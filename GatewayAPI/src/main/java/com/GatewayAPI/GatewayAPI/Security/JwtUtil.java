@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 /*
@@ -13,20 +15,24 @@ import java.security.Key;
  * No request filtering logic is handled here. 
  */
 
-
 @Component
 public class JwtUtil {
 
 	private final JwtProperties jwtProperties; 
 	
-	private final Key signingKey;
+	private Key signingKey;
 	
 	public JwtUtil(JwtProperties jwtProperties) {
 		
-		this.jwtProperties = jwtProperties; 
-		
-		this.signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()); 
+		this.jwtProperties = jwtProperties;
 	}
+	
+	@PostConstruct
+	public void init() {
+        this.signingKey = Keys.hmacShaKeyFor(
+            jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8)
+        );
+    }
 	
 	/*
 	 * Extracts claims from a JWT token. 

@@ -20,6 +20,6 @@ spring:
 # JWT configuration for Gateway
 jwt:
   # Secret used to validate JWTs issued by Auth Service
-  secret: parentpulse-gateway-secret-key
+  secret: parentpulse-gateway-secret-key-which-is-at-least-32-bytes-long
   # Token expiration (1 hour in milliseconds)
   expiration: 3600000

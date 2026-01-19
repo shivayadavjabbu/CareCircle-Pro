@@ -1,1 +1,18 @@
 
+# Build output
+GatewayAPI/target/
+
+# Spring Boot configuration (SECRETS)
+GatewayAPI/src/main/resources/application.yml
+GatewayAPI/src/main/resources/application.properties
+
+# Maven Wrapper
+GatewayAPI/.mvn/
+
+# Eclipse / IDE files
+GatewayAPI/.classpath
+GatewayAPI/.project
+GatewayAPI/.settings/
+
+
+

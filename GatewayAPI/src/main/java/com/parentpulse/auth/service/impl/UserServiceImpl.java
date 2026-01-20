@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.parentpulse.auth.dto.request.LoginRequest;
 import com.parentpulse.auth.dto.request.RegisterRequest;
+import com.parentpulse.auth.exception.InvalidCredentialsException;
+import com.parentpulse.auth.exception.UserAlreadyExistsException;
 import com.parentpulse.auth.model.User;
 import com.parentpulse.auth.repository.UserRepository;
 import com.parentpulse.auth.service.UserService;
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService {
 		
 		//Business rule: email must be unique
 		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new IllegalStateException("User already exists with this email.");
+			throw new UserAlreadyExistsException("Email already registered.");
 		}
 		
 		User user = new User(); 
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByEmail(request.getEmail())
 				.filter(User::isEnabled)
 				.orElseThrow(() ->
-				new IllegalStateException("Invalid email or password")); 
+				new InvalidCredentialsException("Invalid email or password.")); 
 				
 	}
 

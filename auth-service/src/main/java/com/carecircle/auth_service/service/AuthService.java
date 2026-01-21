@@ -2,6 +2,8 @@ package com.carecircle.auth_service.service;
 
 import com.carecircle.auth_service.dto.request.LoginRequest;
 import com.carecircle.auth_service.dto.request.RegisterRequest;
+import com.carecircle.auth_service.exception.InvalidCredentialsException;
+import com.carecircle.auth_service.exception.UserAlreadyExistsException;
 import com.carecircle.auth_service.model.User;
 import com.carecircle.auth_service.repository.UserRepository;
 import com.carecircle.auth_service.security.JwtUtil;
@@ -26,7 +28,7 @@ public class AuthService {
     public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new UserAlreadyExistsException("Email already registered"); 
         }
 
         User user = new User();
@@ -43,7 +45,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid Credentials"); 
         }
 
         return jwtUtil.generateToken(user);

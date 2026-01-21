@@ -3,11 +3,15 @@ package com.GatewayAPI.GatewayAPI.Security;
 import io.jsonwebtoken.Claims;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.List;
 
 /**
  * Global JWT authentication and role-based authorization filter.
@@ -30,13 +34,19 @@ public class JwtAuthenticationFilter implements GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        String path = exchange.getRequest().getURI().getPath();
+        // --------------------------------------------------
+        // 1. Resolve ORIGINAL request path (before rewriting)
+        // --------------------------------------------------
+        String originalPath = resolveOriginalPath(exchange);
 
-        // Public endpoints
-        if (path.startsWith("/auth/")) {
+        // Public endpoints (no authentication required)
+        if (originalPath.startsWith("/auth/")) {
             return chain.filter(exchange);
         }
 
+        // --------------------------------------------------
+        // 2. Extract Authorization header
+        // --------------------------------------------------
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
@@ -48,6 +58,9 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
         String token = authHeader.substring(7);
 
+        // --------------------------------------------------
+        // 3. Validate JWT token
+        // --------------------------------------------------
         Claims claims;
         try {
             claims = jwtUtil.extractClaims(token);
@@ -58,26 +71,46 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
         String role = claims.get("role", String.class);
 
-        // ---- ROLE BASED ACCESS CONTROL ----
-        if (!isAuthorized(path, role)) {
+        // --------------------------------------------------
+        // 4. Role-Based Access Control (RBAC)
+        // --------------------------------------------------
+        if (!isAuthorized(originalPath, role)) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
             return exchange.getResponse().setComplete();
         }
 
-        // Forward trusted identity headers
-        exchange = exchange.mutate()
+        // --------------------------------------------------
+        // 5. Forward trusted user context to downstream services
+        // --------------------------------------------------
+        ServerWebExchange mutatedExchange = exchange.mutate()
                 .request(builder -> builder
                         .header("X-User-Email", claims.getSubject())
                         .header("X-User-Role", role)
                 )
                 .build();
 
-        return chain.filter(exchange);
+        return chain.filter(mutatedExchange);
+    }
+
+    /**
+     * Resolve the original request path before any gateway rewriting.
+     */
+    private String resolveOriginalPath(ServerWebExchange exchange) {
+
+        List<URI> originalUris =
+                exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ORIGINAL_REQUEST_URL_ATTR);
+
+        if (originalUris != null && !originalUris.isEmpty()) {
+            return originalUris.get(0).getPath();
+        }
+
+        // Fallback (should rarely happen)
+        return exchange.getRequest().getURI().getPath();
     }
 
     /**
      * Simple role-to-path authorization rules.
-     * This keeps gateway authorization coarse-grained.
+     * Gateway authorization is intentionally coarse-grained.
      */
     private boolean isAuthorized(String path, String role) {
 

@@ -130,5 +130,22 @@ public class ChildService {
         childRepository.deleteByIdAndParent(childId, parent);
     }
 
+    /**
+     * Fetches a child by id if it belongs to the authenticated parent.
+     *
+     * @param userEmail authenticated parent's email
+     * @param childId child id
+     * @return child
+     */
+    @Transactional(readOnly = true)
+    public Child getChildById(String userEmail, Long childId) {
+        ParentProfile parent =
+                parentProfileService.getProfileByUserEmail(userEmail);
+
+        return childRepository
+                .findByIdAndParent(childId, parent)
+                .orElseThrow(() -> new ChildNotFoundException(childId));
+    }
+
 }
 

@@ -109,6 +109,24 @@ public class ChildController {
         childService.deleteChild(userEmail, childId);
     }
     
+    
+    /**
+     * Returns details of a specific child owned by the authenticated parent.
+     */
+    @GetMapping("/{childId}")
+    public ChildResponse getChildById(
+            @PathVariable Long childId,
+            HttpServletRequest httpRequest
+    ) {
+        String userEmail = extractUserEmail(httpRequest);
+        validateParentRole(httpRequest);
+
+        Child child = childService.getChildById(userEmail, childId);
+
+        return mapToResponse(child);
+    }
+
+    
 
     // =========================
     // Private helper methods

@@ -5,6 +5,8 @@ import com.carecircle.user_profile_service.parent.dto.ParentProfileResponse;
 import com.carecircle.user_profile_service.parent.model.ParentProfile;
 import com.carecircle.user_profile_service.parent.service.ParentProfileService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +36,7 @@ public class ParentProfileController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ParentProfileResponse createProfile(
-            @RequestBody CreateParentProfileRequest request,
+    		 @Valid @RequestBody CreateParentProfileRequest request,
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);

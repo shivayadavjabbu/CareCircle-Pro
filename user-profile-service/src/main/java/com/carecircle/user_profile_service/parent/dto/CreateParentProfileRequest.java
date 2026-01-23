@@ -1,19 +1,28 @@
 package com.carecircle.user_profile_service.parent.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 /**
  * Request DTO for creating a parent profile.
  *
- * This DTO represents client-provided data only.
- * Authenticated user identity is derived from the gateway.
+ * Contains only client-provided data.
+ * Validation is applied at the API boundary.
  */
 public class CreateParentProfileRequest {
 
+    @NotBlank(message = "Full name is required")
     private String fullName;
+
+    @NotBlank(message = "Phone number is required")
+    @Size	(min = 8, max = 15, message = "Phone number must be between 8 and 15 digits")
     private String phoneNumber;
+
+    @NotBlank(message = "Address is required")
     private String address;
 
     public CreateParentProfileRequest() {
-        // Default constructor for JSON deserialization
+        // For JSON deserialization
     }
 
     public String getFullName() {

@@ -2,6 +2,7 @@ package com.carecircle.user_profile_service.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -10,6 +11,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ApiError> handleValidationException(
+	        MethodArgumentNotValidException ex
+	) {
+	    String message = ex.getBindingResult()
+	            .getFieldErrors()
+	            .stream()
+	            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+	            .findFirst()
+	            .orElse("Validation failed");
+
+	    ApiError apiError = new ApiError(
+	            message,
+	            HttpStatus.BAD_REQUEST.value()
+	    );
+
+	    return ResponseEntity.badRequest().body(apiError);
+	}
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> handleRuntimeException(RuntimeException ex) {

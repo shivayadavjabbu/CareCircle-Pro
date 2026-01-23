@@ -1,0 +1,279 @@
+package com.carecircle.user_profile_service.admin.service.impl;
+
+
+import com.carecircle.user_profile_service.admin.exception.*;
+import com.carecircle.user_profile_service.admin.model.AdminProfile;
+import com.carecircle.user_profile_service.admin.model.VerificationAudit;
+import com.carecircle.user_profile_service.admin.repository.AdminProfileRepository;
+import com.carecircle.user_profile_service.admin.repository.VerificationAuditRepository;
+import com.carecircle.user_profile_service.admin.service.AdminService;
+import com.carecircle.user_profile_service.caregiver.model.CaregiverCapability;
+import com.carecircle.user_profile_service.caregiver.model.CaregiverCertification;
+import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
+import com.carecircle.user_profile_service.caregiver.repository.CaregiverCapabilityRepository;
+import com.carecircle.user_profile_service.caregiver.repository.CaregiverCertificationRepository;
+import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+/**
+ * Implementation of admin verification and moderation logic.
+ */
+@Service
+@Transactional
+public class AdminServiceImpl implements AdminService {
+
+    private final AdminProfileRepository adminProfileRepository;
+    private final VerificationAuditRepository auditRepository;
+
+    private final CaregiverProfileRepository caregiverProfileRepository;
+    private final CaregiverCapabilityRepository caregiverCapabilityRepository;
+    private final CaregiverCertificationRepository caregiverCertificationRepository;
+
+    public AdminServiceImpl(
+            AdminProfileRepository adminProfileRepository,
+            VerificationAuditRepository auditRepository,
+            CaregiverProfileRepository caregiverProfileRepository,
+            CaregiverCapabilityRepository caregiverCapabilityRepository,
+            CaregiverCertificationRepository caregiverCertificationRepository
+    ) {
+        this.adminProfileRepository = adminProfileRepository;
+        this.auditRepository = auditRepository;
+        this.caregiverProfileRepository = caregiverProfileRepository;
+        this.caregiverCapabilityRepository = caregiverCapabilityRepository;
+        this.caregiverCertificationRepository = caregiverCertificationRepository;
+    }
+
+    // =========================
+    // Helpers
+    // =========================
+
+    private AdminProfile loadActiveAdmin(String adminEmail) {
+        AdminProfile admin = adminProfileRepository.findByUserEmail(adminEmail)
+                .orElseThrow(() -> new AdminProfileNotFoundException(adminEmail));
+
+        if (!Boolean.TRUE.equals(admin.getIsActive())) {
+            throw new AdminInactiveException(adminEmail);
+        }
+        return admin;
+    }
+
+    private void saveAudit(
+            AdminProfile admin,
+            String targetType,
+            Long targetId,
+            String action,
+            String previousStatus,
+            String newStatus,
+            String reason
+    ) {
+        VerificationAudit audit = new VerificationAudit(
+                admin,
+                targetType,
+                targetId,
+                action,
+                previousStatus,
+                newStatus,
+                reason
+        );
+        auditRepository.save(audit);
+    }
+
+    // =========================
+    // Caregiver Profile
+    // =========================
+
+    @Override
+    public void verifyCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_PROFILE", caregiverId)
+                );
+
+        if ("VERIFIED".equals(profile.getVerificationStatus())) {
+            throw new InvalidVerificationStateException("Caregiver profile already verified");
+        }
+
+        String previous = profile.getVerificationStatus();
+        profile.markVerified();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_PROFILE",
+                caregiverId,
+                "VERIFY",
+                previous,
+                "VERIFIED",
+                reason
+        );
+    }
+
+    @Override
+    public void rejectCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_PROFILE", caregiverId)
+                );
+
+        if ("REJECTED".equals(profile.getVerificationStatus())) {
+            throw new InvalidVerificationStateException("Caregiver profile already rejected");
+        }
+
+        String previous = profile.getVerificationStatus();
+        profile.markRejected(reason);
+        saveAudit(
+                admin,
+                "CAREGIVER_PROFILE",
+                caregiverId,
+                "REJECT",
+                previous,
+                "REJECTED",
+                reason
+        );
+    }
+
+    @Override
+    public void disableCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_PROFILE", caregiverId)
+                );
+
+        if (!Boolean.TRUE.equals(profile.getIsActive())) {
+            throw new InvalidVerificationStateException("Caregiver profile already disabled");
+        }
+
+        profile.disable();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_PROFILE",
+                caregiverId,
+                "DISABLE",
+                "ACTIVE",
+                "DISABLED",
+                reason
+        );
+    }
+
+    // =========================
+    // Caregiver Capability
+    // =========================
+
+    @Override
+    public void verifyCaregiverCapability(String adminEmail, Long capabilityId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverCapability capability = caregiverCapabilityRepository.findById(capabilityId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_CAPABILITY", capabilityId)
+                );
+
+        if (Boolean.TRUE.equals(capability.getVerified())) {
+            throw new InvalidVerificationStateException("Capability already verified");
+        }
+
+        capability.markVerified();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_CAPABILITY",
+                capabilityId,
+                "VERIFY",
+                "UNVERIFIED",
+                "VERIFIED",
+                reason
+        );
+    }
+
+    @Override
+    public void rejectCaregiverCapability(String adminEmail, Long capabilityId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverCapability capability = caregiverCapabilityRepository.findById(capabilityId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_CAPABILITY", capabilityId)
+                );
+
+        if (Boolean.FALSE.equals(capability.getVerified())) {
+            throw new InvalidVerificationStateException("Capability already unverified");
+        }
+
+        capability.markUnverified();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_CAPABILITY",
+                capabilityId,
+                "REJECT",
+                "VERIFIED",
+                "UNVERIFIED",
+                reason
+        );
+    }
+
+    // =========================
+    // Caregiver Certification
+    // =========================
+
+    @Override
+    public void verifyCaregiverCertification(String adminEmail, Long certificationId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverCertification cert = caregiverCertificationRepository.findById(certificationId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_CERTIFICATION", certificationId)
+                );
+
+        if (Boolean.TRUE.equals(cert.getVerified())) {
+            throw new InvalidVerificationStateException("Certification already verified");
+        }
+
+        cert.markVerified();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_CERTIFICATION",
+                certificationId,
+                "VERIFY",
+                "UNVERIFIED",
+                "VERIFIED",
+                reason
+        );
+    }
+
+    @Override
+    public void rejectCaregiverCertification(String adminEmail, Long certificationId, String reason) {
+        AdminProfile admin = loadActiveAdmin(adminEmail);
+
+        CaregiverCertification cert = caregiverCertificationRepository.findById(certificationId)
+                .orElseThrow(() ->
+                        new VerificationTargetNotFoundException("CAREGIVER_CERTIFICATION", certificationId)
+                );
+
+        if (Boolean.FALSE.equals(cert.getVerified())) {
+            throw new InvalidVerificationStateException("Certification already unverified");
+        }
+
+        cert.markUnverified();
+
+        saveAudit(
+                admin,
+                "CAREGIVER_CERTIFICATION",
+                certificationId,
+                "REJECT",
+                "VERIFIED",
+                "UNVERIFIED",
+                reason
+        );
+    }
+}
+
+

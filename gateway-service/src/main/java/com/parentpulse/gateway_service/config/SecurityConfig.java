@@ -11,16 +11,16 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
-        System.out.println("✅ Gateway SecurityConfig LOADED (CSRF DISABLED)");
+        System.out.println("Gateway SecurityConfig LOADED (SECURITY DISABLED)");
 
         return http
-            .csrf(ServerHttpSecurity.CsrfSpec::disable)   // 🔥 THIS WAS MISSING
+            .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
             .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
             .authorizeExchange(exchange -> exchange
-                .pathMatchers("/auth/**", "/actuator/**").permitAll()
-                .anyExchange().authenticated()
+                .anyExchange().permitAll()
             )
             .build();
     }
 }
+

@@ -39,7 +39,7 @@ public class JwtAuthFilter implements GlobalFilter {
 	            .getFirst(HttpHeaders.AUTHORIZATION);
 
 	    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-	        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+	        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);	
 	        return exchange.getResponse().setComplete();
 	    }
 
@@ -49,6 +49,7 @@ public class JwtAuthFilter implements GlobalFilter {
 	    try {
 	        claims = jwtUtil.validateAndExtractClaims(token);
 	    } catch (Exception e) {
+	    	e.printStackTrace();
 	        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
 	        return exchange.getResponse().setComplete();
 	    }
@@ -82,17 +83,19 @@ public class JwtAuthFilter implements GlobalFilter {
 	private boolean isAuthorized(String path, String role) {
 
 	    if (path.startsWith("/admin/")) {
-	        return "ADMIN".equals(role);
+	        return "ROLE_ADMIN".equals(role);
 	    }
 
 	    if (path.startsWith("/caregiver/")) {
-	        return "CAREGIVER".equals(role);
+	        return "ROLE_CAREGIVER".equals(role);
 	    }
 
 	    if (path.startsWith("/parents/")) {
-	        return "PARENT".equals(role);
+	        return "ROLE_PARENT".equals(role);
 	    }
+
 	    return false;
 	}
+
 
 }

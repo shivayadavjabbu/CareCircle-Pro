@@ -1,9 +1,20 @@
 package com.carecircle.user_profile_service.admin.service;
 
+import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
+
 /**
  * Service interface for admin verification and moderation operations.
  */
 public interface AdminService {
+	
+	void createAdminProfile(
+	        String adminEmail,
+	        String fullName,
+	        String phoneNumber,
+	        String adminLevel
+	);
+
+	AdminProfileResponse getMyProfile(String adminEmail);
 
     // ===== Caregiver Profile =====
 

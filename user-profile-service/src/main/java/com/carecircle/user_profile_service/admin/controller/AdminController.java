@@ -1,5 +1,7 @@
 package com.carecircle.user_profile_service.admin.controller;
 
+import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
+import com.carecircle.user_profile_service.admin.dto.CreateAdminProfileRequest;
 import com.carecircle.user_profile_service.admin.dto.DisableRequest;
 import com.carecircle.user_profile_service.admin.dto.RejectRequest;
 import com.carecircle.user_profile_service.admin.dto.VerifyRequest;
@@ -21,17 +23,38 @@ public class AdminController {
 
     private static final String USER_EMAIL_HEADER = "X-User-Email";
     private static final String USER_ROLE_HEADER = "X-User-Role";
-    private static final String ADMIN_ROLE = "ADMIN";
+    private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     private final AdminService adminService;
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
+    
+    @PostMapping("/profile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createAdminProfile(
+            @Valid @RequestBody CreateAdminProfileRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        String adminEmail = validateAdminAndGetEmail(httpRequest);
 
-    // =========================
+        adminService.createAdminProfile(
+                adminEmail,
+                request.getFullName(),
+                request.getPhoneNumber(),
+                request.getAdminLevel()
+        );
+    }
+
+    @GetMapping("/profile")
+    public AdminProfileResponse getMyProfile(HttpServletRequest httpRequest) {
+        String adminEmail = validateAdminAndGetEmail(httpRequest);
+        return adminService.getMyProfile(adminEmail);
+    }
+
+
     // Caregiver Profile
-    // =========================
 
     @PostMapping("/caregivers/{caregiverId}/verify")
     @ResponseStatus(HttpStatus.OK)

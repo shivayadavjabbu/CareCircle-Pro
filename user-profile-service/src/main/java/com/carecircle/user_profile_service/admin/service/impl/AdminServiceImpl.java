@@ -1,6 +1,7 @@
 package com.carecircle.user_profile_service.admin.service.impl;
 
 
+import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
 import com.carecircle.user_profile_service.admin.exception.*;
 import com.carecircle.user_profile_service.admin.model.AdminProfile;
 import com.carecircle.user_profile_service.admin.model.VerificationAudit;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class AdminServiceImpl implements AdminService {
+	
+	
 
     private final AdminProfileRepository adminProfileRepository;
     private final VerificationAuditRepository auditRepository;
@@ -30,6 +33,45 @@ public class AdminServiceImpl implements AdminService {
     private final CaregiverProfileRepository caregiverProfileRepository;
     private final CaregiverCapabilityRepository caregiverCapabilityRepository;
     private final CaregiverCertificationRepository caregiverCertificationRepository;
+    
+    
+    @Override
+    public void createAdminProfile(
+            String adminEmail,
+            String fullName,
+            String phoneNumber,
+            String adminLevel
+    ) {
+        if (adminProfileRepository.findByUserEmail(adminEmail).isPresent()) {
+            throw new RuntimeException("Admin profile already exists");
+        }
+
+        AdminProfile admin = new AdminProfile(
+                adminEmail,
+                fullName,
+                phoneNumber,
+                adminLevel,
+                null, null, null, null, null, null
+        );
+
+        adminProfileRepository.save(admin);
+    }
+
+    @Override
+    public AdminProfileResponse getMyProfile(String adminEmail) {
+        AdminProfile admin = adminProfileRepository.findByUserEmail(adminEmail)
+                .orElseThrow(() -> new AdminProfileNotFoundException(adminEmail));
+
+        return new AdminProfileResponse(
+                admin.getId(),
+                admin.getFullName(),
+                admin.getUserEmail(),
+                admin.getAdminLevel(),
+                admin.getIsActive(),
+                admin.getCreatedAt()
+        );
+    }
+
 
     public AdminServiceImpl(
             AdminProfileRepository adminProfileRepository,

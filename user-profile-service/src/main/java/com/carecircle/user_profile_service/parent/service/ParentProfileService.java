@@ -1,12 +1,10 @@
 package com.carecircle.user_profile_service.parent.service;
 
 
-import com.carecircle.user_profile_service.parent.exception.ParentProfileAlreadyExistsException;
-import com.carecircle.user_profile_service.parent.exception.ParentProfileNotFoundException;
-import com.carecircle.user_profile_service.parent.model.ParentProfile;
-import com.carecircle.user_profile_service.parent.repository.ParentProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.carecircle.user_profile_service.parent.model.ParentProfile;
 
 /**
  * Service responsible for handling parent profile domain logic.
@@ -15,13 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
  * related to parent profiles.
  */
 @Service
-public class ParentProfileService {
+public interface ParentProfileService {
 
-    private final ParentProfileRepository parentProfileRepository;
-
-    public ParentProfileService(ParentProfileRepository parentProfileRepository) {
-        this.parentProfileRepository = parentProfileRepository;
-    }
 
     /**
      * Creates a new parent profile for the authenticated user.
@@ -39,17 +32,7 @@ public class ParentProfileService {
             String fullName,
             String phoneNumber,
             String address
-    ) {
-        boolean exists = parentProfileRepository.findByUserEmail(userEmail).isPresent();
-        if (exists) {
-        	 throw new ParentProfileAlreadyExistsException(userEmail);
-        }
-
-        ParentProfile profile =
-                new ParentProfile(userEmail, fullName, phoneNumber, address);
-
-        return parentProfileRepository.save(profile);
-    }
+    );
 
     /**
      * Fetches the parent profile for the authenticated user.
@@ -59,11 +42,5 @@ public class ParentProfileService {
      * @throws IllegalStateException if profile does not exist
      */
     @Transactional(readOnly = true)
-    public ParentProfile getProfileByUserEmail(String userEmail) {
-        return parentProfileRepository
-                .findByUserEmail(userEmail)
-                .orElseThrow(() ->
-                        new ParentProfileNotFoundException(userEmail)
-                );
-    }
+    public ParentProfile getProfileByUserEmail(String userEmail);
 }

@@ -13,10 +13,27 @@ spring:
           predicates:
             - Path=/auth/**
 
-        - id: user-profile-service
+        - id: parents-route
           uri: http://localhost:8083
           predicates:
             - Path=/parents/**
 
+        - id: caregiver-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/caregiver/**
+
+        - id: admin-route
+          uri: http://localhost:8083
+          predicates:
+            - Path=/admin/**
+
 jwt:
   secret: carecircle-auth-secret-key-which-is-at-least-32-bytes-long
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  

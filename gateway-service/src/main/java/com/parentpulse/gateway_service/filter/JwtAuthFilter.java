@@ -80,22 +80,22 @@ public class JwtAuthFilter implements GlobalFilter {
 	    return chain.filter(exchange);
 	}
 	
-	private boolean isAuthorized(String path, String role) {
-
-	    if (path.startsWith("/admin/")) {
-	        return "ROLE_ADMIN".equals(role);
-	    }
-
-	    if (path.startsWith("/caregiver/")) {
-	        return "ROLE_CAREGIVER".equals(role);
-	    }
-
-	    if (path.startsWith("/parents/")) {
-	        return "ROLE_PARENT".equals(role);
-	    }
-
-	    return false;
+		private boolean isAuthorized(String path, String role) {
+	
+		    if (path.startsWith("/admin/")) {
+		        return "ROLE_ADMIN".equals(role);
+		    }
+	
+		    if (path.startsWith("/caregiver/")) {
+		        return "ROLE_CAREGIVER".equals(role);
+		    }
+	
+		    if (path.startsWith("/parents/")) {
+		        return "ROLE_PARENT".equals(role);
+		    }
+	
+		    return true;
+		}
+	
+	
 	}
-
-
-}

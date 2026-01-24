@@ -13,5 +13,10 @@ spring:
           predicates:
             - Path=/auth/**
 
+        - id: user-profile-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/parents/**
+
 jwt:
   secret: carecircle-auth-secret-key-which-is-at-least-32-bytes-long

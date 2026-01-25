@@ -1,6 +1,7 @@
 package com.carecircle.communication.service.impl;
 
 import com.carecircle.communication.model.chat.ChatMessage;
+import com.carecircle.communication.service.interfaces.NotificationService;
 import com.carecircle.communication.model.chat.ChatParticipant;
 import com.carecircle.communication.model.chat.ChatRoom;
 import com.carecircle.communication.model.chat.ChatRoomType;
@@ -21,15 +22,18 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final NotificationService notificationService;
 
     public ChatServiceImpl(
             ChatRoomRepository chatRoomRepository,
             ChatParticipantRepository chatParticipantRepository,
-            ChatMessageRepository chatMessageRepository
+            ChatMessageRepository chatMessageRepository, 
+            NotificationService notificationService
     ) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatParticipantRepository = chatParticipantRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -60,5 +64,13 @@ public class ChatServiceImpl implements ChatService {
         chatMessage.setMessageType(MessageType.TEXT);
 
         chatMessageRepository.save(chatMessage);
+
+        // TEMPORARY: notify sender only (will improve later)
+        notificationService.createNotification(
+                senderId,
+                "CHAT",
+                "New message sent"
+        );
     }
+
 }

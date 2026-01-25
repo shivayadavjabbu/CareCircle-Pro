@@ -6,6 +6,7 @@ import com.carecircle.communication.service.interfaces.BlockService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,4 +46,12 @@ public class BlockServiceImpl implements BlockService {
     public boolean isBlocked(UUID blockerId, UUID blockedId) {
         return blockedUserRepository.existsByBlockerIdAndBlockedId(blockerId, blockedId);
     }
+    
+    @Override
+    public List<UUID> getBlockedUsers(UUID blockerId) {
+        return blockedUserRepository.findByBlockerId(blockerId).stream()
+                .map(BlockedUser::getBlockedId)
+                .toList();
+    }
+
 }

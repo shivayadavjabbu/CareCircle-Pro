@@ -46,4 +46,14 @@ public class ChatController {
         chatService.sendMessage(roomId, senderId, request.getMessage());
         return ResponseEntity.ok().build();
     }
+    
+    @GetMapping("/rooms/{roomId}/messages")
+    public ResponseEntity<List<ChatMessageResponse>> getRoomMessages(
+            @PathVariable UUID roomId,
+            @RequestHeader("X-User-Id") UUID userId
+    ) {
+        return ResponseEntity.ok(
+                chatService.getRoomMessages(roomId, userId)
+        );
+    }
 }

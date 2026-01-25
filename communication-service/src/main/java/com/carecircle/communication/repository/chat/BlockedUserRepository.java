@@ -1,10 +1,11 @@
 package com.carecircle.communication.repository.chat;
 
-import java.util.UUID;
-
+import com.carecircle.communication.model.chat.BlockedUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.carecircle.communication.model.chat.BlockedUser;
+import java.util.UUID;
 
 public interface BlockedUserRepository extends JpaRepository<BlockedUser, UUID> {
+
+    boolean existsByBlockerIdAndBlockedId(UUID blockerId, UUID blockedId);
 }

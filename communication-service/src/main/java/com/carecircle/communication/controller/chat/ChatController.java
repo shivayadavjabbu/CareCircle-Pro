@@ -1,5 +1,8 @@
 package com.carecircle.communication.controller.chat;
 
+import com.carecircle.communication.dto.request.AddParticipantRequest;
+import com.carecircle.communication.dto.request.CreateChatRoomRequest;
+import com.carecircle.communication.dto.request.SendMessageRequest;
 import com.carecircle.communication.service.interfaces.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +22,18 @@ public class ChatController {
 
     @PostMapping("/rooms")
     public ResponseEntity<Map<String, UUID>> createRoom(
-            @RequestParam(required = false) UUID bookingId
+            @RequestBody CreateChatRoomRequest request
     ) {
-        UUID roomId = chatService.createChatRoom(bookingId);
+        UUID roomId = chatService.createChatRoom(request.getBookingId());
         return ResponseEntity.ok(Map.of("roomId", roomId));
     }
 
     @PostMapping("/rooms/{roomId}/participants")
     public ResponseEntity<Void> addParticipant(
             @PathVariable UUID roomId,
-            @RequestParam UUID userId
+            @RequestBody AddParticipantRequest request
     ) {
-        chatService.addParticipant(roomId, userId);
+        chatService.addParticipant(roomId, request.getUserId());
         return ResponseEntity.ok().build();
     }
 
@@ -38,9 +41,9 @@ public class ChatController {
     public ResponseEntity<Void> sendMessage(
             @PathVariable UUID roomId,
             @RequestParam UUID senderId,
-            @RequestParam String message
+            @RequestBody SendMessageRequest request
     ) {
-        chatService.sendMessage(roomId, senderId, message);
+        chatService.sendMessage(roomId, senderId, request.getMessage());
         return ResponseEntity.ok().build();
     }
 }

@@ -65,12 +65,18 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(chatMessage);
 
-        // TEMPORARY: notify sender only (will improve later)
-        notificationService.createNotification(
-                senderId,
-                "CHAT",
-                "New message sent"
-        );
+        chatParticipantRepository.findByRoomId(roomId).stream()
+                .map(ChatParticipant::getUserId)
+                .filter(userId -> !userId.equals(senderId))
+                .forEach(userId ->
+                        notificationService.createNotification(
+                                userId,
+                                "CHAT",
+                                "New message received"
+                        )
+                );
     }
+
+
 
 }

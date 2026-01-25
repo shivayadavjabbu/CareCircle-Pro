@@ -1,5 +1,6 @@
 package com.carecircle.communication.service.impl;
 
+import com.carecircle.communication.exception.ChatBlockedException;
 import com.carecircle.communication.model.chat.ChatMessage;
 import com.carecircle.communication.service.interfaces.NotificationService;
 import com.carecircle.communication.model.chat.ChatParticipant;
@@ -75,7 +76,7 @@ public class ChatServiceImpl implements ChatService {
                 );
 
         if (isBlocked) {
-            throw new IllegalStateException("Message cannot be sent. You are blocked by a participant.");
+            throw new ChatBlockedException("Message cannot be sent. You are blocked by a participant.");
         }
 
         // Save message

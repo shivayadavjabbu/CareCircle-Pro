@@ -40,7 +40,7 @@ public class ChatController {
     @PostMapping("/rooms/{roomId}/messages")
     public ResponseEntity<Void> sendMessage(
             @PathVariable UUID roomId,
-            @RequestParam UUID senderId,
+            @RequestHeader("X-User-Id") UUID senderId,
             @RequestBody SendMessageRequest request
     ) {
         chatService.sendMessage(roomId, senderId, request.getMessage());

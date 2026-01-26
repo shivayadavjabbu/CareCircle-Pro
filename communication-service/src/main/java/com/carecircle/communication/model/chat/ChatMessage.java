@@ -8,10 +8,11 @@ import java.util.UUID;
 @Table(name = "chat_messages")
 public class ChatMessage {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@org.hibernate.annotations.UuidGenerator
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     @Column(name = "room_id", nullable = false)
     private UUID roomId;

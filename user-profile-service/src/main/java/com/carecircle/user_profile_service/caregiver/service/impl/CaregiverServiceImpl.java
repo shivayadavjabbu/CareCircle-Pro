@@ -141,7 +141,7 @@ public class CaregiverServiceImpl implements CaregiverService {
 
         CaregiverCapability capability = new CaregiverCapability(
                 caregiver,
-                serviceType,
+				serviceType,
                 description,
                 minChildAge,
                 maxChildAge,

@@ -76,7 +76,7 @@ public class ParentProfileServiceImpl implements ParentProfileService{
 	@Override
 	public ParentProfile getProfileByUserId(UUID userId) {
 		 return parentProfileRepository
-	                .findByUserID(userId)
+	                .findByUserId(userId)
 	                .orElseThrow(() ->
 	                        new ParentProfileNotFoundException(String.valueOf(userId))
 	                );

@@ -15,7 +15,6 @@ public class CreateAdminProfileRequest {
     @NotBlank
     private String adminLevel;
     
-    @NotBlank
     private UUID userId; 
 
     public String getFullName() {

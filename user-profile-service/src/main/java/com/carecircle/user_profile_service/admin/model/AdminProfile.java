@@ -15,9 +15,10 @@ import java.util.UUID;
 @Table(name = "admin_profiles")
 public class AdminProfile {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     // ===== Identity (linked logically to auth-service) =====
 

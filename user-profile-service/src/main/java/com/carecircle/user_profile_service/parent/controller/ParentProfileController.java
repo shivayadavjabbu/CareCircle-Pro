@@ -86,8 +86,10 @@ public class ParentProfileController {
     
     private UUID extractUserId(HttpServletRequest request) {
         String userId = request.getHeader(USER_ID);
+        System.out.println("---- INCOMING HEADERS ----");
+     
         if (userId == null || userId.isBlank()) {
-            throw new IllegalStateException("Missing X-User-Email header");
+            throw new IllegalStateException("Missing X-User-Id header");
         }
         return UUID.fromString(userId);
     }

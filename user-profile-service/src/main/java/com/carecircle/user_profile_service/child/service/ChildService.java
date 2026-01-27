@@ -45,14 +45,14 @@ public class ChildService {
      */
     @Transactional
     public Child createChild(
-            UUID userID,
+            UUID userId,
             String name,
             Integer age,
             String gender,
             String specialNeeds
     ) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserId(userID);
+                parentProfileService.getProfileByUserId(userId);
 
         Child child = new Child(
                 parent,

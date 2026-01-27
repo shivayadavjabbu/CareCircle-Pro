@@ -49,6 +49,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(user.getEmail()) 
+                .claim("emailId", user.getEmail())
                 .claim("userId", user.getId().toString()) //Adding uuid
                 .claim("role", user.getRole().name())     // authorization
                 .setIssuedAt(now)

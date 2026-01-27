@@ -17,9 +17,10 @@ import com.carecircle.user_profile_service.parent.model.ParentProfile;
 @Table(name = "children")
 public class Child {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     /**
      * Owning parent of this child.

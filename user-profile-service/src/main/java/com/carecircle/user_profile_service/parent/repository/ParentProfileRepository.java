@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.carecircle.user_profile_service.parent.model.ParentProfile;
+import java.util.List;
+
 
 /*
  *Repository for managing Parent Profile persistance
@@ -21,6 +23,6 @@ public interface ParentProfileRepository extends JpaRepository<ParentProfile, UU
 	 * @return parent profile if exists
 	 */
 	Optional<ParentProfile> findByUserEmail(String userEmail);
-	Optional<ParentProfile> findByUserID(UUID userId);
+	Optional<ParentProfile> findByUserId(UUID userId);
 
 }

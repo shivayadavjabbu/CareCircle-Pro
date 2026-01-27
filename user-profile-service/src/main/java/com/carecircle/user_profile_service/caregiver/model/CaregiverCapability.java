@@ -26,9 +26,10 @@ import java.util.UUID;
 )
 public class CaregiverCapability {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     // ===== Ownership =====
 

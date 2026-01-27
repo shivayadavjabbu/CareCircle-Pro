@@ -16,9 +16,10 @@ import java.util.UUID;
 @Table(name = "verification_audits")
 public class VerificationAudit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     // ===== Actor (Admin) =====
 
@@ -86,7 +87,7 @@ public class VerificationAudit {
 
     // ===== Getters only (immutable entity) =====
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

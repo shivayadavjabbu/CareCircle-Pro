@@ -16,9 +16,10 @@ import java.util.UUID;
 @Table(name = "caregiver_certifications")
 public class CaregiverCertification {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     // ===== Ownership =====
 

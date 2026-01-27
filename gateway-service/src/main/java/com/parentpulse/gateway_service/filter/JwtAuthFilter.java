@@ -55,6 +55,8 @@ public class JwtAuthFilter implements GlobalFilter {
 	    }
 
 	    String role = claims.get("role", String.class);
+	    
+	    String userId = claims.get("userId", String.class);
 
 	    // ===== ROLE-BASED AUTHORIZATION =====
 	    if (!isAuthorized(path, role)) {
@@ -72,6 +74,7 @@ public class JwtAuthFilter implements GlobalFilter {
 	            })
 	            .header("X-User-Email", claims.getSubject())
 	            .header("X-User-Role", role)
+	            .header("X-User-Id", userId)
 	            .header("X-Request-Source", "GATEWAY")
 	        )
 	        .build();
@@ -87,7 +90,8 @@ public class JwtAuthFilter implements GlobalFilter {
 		    }
 	
 		    if (path.startsWith("/caregiver/")) {
-		        return "ROLE_CAREGIVER".equals(role);
+		    	
+		        return "ROLE_CARETAKER".equals(role);
 		    }
 	
 		    if (path.startsWith("/parents/")) {
@@ -96,6 +100,5 @@ public class JwtAuthFilter implements GlobalFilter {
 	
 		    return true;
 		}
-	
 	
 	}

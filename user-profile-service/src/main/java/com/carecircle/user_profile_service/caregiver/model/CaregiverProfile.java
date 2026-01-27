@@ -18,9 +18,10 @@ import java.util.UUID;
 @Table(name = "caregiver_profiles")
 public class CaregiverProfile {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+	@Id
+	@GeneratedValue
+	@Column(name = "id", nullable = false, updatable = false)
+	private UUID id;
 
     // ===== Identity (linked logically to auth-service) =====
 

@@ -6,13 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository for managing Child persistence.
  *
  * All queries are scoped to the owning parent to enforce data isolation.
  */
-public interface ChildRepository extends JpaRepository<Child, Long> {
+public interface ChildRepository extends JpaRepository<Child, UUID> {
 
     /**
      * Fetch all children belonging to a specific parent.
@@ -30,10 +31,10 @@ public interface ChildRepository extends JpaRepository<Child, Long> {
      * @param parent owning parent profile
      * @return child if found and owned by parent
      */
-    Optional<Child> findByIdAndParent(Long id, ParentProfile parent);
+    Optional<Child> findByIdAndParent(UUID id, ParentProfile parent);
     
     /*
      * Delete the children only using the parent
      */
-    void deleteByIdAndParent(Long id, ParentProfile parent);
+    void deleteByIdAndParent(UUID id, ParentProfile parent);
 }

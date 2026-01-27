@@ -1,6 +1,7 @@
 package com.carecircle.user_profile_service.parent.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,9 +32,11 @@ public class ParentProfile {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id; 
+	private UUID id; 
 	
-
+	@Column(name = "user_id", nullable = false, unique = true)
+    private UUID userId;
+	
 	@Column(name="user_email", nullable = false, updatable = false)
 	private String userEmail; 
 	
@@ -55,11 +58,12 @@ public class ParentProfile {
 	protected  ParentProfile() {		
 	}
 	
-	public ParentProfile(String userEmail, String fullName, String phoneNumber, String address) {
+	public ParentProfile( UUID userId, String userEmail, String fullName, String phoneNumber, String address) {
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.userId = userId; 
     }
 	
 	
@@ -76,7 +80,7 @@ public class ParentProfile {
 
     // Getters only – entity should not be freely mutable
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -103,5 +107,8 @@ public class ParentProfile {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-	
+    
+	public UUID getUserId() {
+		return userId;
+	}
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.UUID;
 
 /**
  * Service responsible for child domain operations.
@@ -43,14 +45,14 @@ public class ChildService {
      */
     @Transactional
     public Child createChild(
-            String userEmail,
+            UUID userID,
             String name,
             Integer age,
             String gender,
             String specialNeeds
     ) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userID);
 
         Child child = new Child(
                 parent,
@@ -70,9 +72,9 @@ public class ChildService {
      * @return list of children
      */
     @Transactional(readOnly = true)
-    public List<Child> getChildrenForParent(String userEmail) {
+    public List<Child> getChildrenForParent(UUID userId) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userId);
 
         return childRepository.findAllByParent(parent);
     }
@@ -90,19 +92,19 @@ public class ChildService {
      */
     @Transactional
     public Child updateChild(
-            String userEmail,
-            Long childId,
+            UUID userID,
+            UUID childId,
             String name,
             Integer age,
             String gender,
             String specialNeeds
     ) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userID);
 
         Child child = childRepository
                 .findByIdAndParent(childId, parent)
-                .orElseThrow(() -> new ChildNotFoundException(childId));
+                .orElseThrow(() -> new ChildNotFoundException(String.valueOf(childId)));
 
         child.updateDetails(name, age, gender, specialNeeds);
 
@@ -117,16 +119,16 @@ public class ChildService {
      * @param childId child id
      */
     @Transactional
-    public void deleteChild(String userEmail, Long childId) {
+    public void deleteChild(UUID userId, UUID childId) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userId);
 
         boolean exists = childRepository
                 .findByIdAndParent(childId, parent)
                 .isPresent();
 
         if (!exists) {
-            throw new ChildNotFoundException(childId);
+            throw new ChildNotFoundException(String.valueOf(childId));
         }
 
         childRepository.deleteByIdAndParent(childId, parent);
@@ -140,13 +142,13 @@ public class ChildService {
      * @return child
      */
     @Transactional(readOnly = true)
-    public Child getChildById(String userEmail, Long childId) {
+    public Child getChildById(UUID userId, UUID childId) {
         ParentProfile parent =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userId);
 
         return childRepository
                 .findByIdAndParent(childId, parent)
-                .orElseThrow(() -> new ChildNotFoundException(childId));
+                .orElseThrow(() -> new ChildNotFoundException(String.valueOf(childId)));
     }
 
 }

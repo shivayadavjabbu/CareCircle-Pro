@@ -4,6 +4,7 @@ package com.carecircle.user_profile_service.child.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.carecircle.user_profile_service.parent.model.ParentProfile;
 
@@ -18,7 +19,7 @@ public class Child {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     /**
      * Owning parent of this child.
@@ -77,7 +78,7 @@ public class Child {
 
     // Getters only — ownership must not be mutable
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

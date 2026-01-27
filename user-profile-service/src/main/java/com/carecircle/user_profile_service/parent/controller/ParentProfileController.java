@@ -7,6 +7,8 @@ import com.carecircle.user_profile_service.parent.service.ParentProfileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,7 @@ public class ParentProfileController {
     private static final String USER_EMAIL_HEADER = "X-User-Email";
     private static final String USER_ROLE_HEADER = "X-User-Role";
     private static final String PARENT_ROLE = "ROLE_PARENT";
+    private static final String USER_ID = "X-User-Id";
 
     private final ParentProfileService parentProfileService;
 
@@ -40,10 +43,12 @@ public class ParentProfileController {
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
         
         ParentProfile profile = parentProfileService.createProfile(
+        		userId,
                 userEmail,
                 request.getFullName(),
                 request.getPhoneNumber(),
@@ -59,10 +64,11 @@ public class ParentProfileController {
     @GetMapping("/me")
     public ParentProfileResponse getMyProfile(HttpServletRequest httpRequest) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
         ParentProfile profile =
-                parentProfileService.getProfileByUserEmail(userEmail);
+                parentProfileService.getProfileByUserId(userId);
 
         return mapToResponse(profile);
     }
@@ -77,6 +83,15 @@ public class ParentProfileController {
         }
         return email;
     }
+    
+    private UUID extractUserId(HttpServletRequest request) {
+        String userId = request.getHeader(USER_ID);
+        if (userId == null || userId.isBlank()) {
+            throw new IllegalStateException("Missing X-User-Email header");
+        }
+        return UUID.fromString(userId);
+    }
+
 
     private void validateParentRole(HttpServletRequest request) {
         String role = request.getHeader(USER_ROLE_HEADER);

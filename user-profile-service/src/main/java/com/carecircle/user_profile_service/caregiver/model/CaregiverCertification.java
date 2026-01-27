@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a certification or formal training held by a caregiver.
@@ -17,7 +18,7 @@ public class CaregiverCertification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // ===== Ownership =====
 
@@ -82,7 +83,7 @@ public class CaregiverCertification {
 
     // ===== Getters only =====
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of caregiver self-management service.
@@ -42,6 +43,7 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     public CaregiverProfile createProfile(
+    		UUID userId, 
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -61,6 +63,7 @@ public class CaregiverServiceImpl implements CaregiverService {
         });
 
         CaregiverProfile profile = new CaregiverProfile(
+        		userId,
                 userEmail,
                 fullName,
                 phoneNumber,
@@ -81,14 +84,14 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     @Transactional(readOnly = true)
-    public CaregiverProfile getMyProfile(String userEmail) {
-        return profileRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new CaregiverProfileNotFoundException(userEmail));
+    public CaregiverProfile getMyProfile(UUID userId) {
+        return profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new CaregiverProfileNotFoundException(String.valueOf(userId)));
     }
 
     @Override
     public CaregiverProfile updateMyProfile(
-            String userEmail,
+            UUID  userId,
             String fullName,
             String phoneNumber,
             String addressLine1,
@@ -100,10 +103,11 @@ public class CaregiverServiceImpl implements CaregiverService {
             String bio,
             Integer experienceYears
     ) {
-        CaregiverProfile profile = getMyProfile(userEmail);
+        CaregiverProfile profile = getMyProfile(userId);
 
         // Controlled updates only (no verification, no ratings)
         profile = new CaregiverProfile(
+        		profile.getUserId(),
                 profile.getUserEmail(),
                 fullName,
                 phoneNumber,
@@ -126,14 +130,14 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     public CaregiverCapability addCapability(
-            String userEmail,
+            UUID userId,
             String serviceType,
             String description,
             Integer minChildAge,
             Integer maxChildAge,
             Boolean requiresCertification
     ) {
-        CaregiverProfile caregiver = getMyProfile(userEmail);
+        CaregiverProfile caregiver = getMyProfile(userId);
 
         CaregiverCapability capability = new CaregiverCapability(
                 caregiver,
@@ -149,8 +153,8 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CaregiverCapability> getMyCapabilities(String userEmail) {
-        CaregiverProfile caregiver = getMyProfile(userEmail);
+    public List<CaregiverCapability> getMyCapabilities(UUID userId) {
+        CaregiverProfile caregiver = getMyProfile(userId);
         return capabilityRepository.findAllByCaregiver(caregiver);
     }
 
@@ -158,12 +162,12 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     public CaregiverCertification addCertification(
-            String userEmail,
+            UUID userId,
             String certificationName,
             String issuedBy,
             LocalDate validTill
     ) {
-        CaregiverProfile caregiver = getMyProfile(userEmail);
+        CaregiverProfile caregiver = getMyProfile(userId);
 
         CaregiverCertification certification = new CaregiverCertification(
                 caregiver,
@@ -177,8 +181,8 @@ public class CaregiverServiceImpl implements CaregiverService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CaregiverCertification> getMyCertifications(String userEmail) {
-        CaregiverProfile caregiver = getMyProfile(userEmail);
+    public List<CaregiverCertification> getMyCertifications(UUID userId) {
+        CaregiverProfile caregiver = getMyProfile(userId);
         return certificationRepository.findAllByCaregiver(caregiver);
     }
 }

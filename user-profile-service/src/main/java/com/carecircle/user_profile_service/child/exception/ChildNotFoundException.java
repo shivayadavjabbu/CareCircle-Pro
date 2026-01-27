@@ -6,7 +6,7 @@ package com.carecircle.user_profile_service.child.exception;
  */
 public class ChildNotFoundException extends RuntimeException {
 
-    public ChildNotFoundException(Long childId) {
+    public ChildNotFoundException(String childId) {
         super("Child not found for id: " + childId);
     }
 }

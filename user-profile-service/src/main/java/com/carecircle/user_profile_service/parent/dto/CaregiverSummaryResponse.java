@@ -1,5 +1,7 @@
 package com.carecircle.user_profile_service.parent.dto;
 
+import java.util.UUID;
+
 /*
  * This class helps parent to see who are all people available for the different services  
  * from the CareGiver. The more matching will be done using matching microservice. Which will 
@@ -7,7 +9,7 @@ package com.carecircle.user_profile_service.parent.dto;
  */
 public class CaregiverSummaryResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String fullName;
     private final String city;
     private final String state;
@@ -17,7 +19,7 @@ public class CaregiverSummaryResponse {
     private final Integer totalReviews;
 
     public CaregiverSummaryResponse(
-            Long id,
+            UUID id,
             String fullName,
             String city,
             String state,
@@ -36,7 +38,7 @@ public class CaregiverSummaryResponse {
         this.totalReviews = totalReviews;
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getFullName() { return fullName; }
     public String getCity() { return city; }
     public String getState() { return state; }

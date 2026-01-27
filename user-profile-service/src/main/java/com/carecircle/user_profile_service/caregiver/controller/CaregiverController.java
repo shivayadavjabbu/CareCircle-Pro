@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +26,7 @@ public class CaregiverController {
     private static final String USER_EMAIL_HEADER = "X-User-Email";
     private static final String USER_ROLE_HEADER = "X-User-Role";
     private static final String CAREGIVER_ROLE = "ROLE_CAREGIVER";
+    private static final String USER_ID = "X-User-Id";
 
     private final CaregiverService caregiverService;
 
@@ -44,8 +46,10 @@ public class CaregiverController {
     ) {
         validateCaregiverRole(httpRequest);
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
 
         CaregiverProfile profile = caregiverService.createProfile(
+        		userId,
                 userEmail,
                 request.getFullName(),
                 request.getPhoneNumber(),
@@ -67,9 +71,9 @@ public class CaregiverController {
     @GetMapping("/profile")
     public CaregiverProfileResponse getMyProfile(HttpServletRequest httpRequest) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
 
-        return mapProfile(caregiverService.getMyProfile(userEmail));
+        return mapProfile(caregiverService.getMyProfile(userId));
     }
 
     @PutMapping("/profile")
@@ -78,10 +82,10 @@ public class CaregiverController {
             HttpServletRequest httpRequest
     ) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+       UUID userId = extractUserId(httpRequest);
 
         CaregiverProfile profile = caregiverService.updateMyProfile(
-                userEmail,
+                userId,
                 request.getFullName(),
                 request.getPhoneNumber(),
                 request.getAddressLine1(),
@@ -108,10 +112,10 @@ public class CaregiverController {
             HttpServletRequest httpRequest
     ) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+        UUID userId  = extractUserId(httpRequest);
 
         CaregiverCapability capability = caregiverService.addCapability(
-                userEmail,
+                userId,
                 request.getServiceType(),
                 request.getDescription(),
                 request.getMinChildAge(),
@@ -127,9 +131,9 @@ public class CaregiverController {
             HttpServletRequest httpRequest
     ) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+        UUID userId  = extractUserId(httpRequest);
 
-        return caregiverService.getMyCapabilities(userEmail)
+        return caregiverService.getMyCapabilities(userId)
                 .stream()
                 .map(this::mapCapability)
                 .collect(Collectors.toList());
@@ -146,10 +150,10 @@ public class CaregiverController {
             HttpServletRequest httpRequest
     ) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
 
         CaregiverCertification certification = caregiverService.addCertification(
-                userEmail,
+                userId,
                 request.getCertificationName(),
                 request.getIssuedBy(),
                 request.getValidTill()
@@ -163,9 +167,9 @@ public class CaregiverController {
             HttpServletRequest httpRequest
     ) {
         validateCaregiverRole(httpRequest);
-        String userEmail = extractUserEmail(httpRequest);
+        UUID userId = extractUserId(httpRequest);
 
-        return caregiverService.getMyCertifications(userEmail)
+        return caregiverService.getMyCertifications(userId)
                 .stream()
                 .map(this::mapCertification)
                 .collect(Collectors.toList());
@@ -181,6 +185,14 @@ public class CaregiverController {
             throw new RuntimeException("Missing X-User-Email header");
         }
         return email;
+    }
+    
+    private UUID extractUserId(HttpServletRequest request) {
+        String userId = request.getHeader(USER_ID);
+        if (userId == null || userId.isBlank()) {
+            throw new RuntimeException("Missing X-User-Id header");
+        }
+        return UUID.fromString(userId);
     }
 
     private void validateCaregiverRole(HttpServletRequest request) {

@@ -1,13 +1,14 @@
 package com.carecircle.user_profile_service.child.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Response DTO representing a child.
  */
 public class ChildResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String name;
     private final Integer age;
     private final String gender;
@@ -15,7 +16,7 @@ public class ChildResponse {
     private final LocalDateTime createdAt;
 
     public ChildResponse(
-            Long id,
+            UUID id,
             String name,
             Integer age,
             String gender,
@@ -30,7 +31,7 @@ public class ChildResponse {
         this.createdAt = createdAt;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

@@ -3,6 +3,7 @@ package com.carecircle.user_profile_service.admin.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents an administrator of the CareCircle platform.
@@ -16,12 +17,15 @@ public class AdminProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // ===== Identity (linked logically to auth-service) =====
 
     @Column(name = "user_email", nullable = false, unique = true, updatable = false)
     private String userEmail;
+    
+    @Column(name = "user_id", nullable = false, unique = true)
+    private UUID userId;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -70,6 +74,7 @@ public class AdminProfile {
     }
 
     public AdminProfile(
+    		UUID userId, 
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -81,6 +86,7 @@ public class AdminProfile {
             String pincode,
             String country
     ) {
+    	this.userId = userId; 
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
@@ -107,11 +113,19 @@ public class AdminProfile {
 
     // ===== Getters only =====
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public String getUserEmail() {
+    public UUID getUserId() {
+		return userId;
+	}
+
+	public void setUserId(UUID userId) {
+		this.userId = userId;
+	}
+
+	public String getUserEmail() {
         return userEmail;
     }
 

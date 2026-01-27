@@ -3,6 +3,7 @@ package com.carecircle.user_profile_service.admin.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents an immutable audit record for verification and moderation actions
@@ -32,7 +33,7 @@ public class VerificationAudit {
     // CAREGIVER_PROFILE / CAREGIVER_CAPABILITY / CAREGIVER_CERTIFICATION
 
     @Column(name = "target_id", nullable = false, updatable = false)
-    private Long targetId;
+    private UUID targetId;
 
     // ===== Action & State Transition =====
 
@@ -63,7 +64,7 @@ public class VerificationAudit {
     public VerificationAudit(
             AdminProfile admin,
             String targetType,
-            Long targetId,
+            UUID targetId,
             String action,
             String previousStatus,
             String newStatus,
@@ -97,7 +98,7 @@ public class VerificationAudit {
         return targetType;
     }
 
-    public Long getTargetId() {
+    public UUID getTargetId() {
         return targetId;
     }
 

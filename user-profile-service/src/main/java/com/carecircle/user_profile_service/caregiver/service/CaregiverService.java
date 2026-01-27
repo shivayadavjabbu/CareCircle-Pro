@@ -6,6 +6,7 @@ import com.carecircle.user_profile_service.caregiver.model.CaregiverCertificatio
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service interface for caregiver self-management operations.
@@ -15,6 +16,7 @@ public interface CaregiverService {
     // ===== Caregiver Profile =====
 
     CaregiverProfile createProfile(
+    		UUID userId,
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -30,10 +32,10 @@ public interface CaregiverService {
             Integer experienceYears
     );
 
-    CaregiverProfile getMyProfile(String userEmail);
+    CaregiverProfile getMyProfile(UUID userId);
 
     CaregiverProfile updateMyProfile(
-            String userEmail,
+            UUID user_Id, 
             String fullName,
             String phoneNumber,
             String addressLine1,
@@ -49,7 +51,7 @@ public interface CaregiverService {
     // ===== Capabilities =====
 
     CaregiverCapability addCapability(
-            String userEmail,
+            UUID userID,
             String serviceType,
             String description,
             Integer minChildAge,
@@ -57,16 +59,16 @@ public interface CaregiverService {
             Boolean requiresCertification
     );
 
-    List<CaregiverCapability> getMyCapabilities(String userEmail);
+    List<CaregiverCapability> getMyCapabilities(UUID userID);
 
     // ===== Certifications =====
 
     CaregiverCertification addCertification(
-            String userEmail,
+            UUID userId, 
             String certificationName,
             String issuedBy,
             java.time.LocalDate validTill
     );
 
-    List<CaregiverCertification> getMyCertifications(String userEmail);
+    List<CaregiverCertification> getMyCertifications(UUID userID);
 }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +27,7 @@ public class ChildController {
     private static final String USER_EMAIL_HEADER = "X-User-Email";
     private static final String USER_ROLE_HEADER = "X-User-Role";
     private static final String PARENT_ROLE = "ROLE_PARENT";
+    private static final String USER_ID = "X-User-Id";
 
     private final ChildService childService;
 
@@ -43,10 +45,11 @@ public class ChildController {
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
         Child child = childService.createChild(
-                userEmail,
+                userId,
                 request.getName(),
                 request.getAge(),
                 request.getGender(),
@@ -62,9 +65,10 @@ public class ChildController {
     @GetMapping
     public List<ChildResponse> getMyChildren(HttpServletRequest httpRequest) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
-        return childService.getChildrenForParent(userEmail)
+        return childService.getChildrenForParent(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -75,15 +79,16 @@ public class ChildController {
      */
     @PutMapping("/{childId}")
     public ChildResponse updateChild(
-            @PathVariable Long childId,
+            @PathVariable UUID childId,
             @Valid @RequestBody UpdateChildRequest request,
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
         Child updatedChild = childService.updateChild(
-                userEmail,
+                userId,
                 childId,
                 request.getName(),
                 request.getAge(),
@@ -100,13 +105,14 @@ public class ChildController {
     @DeleteMapping("/{childId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteChild(
-            @PathVariable Long childId,
+            @PathVariable UUID childId,
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
-        childService.deleteChild(userEmail, childId);
+        childService.deleteChild(userId, childId);
     }
     
     
@@ -115,13 +121,14 @@ public class ChildController {
      */
     @GetMapping("/{childId}")
     public ChildResponse getChildById(
-            @PathVariable Long childId,
+            @PathVariable UUID childId,
             HttpServletRequest httpRequest
     ) {
         String userEmail = extractUserEmail(httpRequest);
+        UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
-        Child child = childService.getChildById(userEmail, childId);
+        Child child = childService.getChildById(userId, childId);
 
         return mapToResponse(child);
     }
@@ -140,6 +147,12 @@ public class ChildController {
         return email;
     }
 
+    private UUID extractUserId(HttpServletRequest request) {
+    	UUID userId = UUID.fromString(request.getHeader(USER_ID));
+    	return userId;
+    	
+    }
+    
     private void validateParentRole(HttpServletRequest request) {
         String role = request.getHeader(USER_ROLE_HEADER);
         if (!PARENT_ROLE.equals(role)) {

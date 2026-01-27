@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Read-only APIs for parents to discover verified caregivers.
@@ -44,7 +45,7 @@ public class ParentCaregiverDiscoveryController {
 
     @GetMapping("/{caregiverId}")
     public CaregiverDetailResponse getCaregiverById(
-            @PathVariable Long caregiverId,
+            @PathVariable UUID caregiverId,
             HttpServletRequest request
     ) {
         validateParentRole(request);

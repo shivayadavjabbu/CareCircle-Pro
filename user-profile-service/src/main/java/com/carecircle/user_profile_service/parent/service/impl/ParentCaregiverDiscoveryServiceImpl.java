@@ -11,6 +11,7 @@ import com.carecircle.user_profile_service.parent.service.ParentCaregiverDiscove
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +61,7 @@ public class ParentCaregiverDiscoveryServiceImpl
     // =========================
 
     @Override
-    public CaregiverDetailResponse getCaregiverById(Long caregiverId) {
+    public CaregiverDetailResponse getCaregiverById(UUID caregiverId) {
 
         CaregiverProfile caregiver = caregiverProfileRepository.findById(caregiverId)
                 .filter(c ->

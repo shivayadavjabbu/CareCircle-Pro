@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository for caregiver service capabilities.
  */
 public interface CaregiverCapabilityRepository
-        extends JpaRepository<CaregiverCapability, Long> {
+        extends JpaRepository<CaregiverCapability, UUID> {
 
     /**
      * Fetch all capabilities for a caregiver.
@@ -22,7 +23,7 @@ public interface CaregiverCapabilityRepository
      * Fetch a specific capability owned by a caregiver.
      */
     Optional<CaregiverCapability> findByIdAndCaregiver(
-            Long id,
+            UUID id,
             CaregiverProfile caregiver
     );
 

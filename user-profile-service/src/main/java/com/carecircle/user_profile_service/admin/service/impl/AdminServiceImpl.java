@@ -14,6 +14,9 @@ import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverCapabilityRepository;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverCertificationRepository;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
+
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +40,8 @@ public class AdminServiceImpl implements AdminService {
     
     @Override
     public void createAdminProfile(
-            String adminEmail,
+    		UUID userId,
+    		String adminEmail, 
             String fullName,
             String phoneNumber,
             String adminLevel
@@ -47,7 +51,8 @@ public class AdminServiceImpl implements AdminService {
         }
 
         AdminProfile admin = new AdminProfile(
-                adminEmail,
+        		userId, 
+        		adminEmail, 
                 fullName,
                 phoneNumber,
                 adminLevel,
@@ -58,9 +63,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminProfileResponse getMyProfile(String adminEmail) {
-        AdminProfile admin = adminProfileRepository.findByUserEmail(adminEmail)
-                .orElseThrow(() -> new AdminProfileNotFoundException(adminEmail));
+    public AdminProfileResponse getMyProfile(UUID userId) {
+        AdminProfile admin = adminProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
 
         return new AdminProfileResponse(
                 admin.getId(),
@@ -91,12 +96,12 @@ public class AdminServiceImpl implements AdminService {
     // Helpers
     // =========================
 
-    private AdminProfile loadActiveAdmin(String adminEmail) {
-        AdminProfile admin = adminProfileRepository.findByUserEmail(adminEmail)
-                .orElseThrow(() -> new AdminProfileNotFoundException(adminEmail));
+    private AdminProfile loadActiveAdmin(UUID userId) {
+        AdminProfile admin = adminProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
 
         if (!Boolean.TRUE.equals(admin.getIsActive())) {
-            throw new AdminInactiveException(adminEmail);
+            throw new AdminInactiveException(String.valueOf(userId));
         }
         return admin;
     }
@@ -104,7 +109,7 @@ public class AdminServiceImpl implements AdminService {
     private void saveAudit(
             AdminProfile admin,
             String targetType,
-            Long targetId,
+            UUID targetId,
             String action,
             String previousStatus,
             String newStatus,
@@ -127,8 +132,8 @@ public class AdminServiceImpl implements AdminService {
     // =========================
 
     @Override
-    public void verifyCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void verifyCaregiverProfile(UUID userId, UUID caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
                 .orElseThrow(() ->
@@ -154,8 +159,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void rejectCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void rejectCaregiverProfile(UUID userId, UUID caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
                 .orElseThrow(() ->
@@ -180,8 +185,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void disableCaregiverProfile(String adminEmail, Long caregiverId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void disableCaregiverProfile(UUID userId, UUID caregiverId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverProfile profile = caregiverProfileRepository.findById(caregiverId)
                 .orElseThrow(() ->
@@ -210,8 +215,8 @@ public class AdminServiceImpl implements AdminService {
     // =========================
 
     @Override
-    public void verifyCaregiverCapability(String adminEmail, Long capabilityId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void verifyCaregiverCapability(UUID userId, UUID capabilityId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverCapability capability = caregiverCapabilityRepository.findById(capabilityId)
                 .orElseThrow(() ->
@@ -236,8 +241,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void rejectCaregiverCapability(String adminEmail, Long capabilityId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void rejectCaregiverCapability(UUID userId, UUID capabilityId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverCapability capability = caregiverCapabilityRepository.findById(capabilityId)
                 .orElseThrow(() ->
@@ -266,8 +271,8 @@ public class AdminServiceImpl implements AdminService {
     // =========================
 
     @Override
-    public void verifyCaregiverCertification(String adminEmail, Long certificationId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void verifyCaregiverCertification(UUID UserId, UUID certificationId, String reason) {
+        AdminProfile admin = loadActiveAdmin(UserId);
 
         CaregiverCertification cert = caregiverCertificationRepository.findById(certificationId)
                 .orElseThrow(() ->
@@ -292,8 +297,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void rejectCaregiverCertification(String adminEmail, Long certificationId, String reason) {
-        AdminProfile admin = loadActiveAdmin(adminEmail);
+    public void rejectCaregiverCertification(UUID userId, UUID certificationId, String reason) {
+        AdminProfile admin = loadActiveAdmin(userId);
 
         CaregiverCertification cert = caregiverCertificationRepository.findById(certificationId)
                 .orElseThrow(() ->

@@ -7,6 +7,8 @@ import com.carecircle.user_profile_service.parent.model.ParentProfile;
 import com.carecircle.user_profile_service.parent.repository.ParentProfileRepository;
 import com.carecircle.user_profile_service.parent.service.ParentProfileService;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ public class ParentProfileServiceImpl implements ParentProfileService{
      */
     @Transactional
     public ParentProfile createProfile(
+    		UUID userId,
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -48,7 +51,7 @@ public class ParentProfileServiceImpl implements ParentProfileService{
         }
 
         ParentProfile profile =
-                new ParentProfile(userEmail, fullName, phoneNumber, address);
+                new ParentProfile( userId, userEmail, fullName, phoneNumber, address);
 
         return parentProfileRepository.save(profile);
     }
@@ -61,11 +64,21 @@ public class ParentProfileServiceImpl implements ParentProfileService{
      * @throws IllegalStateException if profile does not exist
      */
     @Transactional(readOnly = true)
-    public ParentProfile getProfileByUserEmail(String userEmail) {
+    public ParentProfile getProfileByUserEmail(String emailId) {
         return parentProfileRepository
-                .findByUserEmail(userEmail)
+                .findByUserEmail(emailId)
                 .orElseThrow(() ->
-                        new ParentProfileNotFoundException(userEmail)
+                        new ParentProfileNotFoundException(emailId)
                 );
     }
+
+
+	@Override
+	public ParentProfile getProfileByUserId(UUID userId) {
+		 return parentProfileRepository
+	                .findByUserID(userId)
+	                .orElseThrow(() ->
+	                        new ParentProfileNotFoundException(String.valueOf(userId))
+	                );
+	}
 }

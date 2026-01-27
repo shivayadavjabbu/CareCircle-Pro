@@ -4,6 +4,7 @@ import com.carecircle.user_profile_service.parent.dto.CaregiverDetailResponse;
 import com.carecircle.user_profile_service.parent.dto.CaregiverSummaryResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Read-only service for parents to discover verified caregivers.
@@ -18,5 +19,5 @@ public interface ParentCaregiverDiscoveryService {
     /**
      * Fetch detailed caregiver profile visible to parents.
      */
-    CaregiverDetailResponse getCaregiverById(Long caregiverId);
+    CaregiverDetailResponse getCaregiverById(UUID caregiverId);
 }

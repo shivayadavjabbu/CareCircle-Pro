@@ -3,6 +3,7 @@ package com.carecircle.user_profile_service.caregiver.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a caregiver offering childcare-related services.
@@ -19,12 +20,15 @@ public class CaregiverProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // ===== Identity (linked logically to auth-service) =====
 
     @Column(name = "user_email", nullable = false, unique = true, updatable = false)
     private String userEmail;
+    
+    @Column(name = "user_id", nullable = false, unique = true)
+    private UUID userId;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -101,6 +105,7 @@ public class CaregiverProfile {
     }
 
     public CaregiverProfile(
+    		UUID userId, 
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -115,6 +120,7 @@ public class CaregiverProfile {
             String bio,
             Integer experienceYears
     ) {
+    	this.userId = userId;
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
@@ -147,8 +153,12 @@ public class CaregiverProfile {
 
     // ===== Getters only (mutations controlled via service) =====
 
-    public Long getId() {
+    public UUID getId() {
         return id;
+    }
+    
+    public UUID getUserId() {
+    	return userId;
     }
 
     public String getUserEmail() {

@@ -6,16 +6,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository for CaregiverProfile persistence.
  */
-public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfile, Long> {
+public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfile, UUID> {
 
     /**
      * Fetch caregiver profile by authenticated user email.
      */
     Optional<CaregiverProfile> findByUserEmail(String userEmail);
+    Optional<CaregiverProfile> findByUserId(UUID userId);
 
     /**
      * Fetch all caregivers visible to parents.

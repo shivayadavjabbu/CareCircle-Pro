@@ -1,13 +1,14 @@
 package com.carecircle.user_profile_service.admin.dto;	
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Response DTO representing admin profile details.
  */
 public class AdminProfileResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String fullName;
     private final String userEmail;
     private final String adminLevel;
@@ -15,7 +16,7 @@ public class AdminProfileResponse {
     private final LocalDateTime createdAt;
 
     public AdminProfileResponse(
-            Long id,
+            UUID id,
             String fullName,
             String userEmail,
             String adminLevel,
@@ -30,7 +31,7 @@ public class AdminProfileResponse {
         this.createdAt = createdAt;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

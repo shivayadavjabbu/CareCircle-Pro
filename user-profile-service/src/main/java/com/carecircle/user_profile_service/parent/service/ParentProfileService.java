@@ -1,6 +1,8 @@
 package com.carecircle.user_profile_service.parent.service;
 
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public interface ParentProfileService {
      */
   
     public ParentProfile createProfile(
+    		UUID userId, 
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -42,5 +45,5 @@ public interface ParentProfileService {
      * @throws IllegalStateException if profile does not exist
      */
 
-    public ParentProfile getProfileByUserEmail(String userEmail);
+    public ParentProfile getProfileByUserId(UUID userId);
 }

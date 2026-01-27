@@ -1,10 +1,11 @@
 package com.carecircle.user_profile_service.parent.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CaregiverDetailResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String fullName;
     private final String bio;
     private final String gender;
@@ -19,7 +20,7 @@ public class CaregiverDetailResponse {
     private final List<CertificationResponse> certifications;
 
     public CaregiverDetailResponse(
-            Long id,
+            UUID id,
             String fullName,
             String bio,
             String gender,
@@ -46,5 +47,53 @@ public class CaregiverDetailResponse {
         this.certifications = certifications;
     }
 
-    // getters only
+	public UUID getId() {
+		return id;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public Integer getExperienceYears() {
+		return experienceYears;
+	}
+
+	public Double getOverallRating() {
+		return overallRating;
+	}
+
+	public Integer getTotalReviews() {
+		return totalReviews;
+	}
+
+	public List<CapabilityResponse> getCapabilities() {
+		return capabilities;
+	}
+
+	public List<CertificationResponse> getCertifications() {
+		return certifications;
+	}
+
+    
 }

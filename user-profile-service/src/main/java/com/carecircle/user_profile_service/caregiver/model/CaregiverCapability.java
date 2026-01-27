@@ -4,6 +4,7 @@ package com.carecircle.user_profile_service.caregiver.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Represents a service capability offered by a caregiver.
@@ -27,7 +28,7 @@ public class CaregiverCapability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // ===== Ownership =====
 
@@ -112,7 +113,7 @@ public class CaregiverCapability {
 
     // ===== Getters only (mutations controlled via service) =====
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 

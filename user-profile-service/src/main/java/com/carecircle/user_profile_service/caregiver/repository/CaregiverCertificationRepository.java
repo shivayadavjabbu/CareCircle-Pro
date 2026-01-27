@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository for caregiver certifications.
  */
 public interface CaregiverCertificationRepository
-        extends JpaRepository<CaregiverCertification, Long> {
+        extends JpaRepository<CaregiverCertification, UUID> {
 
     /**
      * Fetch all certifications for a caregiver.
@@ -22,7 +23,7 @@ public interface CaregiverCertificationRepository
      * Fetch a certification owned by a caregiver.
      */
     Optional<CaregiverCertification> findByIdAndCaregiver(
-            Long id,
+            UUID id,
             CaregiverProfile caregiver
     );
 

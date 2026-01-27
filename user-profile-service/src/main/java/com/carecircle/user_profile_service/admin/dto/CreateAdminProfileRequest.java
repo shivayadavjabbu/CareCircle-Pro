@@ -1,5 +1,7 @@
 package com.carecircle.user_profile_service.admin.dto;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 
 public class CreateAdminProfileRequest {
@@ -12,6 +14,9 @@ public class CreateAdminProfileRequest {
 
     @NotBlank
     private String adminLevel;
+    
+    @NotBlank
+    private UUID userId; 
 
     public String getFullName() {
         return fullName;
@@ -23,5 +28,9 @@ public class CreateAdminProfileRequest {
 
     public String getAdminLevel() {
         return adminLevel;
+    }
+    
+    public UUID getUserId() {
+    	return userId; 
     }
 }

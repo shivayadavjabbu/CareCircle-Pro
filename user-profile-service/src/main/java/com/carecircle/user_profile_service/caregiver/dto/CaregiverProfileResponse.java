@@ -1,13 +1,14 @@
 package com.carecircle.user_profile_service.caregiver.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Response DTO representing caregiver profile details.
  */
 public class CaregiverProfileResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String fullName;
     private final String phoneNumber;
     private final Integer age;
@@ -32,7 +33,7 @@ public class CaregiverProfileResponse {
     private final LocalDateTime createdAt;
 
     public CaregiverProfileResponse(
-            Long id,
+            UUID id,
             String fullName,
             String phoneNumber,
             Integer age,
@@ -71,7 +72,7 @@ public class CaregiverProfileResponse {
         this.createdAt = createdAt;
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getFullName() { return fullName; }
     public String getPhoneNumber() { return phoneNumber; }
     public Integer getAge() { return age; }

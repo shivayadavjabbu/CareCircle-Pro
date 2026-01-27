@@ -1,13 +1,14 @@
 package com.carecircle.user_profile_service.caregiver.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Response DTO representing a caregiver service capability.
  */
 public class CaregiverCapabilityResponse {
 
-    private final Long id;
+    private final UUID id;
     private final String serviceType;
     private final String description;
     private final Integer minChildAge;
@@ -20,7 +21,7 @@ public class CaregiverCapabilityResponse {
     private final LocalDateTime createdAt;
 
     public CaregiverCapabilityResponse(
-            Long id,
+            UUID id,
             String serviceType,
             String description,
             Integer minChildAge,
@@ -41,7 +42,7 @@ public class CaregiverCapabilityResponse {
         this.createdAt = createdAt;
     }
 
-    public Long getId() { return id; }
+    public UUID getId() { return id; }
     public String getServiceType() { return serviceType; }
     public String getDescription() { return description; }
     public Integer getMinChildAge() { return minChildAge; }

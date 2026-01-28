@@ -21,4 +21,11 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             java.time.LocalTime startTime
     );
     
+    boolean existsByCaregiverIdAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            UUID caregiverId,
+            String status,
+            java.time.LocalDate endDate,
+            java.time.LocalDate startDate
+    );
+
 }

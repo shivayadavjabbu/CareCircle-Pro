@@ -69,7 +69,27 @@ public class CaregiverBookingController {
         }
 
         booking.accept();
-        return bookingRepository.save(booking);
-    }
+        
+        
+     // Daily overlap check
+        if ("DAILY".equals(booking.getBookingType())) {
+            boolean conflict =
+                    bookingRepository
+                            .existsByCaregiverIdAndStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                                    caregiverId,
+                                    "ACCEPTED",
+                                    booking.getEndDate(),
+                                    booking.getStartDate()
+                            );
 
+            if (conflict) {
+                throw new RuntimeException("Booking date range conflicts with existing booking");
+            }
+        }
+        
+        return bookingRepository.save(booking);
+
+    }
+    
+   
 }

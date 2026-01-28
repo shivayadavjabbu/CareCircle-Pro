@@ -1,0 +1,131 @@
+/* ===== Parent Registration (Same layout as Nanny) ===== */
+
+.register-parent-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fdfbfb, #ebedee);
+  padding: 20px;
+}
+
+.register-parent-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.register-parent-card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2d3748;
+}
+
+.register-parent-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e0;
+  font-size: 14px;
+}
+
+.register-parent-card input:focus {
+  outline: none;
+  border-color: #4299e1;
+}
+
+.register-parent-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4299e1;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.register-parent-card button:hover {
+  background-color: #3182ce;
+}
+
+.success-message {
+  text-align: center;
+  color: #2f855a;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+
+/* ===== Parent Registration ===== */
+
+.register-parent-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fdfbfb, #ebedee);
+  padding: 20px;
+}
+
+.register-parent-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.register-parent-card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #065f46;
+  /* 🌿 Parent heading */
+}
+
+.register-parent-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e0;
+  font-size: 14px;
+}
+
+.register-parent-card input:focus {
+  outline: none;
+  border-color: #10b981;
+  /* green focus */
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.register-parent-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  /* 🌿 Parent button */
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-parent-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.success-message {
+  text-align: center;
+  color: #047857;
+  font-weight: 600;
+  margin-bottom: 12px;
+}

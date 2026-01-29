@@ -74,6 +74,39 @@ public class ParentProfileController {
         return mapToResponse(profile);
     }
 
+    /**
+     * Updates the authenticated parent's profile.
+     */
+    @PutMapping
+    public ParentProfileResponse updateProfile(
+            @Valid @RequestBody CreateParentProfileRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        UUID userId = extractUserId(httpRequest);
+        validateParentRole(httpRequest);
+
+        ParentProfile profile = parentProfileService.updateProfile(
+                userId,
+                request.getFullName(),
+                request.getPhoneNumber(),
+                request.getAddress(),
+                request.getCity()
+        );
+
+        return mapToResponse(profile);
+    }
+
+    /**
+     * Deletes the authenticated parent's profile (cascades to children).
+     */
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProfile(HttpServletRequest httpRequest) {
+        UUID userId = extractUserId(httpRequest);
+        validateParentRole(httpRequest);
+        parentProfileService.deleteProfile(userId);
+    }
+
 
     // Private helper methods
 

@@ -38,6 +38,9 @@ public class CaregiverCertification {
     @Column(name = "valid_till")
     private LocalDate validTill;
 
+    @Column(name = "service_id")
+    private UUID serviceId;
+
     // ===== Verification =====
 
     @Column(name = "verified", nullable = false)
@@ -62,12 +65,14 @@ public class CaregiverCertification {
             CaregiverProfile caregiver,
             String certificationName,
             String issuedBy,
-            LocalDate validTill
+            LocalDate validTill,
+            UUID serviceId
     ) {
         this.caregiver = caregiver;
         this.certificationName = certificationName;
         this.issuedBy = issuedBy;
         this.validTill = validTill;
+        this.serviceId = serviceId;
         this.verified = false;
     }
 
@@ -102,6 +107,10 @@ public class CaregiverCertification {
 
     public LocalDate getValidTill() {
         return validTill;
+    }
+
+    public UUID getServiceId() {
+        return serviceId;
     }
 
     public Boolean getVerified() {

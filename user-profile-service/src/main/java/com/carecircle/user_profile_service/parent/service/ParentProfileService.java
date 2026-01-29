@@ -47,4 +47,29 @@ public interface ParentProfileService {
      */
 
     public ParentProfile getProfileByUserId(UUID userId);
+
+    /**
+     * Updates the parent profile for the authenticated user.
+     *
+     * @param userId user ID from header
+     * @param fullName updated full name
+     * @param phoneNumber updated phone number
+     * @param address updated address
+     * @param city updated city name
+     * @return updated ParentProfile
+     */
+    public ParentProfile updateProfile(
+            UUID userId,
+            String fullName,
+            String phoneNumber,
+            String address,
+            String city
+    );
+
+    /**
+     * Deletes the parent profile (hard delete with cascading to children).
+     *
+     * @param userId user ID from header
+     */
+    public void deleteProfile(UUID userId);
 }

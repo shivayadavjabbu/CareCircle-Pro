@@ -12,6 +12,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.carecircle.user_profile_service.common.service.MatchingIntegrationService;
+
 /**
  * Service responsible for handling parent profile domain logic.
  *
@@ -22,14 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentProfileServiceImpl implements ParentProfileService{
 
     private final ParentProfileRepository parentProfileRepository;
-    private final com.carecircle.user_profile_service.common.service.CityIntegrationService cityService;
+    private final MatchingIntegrationService matchingService;
 
     public ParentProfileServiceImpl(
             ParentProfileRepository parentProfileRepository,
-            com.carecircle.user_profile_service.common.service.CityIntegrationService cityService
+            MatchingIntegrationService matchingService
     ) {
         this.parentProfileRepository = parentProfileRepository;
-        this.cityService = cityService;
+        this.matchingService = matchingService;
     }
 
     /**
@@ -59,8 +61,8 @@ public class ParentProfileServiceImpl implements ParentProfileService{
         // Resolve City ID
         UUID cityId = null;
         if (city != null && !city.isBlank()) {
-             cityId = cityService.getCityByName(city)
-                    .map(com.carecircle.user_profile_service.common.service.CityIntegrationService.CityDto::id)
+             cityId = matchingService.getCityByName(city)
+                    .map(MatchingIntegrationService.CityDto::id)
                     .orElse(null);
         }
 
@@ -94,5 +96,43 @@ public class ParentProfileServiceImpl implements ParentProfileService{
 	                .orElseThrow(() ->
 	                        new ParentProfileNotFoundException(String.valueOf(userId))
 	                );
+	}
+
+	@Override
+	public ParentProfile updateProfile(
+			UUID userId,
+			String fullName,
+			String phoneNumber,
+			String address,
+			String city
+	) {
+		ParentProfile profile = getProfileByUserId(userId);
+
+		// Resolve City ID if city changed
+		UUID cityId = profile.getCityId();
+		if (city != null && !city.equals(profile.getAddress())) {
+			cityId = matchingService.getCityByName(city)
+					.map(MatchingIntegrationService.CityDto::id)
+					.orElse(cityId);
+		}
+
+		// Create updated profile
+		ParentProfile updatedProfile = new ParentProfile(
+				profile.getUserId(),
+				profile.getUserEmail(),
+				fullName,
+				phoneNumber,
+				address,
+				cityId
+		);
+
+		return parentProfileRepository.save(updatedProfile);
+	}
+
+	@Override
+	public void deleteProfile(UUID userId) {
+		ParentProfile profile = getProfileByUserId(userId);
+		// Hard delete - will cascade to children
+		parentProfileRepository.delete(profile);
 	}
 }

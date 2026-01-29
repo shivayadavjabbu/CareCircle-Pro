@@ -27,19 +27,27 @@ export default function UpdatePassword() {
   };
 
   return (
-    <div className="container">
-      <h2>Update Password</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-5 font-sans">
+      <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-[400px] text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Update Password</h2>
 
-      <form className="form" onSubmit={handleUpdate}>
-        <input
-          type="password"
-          placeholder="New Password"
-          required
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form className="flex flex-col gap-4" onSubmit={handleUpdate}>
+          <input
+            type="password"
+            placeholder="New Password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
+          />
 
-        <button type="submit">Update Password</button>
-      </form>
+          <button
+            type="submit"
+            className="w-full p-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
+          >
+            Update Password
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

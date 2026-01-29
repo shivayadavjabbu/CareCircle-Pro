@@ -1,50 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createAdminProfile } from "../api/adminApi";
-import "./AdminDashboard.css";
-
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "admin@example.com");
-  const [profileInitialized, setProfileInitialized] = useState(false);
-
-  useEffect(() => {
-    // 🛡️ Auto-create Admin Profile if not exists (per guide flow, admin creates profile POST)
-    // Since there's no GET /admin/profile/me in the guide, we might just try to create one on first login
-    // or assume the user does it manually via settings. 
-    // However, for better UX, let's try to initialize it.
-
-    // NOTE: The guide says "Create Admin Profile". We can do this once.
-    // Ideally check if exists, but we lack a GET endpoint in the guide.
-    // We will just store a flag in localStorage for this session demo.
-
-    const initProfile = async () => {
-      const hasProfile = localStorage.getItem("adminProfileCreated");
-      if (!hasProfile) {
-        try {
-          // Try to create a default admin profile
-          await createAdminProfile({
-            fullName: "System Admin",
-            phoneNumber: "9000000000",
-            adminLevel: "SUPER_ADMIN"
-          });
-          localStorage.setItem("adminProfileCreated", "true");
-          console.log("Admin profile initialized");
-          setProfileInitialized(true);
-        } catch (err) {
-          // If profile creation fails, redirect to profile setup page
-          console.log("Admin profile creation failed, redirecting to setup:", err);
-          setTimeout(() => {
-            navigate("/admin-profile");
-          }, 1500);
-        }
-      } else {
-        setProfileInitialized(true);
-      }
-    };
-
-    initProfile();
-  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -56,85 +14,71 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="admin-dashboard">
-      {/* Navbar */}
-      <nav className="dashboard-navbar">
-        <div className="navbar-brand">👑 CareCircle Admin</div>
-        <div className="navbar-actions">
-          <div className="user-info">
-            <div className="user-avatar">A</div>
-            <span>{userEmail}</span>
-          </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </nav>
-
+    <div className="bg-[#f0f4f8] min-h-screen pt-32 font-sans">
       {/* Main Dashboard Content */}
-      <div className="dashboard-container">
-        <div className="dashboard-header">
-          <h1 className="dashboard-title">Welcome Admin</h1>
-          <p className="dashboard-subtitle">
+      <div className="p-8 max-w-7xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome Admin</h1>
+          <p className="text-gray-600">
             Manage users, nannies, and platform activities from here
           </p>
         </div>
 
         {/* Stats Section */}
-        <div className="stats-section">
-          <h2 className="stats-title">Platform Stats</h2>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <h3 className="stat-value">0</h3>
-              <p className="stat-label">Registered Parents</p>
+        <div className="mb-12">
+          <h2 className="text-xl font-bold text-gray-800 mb-6">Platform Stats</h2>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[150px] bg-white rounded-xl p-5 text-center shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-800 mb-1">0</h3>
+              <p className="text-sm text-gray-500">Registered Parents</p>
             </div>
-            <div className="stat-item">
-              <h3 className="stat-value">0</h3>
-              <p className="stat-label">Registered Nannies</p>
+            <div className="flex-1 min-w-[150px] bg-white rounded-xl p-5 text-center shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-800 mb-1">0</h3>
+              <p className="text-sm text-gray-500">Registered Nannies</p>
             </div>
-            <div className="stat-item">
-              <h3 className="stat-value">0</h3>
-              <p className="stat-label">Active Bookings</p>
+            <div className="flex-1 min-w-[150px] bg-white rounded-xl p-5 text-center shadow-sm border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-800 mb-1">0</h3>
+              <p className="text-sm text-gray-500">Active Bookings</p>
             </div>
           </div>
         </div>
 
         {/* Action Cards */}
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <div className="card-icon">👨‍👩‍👧</div>
-            <h3 className="card-title">Manage Parents</h3>
-            <p className="card-description">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">👨‍👩‍👧</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Manage Parents</h3>
+            <p className="text-sm text-gray-500 mb-5">
               View, edit, or remove parent accounts
             </p>
-            <button className="card-action">Go to Parents</button>
+            <button className="bg-[#ff9800] text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-[#e68900] transition-colors duration-300 w-full">Go to Parents</button>
           </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">👶</div>
-            <h3 className="card-title">Manage Nannies</h3>
-            <p className="card-description">
+          <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">👶</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Manage Nannies</h3>
+            <p className="text-sm text-gray-500 mb-5">
               Review, approve, or remove nannies
             </p>
-            <button className="card-action">Go to Nannies</button>
+            <button className="bg-[#ff9800] text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-[#e68900] transition-colors duration-300 w-full">Go to Nannies</button>
           </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">📅</div>
-            <h3 className="card-title">Manage Bookings</h3>
-            <p className="card-description">
+          <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">📅</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Manage Bookings</h3>
+            <p className="text-sm text-gray-500 mb-5">
               Track all active and past bookings
             </p>
-            <button className="card-action">View Bookings</button>
+            <button className="bg-[#ff9800] text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-[#e68900] transition-colors duration-300 w-full">View Bookings</button>
           </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">⚙️</div>
-            <h3 className="card-title">Settings</h3>
-            <p className="card-description">
+          <div className="bg-white rounded-xl p-6 text-center shadow-sm border border-gray-100 hover:-translate-y-1 hover:shadow-md transition-all duration-300 group">
+            <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">⚙️</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Settings</h3>
+            <p className="text-sm text-gray-500 mb-5">
               Update admin profile and platform configurations
             </p>
-            <button className="card-action">Settings</button>
+            <button className="bg-[#ff9800] text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-[#e68900] transition-colors duration-300 w-full">Settings</button>
           </div>
         </div>
       </div>

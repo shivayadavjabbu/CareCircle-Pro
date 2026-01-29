@@ -40,4 +40,10 @@ public class CityController {
     public List<City> getActiveCities() {
         return cityRepository.findByActiveTrue();
     }
+
+    @GetMapping("/cities/lookup")
+    public City getCityByName(@RequestParam String name) {
+        return cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
+                .orElseThrow(() -> new RuntimeException("City not found: " + name));
+    }
 }

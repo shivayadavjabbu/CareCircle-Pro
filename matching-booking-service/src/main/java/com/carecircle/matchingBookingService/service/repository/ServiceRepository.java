@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface ServiceRepository extends JpaRepository<ServiceEntity, UUID> {
 
     List<ServiceEntity> findByActiveTrue();
+    java.util.Optional<ServiceEntity> findByCodeIgnoreCaseAndActiveTrue(String code);
 }

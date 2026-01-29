@@ -41,4 +41,18 @@ public class ServiceController {
     public List<ServiceEntity> getActiveServices() {
         return serviceRepository.findByActiveTrue();
     }
+
+    @GetMapping("/services/lookup")
+    public ServiceEntity getServiceByCode(@RequestParam String code) {
+        return serviceRepository.findByCodeIgnoreCaseAndActiveTrue(code)
+                .orElseThrow(() -> new RuntimeException("Service not found for code: " + code));
+    }
+
+    @GetMapping("/services/lookup-by-name")
+    public ServiceEntity getServiceByName(@RequestParam String name) {
+        return serviceRepository.findByActiveTrue().stream()
+                .filter(s -> s.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Service not found for name: " + name));
+    }
 }

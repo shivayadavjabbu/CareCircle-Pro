@@ -31,19 +31,18 @@ export default function RegisterAdmin() {
             let data = null;
             try { data = JSON.parse(text); } catch (e) { }
 
-            const errorMessage = data?.message || data?.error || text || "Registration failed";
-
-            const isExistingEmail = response.status === 409 ||
-                /exist|already|taken|registered|conflict/i.test(errorMessage);
-
-            if (isExistingEmail) {
-                setError("Email already exists. Please login.");
-                setTimeout(() => navigate("/admin-login"), 2000);
-                return;
-            }
+            const serverMessage = data?.message || data?.error || text || "Registration failed";
 
             if (!response.ok) {
-                throw new Error(errorMessage);
+                const isExistingEmail = response.status === 409 ||
+                    /exist|already|taken|conflict/i.test(serverMessage);
+
+                if (isExistingEmail) {
+                    setError("Email already exists. Please login.");
+                    setTimeout(() => navigate("/admin-login"), 2000);
+                    return;
+                }
+                throw new Error(serverMessage);
             }
 
             setSuccessMessage("Registered successfully! Redirecting to login...");

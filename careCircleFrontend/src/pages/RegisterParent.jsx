@@ -32,30 +32,29 @@ export default function RegisterParent() {
       let data = null;
       try { data = JSON.parse(text); } catch (e) { }
 
-      const errorMessage = data?.message || data?.error || text || "Registration failed";
-
-      const isExistingEmail = response.status === 409 ||
-        /exist|already|taken|registered|conflict/i.test(errorMessage);
-
-      if (isExistingEmail) {
-        setError("Email already exists. Please login.");
-        setTimeout(() => navigate("/login"), 2000);
-        return;
-      }
+      const serverMessage = data?.message || data?.error || text || "Registration failed";
 
       if (!response.ok) {
-        throw new Error(errorMessage);
+        const isExistingEmail = response.status === 409 ||
+          /exist|already|taken|conflict/i.test(serverMessage);
+
+        if (isExistingEmail) {
+          setError("Email already exists. Please login.");
+          setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);
+          return;
+        }
+        throw new Error(serverMessage);
       }
 
       setSuccessMessage("Registered successfully! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 2000);
+      setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);
 
     } catch (error) {
       console.error("Registration error:", error);
       const msg = error.message.toLowerCase();
-      if (/exist|already|taken|registered|conflict/i.test(msg)) {
+      if (/exist|already|taken|conflict/i.test(msg)) {
         setError("Email already exists. Please login.");
-        setTimeout(() => navigate("/login"), 2000);
+        setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);
       } else {
         setError(error.message || "Server error. Please try again later.");
       }

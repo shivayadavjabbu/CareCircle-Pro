@@ -69,13 +69,13 @@ export default function Register() {
           errorMsg = data.message || data.error || text || "Registration failed";
         } catch (e) { }
 
-        // Check for existing email keywords or 409 status
+        // Check for existing email keywords or 409 status ONLY on failure
         const isExistingEmail = response.status === 409 ||
-          /exist|already|taken|registered|conflict/i.test(errorMsg);
+          /exist|already|taken|conflict/i.test(errorMsg);
 
         if (isExistingEmail) {
           setError("Email already exists. Please login.");
-          setTimeout(() => navigate("/login"), 2000);
+          setTimeout(() => navigate("/login", { state: { role: form.role } }), 2000);
           return;
         }
 
@@ -90,9 +90,9 @@ export default function Register() {
     } catch (error) {
       console.error("Registration error:", error);
       const msg = error.message.toLowerCase();
-      if (/exist|already|taken|registered|conflict/i.test(msg)) {
+      if (/exist|already|taken|conflict/i.test(msg)) {
         setError("Email already exists. Please login.");
-        setTimeout(() => navigate("/login"), 2000);
+        setTimeout(() => navigate("/login", { state: { role: form.role } }), 2000);
       } else {
         setError(error.message || "Registration failed. Please try again.");
       }
@@ -116,7 +116,7 @@ export default function Register() {
             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl mx-auto mb-6 shadow-xl rotate-3 ${form.role === "parent" ? "bg-brand-parent shadow-brand-parent/20" : "bg-brand-nanny shadow-brand-nanny/20"
               }`}>C</div>
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Join CareCircle</h2>
-            <p className="text-slate-500 font-medium tracking-tight">Create your {form.role === "parent" ? "parent" : "caregiver"} account</p>
+            <p className="text-slate-500 font-medium tracking-tight">Create your {form.role === "ROLE_PARENT" ? "parent" : "caregiver"} account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -192,7 +192,7 @@ export default function Register() {
           <div className="mt-8 pt-6 border-t border-slate-100 text-center">
             <p className="text-slate-500 text-sm font-medium">
               Already have an account?{" "}
-              <button onClick={() => navigate("/login", { state: { role: form.role === "parent" ? "ROLE_PARENT" : "ROLE_CARETAKER" } })} className="font-bold text-indigo-600 hover:underline">Sign In</button>
+              <button onClick={() => navigate("/login", { state: { role: form.role } })} className="font-bold text-indigo-600 hover:underline">Sign In</button>
             </p>
           </div>
         </div>

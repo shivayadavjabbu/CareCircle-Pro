@@ -35,6 +35,9 @@ public class EmailOtp {
 
     @Column(nullable = false, length = 10)
     private String otp;
+    
+    @Column(nullable = true)
+    private String password;
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
@@ -79,6 +82,14 @@ public class EmailOtp {
 
     public void setOtp(String otp) {
         this.otp = otp;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public LocalDateTime getExpiresAt() {

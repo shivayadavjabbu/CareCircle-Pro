@@ -26,9 +26,11 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/auth/register",
-                    "/auth/login",
-                    "/auth/health"
+                		"/auth/register",
+                        "/auth/login",
+                        "/auth/verify-account",
+                        "/auth/forgot-password",
+                        "/auth/reset-password"
                 ).permitAll()
                 .anyRequest().authenticated()
             );

@@ -32,7 +32,7 @@ public class EmailOtpServiceImpl implements EmailOtpService {
 
     @Override
     @Transactional
-    public void sendOtp(String email, Role role) {
+    public void sendOtp(String email, Role role, String password) {
 
         // 🔥 clear old OTP
         otpRepository.deleteByEmailAndRole(email, role);
@@ -43,6 +43,9 @@ public class EmailOtpServiceImpl implements EmailOtpService {
         emailOtp.setEmail(email);
         emailOtp.setRole(role);
         emailOtp.setOtp(otp);
+        if (password != null) {
+            emailOtp.setPassword(password);
+        }
         emailOtp.setAttempts(0);
         emailOtp.setExpiresAt(
             LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES)
@@ -50,7 +53,7 @@ public class EmailOtpServiceImpl implements EmailOtpService {
 
         otpRepository.save(emailOtp);
 
-        mailSenderService.sendOtpMail(email, otp, role.name()); // we need to convert it to role from string should we do it ??
+        mailSenderService.sendOtpMail(email, otp, role.name()); 
     }
 
     @Override
@@ -82,8 +85,9 @@ public class EmailOtpServiceImpl implements EmailOtpService {
         }
 
         // ✅ success
+        String storedPassword = emailOtp.getPassword();
         otpRepository.delete(emailOtp);
-        return new OtpResponse(true, "OTP verified successfully");
+        return new OtpResponse(true, "OTP verified successfully", storedPassword);
     }
 
     private String generateOtp() {

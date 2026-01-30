@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.carecircle.auth_service.loginRegister.dto.request.LoginRequest;
 import com.carecircle.auth_service.loginRegister.dto.request.RegisterRequest;
+import com.carecircle.auth_service.loginRegister.dto.request.VerifyEmailRequest;
+import com.carecircle.auth_service.loginRegister.dto.request.ForgotPasswordRequest;
+import com.carecircle.auth_service.loginRegister.dto.request.ResetPasswordRequest;
 import com.carecircle.auth_service.loginRegister.dto.response.AuthResponse;
 import com.carecircle.auth_service.loginRegister.service.AuthService;
 
@@ -23,8 +26,13 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("User registered successfully");
-        
+                .body("OTP sent to email. Please verify to complete registration.");
+    }
+    
+    @PostMapping("/verify-account")
+    public ResponseEntity<?> verifyAccount(@RequestBody VerifyEmailRequest request) {
+        authService.verifyAccount(request);
+        return ResponseEntity.ok("Account verified successfully");
     }
 
     @PostMapping("/login")
@@ -32,10 +40,21 @@ public class AuthController {
         String token = authService.login(request);
         return ResponseEntity.ok(new AuthResponse(token));
     }
+    
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok("OTP sent to email");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok("Password reset successfully");
+    }
 
     @GetMapping("/health")
     public String health() {
         return "AUTH OK";
     }
 }
-

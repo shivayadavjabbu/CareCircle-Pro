@@ -13,6 +13,7 @@ import com.carecircle.communication.repository.chat.ChatParticipantRepository;
 import com.carecircle.communication.repository.chat.ChatRoomRepository;
 import com.carecircle.communication.service.interfaces.BlockService;
 import com.carecircle.communication.service.interfaces.ChatService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,19 +30,22 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final NotificationService notificationService;
     private final BlockService blockService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ChatServiceImpl(
             ChatRoomRepository chatRoomRepository,
             ChatParticipantRepository chatParticipantRepository,
             ChatMessageRepository chatMessageRepository, 
             NotificationService notificationService, 
-            BlockService blockService
+            BlockService blockService,
+            SimpMessagingTemplate messagingTemplate
     ) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatParticipantRepository = chatParticipantRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.notificationService = notificationService;
-        this.blockService = blockService; 
+        this.blockService = blockService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -84,7 +88,11 @@ public class ChatServiceImpl implements ChatService {
         chatMessage.setContent(message);
         chatMessage.setMessageType(MessageType.TEXT);
 
-        chatMessageRepository.save(chatMessage);
+        ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
+        
+        // Broadcast to WebSocket subscribers
+        ChatMessageResponse response = mapToResponse(savedMessage);
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
 
         participants.stream()
                 .map(ChatParticipant::getUserId)

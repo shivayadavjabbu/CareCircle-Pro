@@ -9,8 +9,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.List;
+import java.util.ArrayList;
+import com.carecircle.user_profile_service.child.model.Child;
 
 /**
  * Represents a parent user's profile in the  CareCircle Platfom
@@ -54,16 +59,27 @@ public class ParentProfile {
 	
 	@Column(name="updated_at", nullable=false)
 	private LocalDateTime updatedAt;
+
+    // ===== Relationships (Cascading) =====
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Child> children = new ArrayList<>();
+
+    // ===== Extended Location Info =====
+
+    @Column(name = "city_id")
+    private UUID cityId;
 	
 	protected  ParentProfile() {		
 	}
 	
-	public ParentProfile( UUID userId, String userEmail, String fullName, String phoneNumber, String address) {
+    public ParentProfile(UUID userId, String userEmail, String fullName, String phoneNumber, String address, UUID cityId) {
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.userId = userId; 
+        this.cityId = cityId;
     }
 	
 	
@@ -111,4 +127,16 @@ public class ParentProfile {
 	public UUID getUserId() {
 		return userId;
 	}
+
+    public List<Child> getChildren() {
+        return children;
+    }
+
+    public UUID getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(UUID cityId) {
+        this.cityId = cityId;
+    }
 }

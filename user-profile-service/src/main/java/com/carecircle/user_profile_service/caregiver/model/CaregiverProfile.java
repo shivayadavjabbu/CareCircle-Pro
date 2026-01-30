@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a caregiver offering childcare-related services.
@@ -101,6 +103,19 @@ public class CaregiverProfile {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // ===== Relationships (Cascading) =====
+
+    @OneToMany(mappedBy = "caregiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CaregiverCapability> capabilities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "caregiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CaregiverCertification> certifications = new ArrayList<>();
+
+    // ===== Extended Location Info =====
+
+    @Column(name = "city_id")
+    private UUID cityId;
+
     protected CaregiverProfile() {
         // JPA only
     }
@@ -136,9 +151,32 @@ public class CaregiverProfile {
         this.bio = bio;
         this.experienceYears = experienceYears;
         this.verificationStatus = "PENDING";
+        this.verificationStatus = "PENDING";
         this.isActive = true;
         this.overallRating = 0.0;
         this.totalReviews = 0;
+    }
+
+    // Overloaded constructor for cityId support
+    public CaregiverProfile(
+            UUID userId, 
+            String userEmail,
+            String fullName,
+            String phoneNumber,
+            Integer age,
+            String gender,
+            String addressLine1,
+            String addressLine2,
+            String city,
+            UUID cityId,
+            String state,
+            String pincode,
+            String country,
+            String bio,
+            Integer experienceYears
+    ) {
+        this(userId, userEmail, fullName, phoneNumber, age, gender, addressLine1, addressLine2, city, state, pincode, country, bio, experienceYears);
+        this.cityId = cityId;
     }
 
     @PrePersist
@@ -264,6 +302,22 @@ public class CaregiverProfile {
 
     public void enable() {
         this.isActive = true;
+    }
+
+    public List<CaregiverCapability> getCapabilities() {
+        return capabilities;
+    }
+
+    public List<CaregiverCertification> getCertifications() {
+        return certifications;
+    }
+
+    public UUID getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(UUID cityId) {
+        this.cityId = cityId;
     }
 
 }

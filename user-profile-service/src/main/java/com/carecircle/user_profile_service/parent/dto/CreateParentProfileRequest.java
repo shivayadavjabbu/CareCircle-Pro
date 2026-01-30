@@ -21,6 +21,9 @@ public class CreateParentProfileRequest {
     @NotBlank(message = "Address is required")
     private String address;
 
+    @NotBlank(message = "City is required")
+    private String city;
+
     public CreateParentProfileRequest() {
         // For JSON deserialization
     }
@@ -35,5 +38,9 @@ public class CreateParentProfileRequest {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getCity() {
+        return city;
     }
 }

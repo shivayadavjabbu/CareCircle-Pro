@@ -47,6 +47,8 @@ public interface CaregiverService {
             String bio,
             Integer experienceYears
     );
+    
+    void deleteProfile(UUID userId);
 
     // ===== Capabilities =====
 
@@ -61,6 +63,8 @@ public interface CaregiverService {
 
     List<CaregiverCapability> getMyCapabilities(UUID userID);
 
+    void deleteCapability(UUID userId, UUID capabilityId);
+
     // ===== Certifications =====
 
     CaregiverCertification addCertification(
@@ -71,4 +75,8 @@ public interface CaregiverService {
     );
 
     List<CaregiverCertification> getMyCertifications(UUID userID);
+    
+    void deleteCertification(UUID userId, UUID certificationId);
+
+
 }

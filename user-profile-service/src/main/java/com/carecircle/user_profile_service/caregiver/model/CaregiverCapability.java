@@ -42,6 +42,9 @@ public class CaregiverCapability {
     @Column(name = "service_type", nullable = false)
     private String serviceType; // e.g. FEVER_CARE, HOMEWORK_HELP
 
+    @Column(name = "service_id")
+    private UUID serviceId;
+
     @Column(name = "description", length = 1000)
     private String description;
 
@@ -88,7 +91,8 @@ public class CaregiverCapability {
             String description,
             Integer minChildAge,
             Integer maxChildAge,
-            Boolean requiresCertification
+            Boolean requiresCertification,
+            UUID serviceId
     ) {
         this.caregiver = caregiver;
         this.serviceType = serviceType;
@@ -96,6 +100,7 @@ public class CaregiverCapability {
         this.minChildAge = minChildAge;
         this.maxChildAge = maxChildAge;
         this.requiresCertification = requiresCertification;
+        this.serviceId = serviceId;
         this.verified = false;
         this.averageRating = 0.0;
         this.totalReviews = 0;
@@ -140,6 +145,10 @@ public class CaregiverCapability {
 
     public Boolean getRequiresCertification() {
         return requiresCertification;
+    }
+
+    public UUID getServiceId() {
+        return serviceId;
     }
 
     public Boolean getVerified() {

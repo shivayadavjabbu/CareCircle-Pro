@@ -139,6 +139,17 @@ public class CaregiverController {
                 .collect(Collectors.toList());
     }
 
+    @DeleteMapping("/capabilities/{capabilityId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCapability(
+            @PathVariable UUID capabilityId,
+            HttpServletRequest httpRequest
+    ) {
+        validateCaregiverRole(httpRequest);
+        UUID userId = extractUserId(httpRequest);
+        caregiverService.deleteCapability(userId, capabilityId);
+    }
+
     // =========================
     // Certifications
     // =========================
@@ -173,6 +184,17 @@ public class CaregiverController {
                 .stream()
                 .map(this::mapCertification)
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/certifications/{certificationId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCertification(
+            @PathVariable UUID certificationId,
+            HttpServletRequest httpRequest
+    ) {
+        validateCaregiverRole(httpRequest);
+        UUID userId = extractUserId(httpRequest);
+        caregiverService.deleteCertification(userId, certificationId);
     }
 
     // =========================

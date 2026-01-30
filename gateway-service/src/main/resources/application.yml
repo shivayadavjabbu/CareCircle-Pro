@@ -8,11 +8,18 @@ spring:
   cloud:
     gateway:
       routes:
+
+        # =========================
+        # AUTH SERVICE
+        # =========================
         - id: auth-service
           uri: http://localhost:8081
           predicates:
             - Path=/auth/**
 
+        # =========================
+        # USER PROFILE SERVICE
+        # =========================
         - id: parents-route
           uri: http://localhost:8083
           predicates:
@@ -28,12 +35,32 @@ spring:
           predicates:
             - Path=/admin/**
 
+        # =========================
+        # MATCHING / BOOKING
+        # =========================
         - id: matching-booking
           uri: http://localhost:8085
           predicates:
             - Path=/matching-booking/**
           filters:
             - StripPrefix=1
+
+        # =========================
+        # COMMUNICATION SERVICE (REST)
+        # =========================
+        - id: communication-rest
+          uri: http://localhost:8082
+          predicates:
+            - Path=/chats/**
+
+
+        # =========================
+        # COMMUNICATION SERVICE (WEBSOCKET)
+        # =========================
+        - id: communication-ws
+          uri: ws://localhost:8082
+          predicates:
+            - Path=/ws/**
 
 jwt:
   secret: carecircle-auth-secret-key-which-is-at-least-32-bytes-long
@@ -43,4 +70,3 @@ management:
     web:
       exposure:
         include: health,info,gateway
-  

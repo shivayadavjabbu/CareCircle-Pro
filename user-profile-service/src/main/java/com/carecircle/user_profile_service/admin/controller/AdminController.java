@@ -53,7 +53,9 @@ public class AdminController {
         		httpRequest.getHeader(USER_EMAIL_HEADER),
                 request.getFullName(),
                 request.getPhoneNumber(),
-                request.getAdminLevel()
+                request.getAdminLevel(),
+                request.getAddress(),
+                request.getCity()
         );
     }
 
@@ -73,7 +75,9 @@ public class AdminController {
                 userId,
                 request.getFullName(),
                 request.getPhoneNumber(),
-                request.getAdminLevel()
+                request.getAdminLevel(),
+                request.getAddress(),
+                request.getCity()
         );
     }
 

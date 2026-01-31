@@ -15,7 +15,9 @@ public interface AdminService {
 			String adminEmail,
 			String fullName,
 			String phoneNumber,
-			String adminLevel);
+			String adminLevel,
+			String address,
+			String city);
 
 	AdminProfileResponse getMyProfile(UUID userId);
 
@@ -23,7 +25,9 @@ public interface AdminService {
 			UUID userId,
 			String fullName,
 			String phoneNumber,
-			String adminLevel);
+			String adminLevel,
+			String address,
+			String city);
 
 	void deleteMyProfile(UUID userId);
 

@@ -29,33 +29,42 @@ public class AdminServiceImpl implements AdminService {
 
         private final AdminProfileRepository adminProfileRepository;
         private final VerificationAuditRepository auditRepository;
+        private final MatchingService matchingService; // Added MatchingService
 
         private final CaregiverProfileRepository caregiverProfileRepository;
         private final ParentProfileRepository parentProfileRepository;
         private final ChildRepository childRepository;
 
         @Override
-        public void createAdminProfile(
-                        UUID userId,
-                        String adminEmail,
-                        String fullName,
-                        String phoneNumber,
-                        String adminLevel) {
-                if (adminProfileRepository.findByUserEmail(adminEmail).isPresent()) {
-                        throw new RuntimeException("Admin profile already exists");
-                }
-
-                AdminProfile admin = new AdminProfile(
-                                userId,
-                                adminEmail,
-                                fullName,
-                                phoneNumber,
-                                adminLevel,
-                                null,
-                                null);
-
-                adminProfileRepository.save(admin);
+    public void createAdminProfile(
+            UUID userId,
+            String adminEmail,
+            String fullName,
+            String phoneNumber,
+            String adminLevel,
+            String address,
+            String city) {
+        if (adminProfileRepository.findByUserEmail(adminEmail).isPresent()) {
+            throw new RuntimeException("Admin profile already exists");
         }
+
+        // Validate City
+        if (city != null && !city.isBlank()) {
+             matchingService.getCityByName(city)
+                     .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+        }
+
+        AdminProfile admin = new AdminProfile(
+                userId,
+                adminEmail,
+                fullName,
+                phoneNumber,
+                adminLevel,
+                address,
+                city);
+
+        adminProfileRepository.save(admin);
+    }
 
         @Override
         public AdminProfileResponse getMyProfile(UUID userId) {
@@ -74,32 +83,44 @@ public class AdminServiceImpl implements AdminService {
         }
 
         @Override
-        public AdminProfileResponse updateMyProfile(
-                        UUID userId,
-                        String fullName,
-                        String phoneNumber,
-                        String adminLevel) {
-                AdminProfile admin = adminProfileRepository.findByUserId(userId)
-                                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
+    public AdminProfileResponse updateMyProfile(
+            UUID userId,
+            String fullName,
+            String phoneNumber,
+            String adminLevel,
+            String address,
+            String city) {
+        AdminProfile admin = adminProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
 
-                // Update only the fields that should change
-                admin.setFullName(fullName);
-                admin.setPhoneNumber(phoneNumber);
-                admin.setAdminLevel(adminLevel);
-
-                // Save will trigger @PreUpdate to update the updatedAt timestamp
-                AdminProfile saved = adminProfileRepository.save(admin);
-
-                return new AdminProfileResponse(
-                                saved.getId(),
-                                saved.getFullName(),
-                                saved.getUserEmail(),
-                                saved.getAdminLevel(),
-                                saved.getIsActive(),
-                                saved.getCreatedAt(),
-                                saved.getAddress(),
-                                saved.getCity());
+        // Validate City if changed/provided
+        if (city != null && !city.equals(admin.getCity())) {
+            if (!city.isBlank()) {
+                matchingService.getCityByName(city)
+                        .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+            }
+            admin.setCity(city);
         }
+
+        // Update other fields
+        admin.setFullName(fullName);
+        admin.setPhoneNumber(phoneNumber);
+        admin.setAdminLevel(adminLevel);
+        admin.setAddress(address);
+
+        // Save will trigger @PreUpdate to update the updatedAt timestamp
+        AdminProfile saved = adminProfileRepository.save(admin);
+
+        return new AdminProfileResponse(
+                saved.getId(),
+                saved.getFullName(),
+                saved.getUserEmail(),
+                saved.getAdminLevel(),
+                saved.getIsActive(),
+                saved.getCreatedAt(),
+                saved.getAddress(),
+                saved.getCity());
+    }
 
         @Override
         public void deleteMyProfile(UUID userId) {

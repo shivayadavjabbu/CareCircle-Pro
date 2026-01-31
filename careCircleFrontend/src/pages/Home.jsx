@@ -49,7 +49,7 @@ export default function Home() {
               Find a Caregiver
             </button>
             <button
-              onClick={() => navigate("/register-nanny")}
+              onClick={() => navigate("/register", { state: { role: "ROLE_CARETAKER" } })}
               className="bg-[#0071e3] text-white text-[19px] font-medium px-8 py-4 rounded-full hover:bg-[#0077ed] transition-all active:scale-95 shadow-lg"
             >
               Join as Caregiver

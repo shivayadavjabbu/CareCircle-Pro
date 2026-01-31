@@ -26,8 +26,8 @@ export default function Navbar() {
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
-          ? "bg-white/90 backdrop-blur-md border-b border-[#d2d2d7]"
-          : "bg-white/80 backdrop-blur-md border-b border-transparent"
+        ? "bg-white/90 backdrop-blur-md border-b border-[#d2d2d7]"
+        : "bg-white/80 backdrop-blur-md border-b border-transparent"
         }`}
     >
       <div className="max-w-[980px] mx-auto px-6 h-[48px] flex justify-between items-center text-xs">
@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-8 text-[#1d1d1f] text-[12px] font-normal tracking-wide">
           <Link to="/" className="hover:text-[#0071e3] transition-colors">Home</Link>
           <Link to="/find-nanny" className="hover:text-[#0071e3] transition-colors">Find Care</Link>
-          <Link to="/register-nanny" className="hover:text-[#0071e3] transition-colors">Become a Caregiver</Link>
+          <Link to="/register" state={{ role: "ROLE_CARETAKER" }} className="hover:text-[#0071e3] transition-colors">Become a Caregiver</Link>
 
           {token ? (
             <div className="relative group cursor-pointer hover:text-[#0071e3] transition-colors">
@@ -57,7 +57,8 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
               <Link to="/login" className="hover:text-[#0071e3] transition-colors">Sign in</Link>
               <Link
-                to="/register-parent"
+                to="/register"
+                state={{ role: "ROLE_PARENT" }}
                 className="bg-[#0071e3] text-white px-3 py-1 rounded-full hover:bg-[#0077ed] transition-colors opacity-100 font-medium"
               >
                 Sign Up

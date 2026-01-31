@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import RegisterParent from "./pages/RegisterParent";
 import RegisterNanny from "./pages/RegisterNanny";
 import RegisterAdmin from "./pages/RegisterAdmin";
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/verify-account" element={<VerifyAccount />} />
 
         {/* Registration */}
+        <Route path="/register" element={<Register />} />
         <Route path="/register-parent" element={<RegisterParent />} />
         <Route path="/register-nanny" element={<RegisterNanny />} />
         <Route path="/register-admin" element={<RegisterAdmin />} />

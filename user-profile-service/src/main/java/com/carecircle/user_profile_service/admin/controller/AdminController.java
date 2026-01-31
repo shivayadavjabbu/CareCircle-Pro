@@ -1,14 +1,19 @@
 package com.carecircle.user_profile_service.admin.controller;
 
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
+import com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse;
+import com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.CreateAdminProfileRequest;
 import com.carecircle.user_profile_service.admin.dto.DisableRequest;
+import com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.RejectRequest;
+import com.carecircle.user_profile_service.admin.dto.UpdateAdminProfileRequest;
 import com.carecircle.user_profile_service.admin.dto.VerifyRequest;
 import com.carecircle.user_profile_service.admin.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -58,6 +63,58 @@ public class AdminController {
         return adminService.getMyProfile(userId);
     }
 
+    @PutMapping("/profile")
+    public AdminProfileResponse updateMyProfile(
+            @Valid @RequestBody UpdateAdminProfileRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        UUID userId = validateAdminAndGetUserId(httpRequest);
+        return adminService.updateMyProfile(
+                userId,
+                request.getFullName(),
+                request.getPhoneNumber(),
+                request.getAdminLevel()
+        );
+    }
+
+    @DeleteMapping("/profile")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMyProfile(HttpServletRequest httpRequest) {
+        UUID userId = validateAdminAndGetUserId(httpRequest);
+        adminService.deleteMyProfile(userId);
+    }
+
+    // =========================
+    // Statistics & Listing
+    // =========================
+
+    @GetMapping("/stats")
+    public AdminStatisticsResponse getStatistics(HttpServletRequest httpRequest) {
+        validateAdminAndGetUserId(httpRequest);
+        return adminService.getStatistics();
+    }
+
+    @GetMapping("/parents")
+    public List<ParentSummaryResponse> getAllParents(HttpServletRequest httpRequest) {
+        validateAdminAndGetUserId(httpRequest);
+        return adminService.getAllParents();
+    }
+
+    @GetMapping("/parents/{parentId}/children")
+    public List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(
+            @PathVariable UUID parentId,
+            HttpServletRequest httpRequest
+    ) {
+        validateAdminAndGetUserId(httpRequest);
+        return adminService.getChildrenForParent(parentId);
+    }
+
+    @GetMapping("/caregivers")
+    public List<CaregiverSummaryResponse> getAllCaregivers(HttpServletRequest httpRequest) {
+        validateAdminAndGetUserId(httpRequest);
+        return adminService.getAllCaregivers();
+    }
+
 
     // Caregiver Profile
 
@@ -92,58 +149,6 @@ public class AdminController {
     ) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
         adminService.disableCaregiverProfile(userId, caregiverId, request.getReason());
-    }
-
-    // =========================
-    // Caregiver Capability
-    // =========================
-
-    @PostMapping("/capabilities/{capabilityId}/verify")
-    @ResponseStatus(HttpStatus.OK)
-    public void verifyCaregiverCapability(
-            @PathVariable UUID capabilityId,
-            @Valid @RequestBody VerifyRequest request,
-            HttpServletRequest httpRequest
-    ) {
-    	UUID userId = validateAdminAndGetUserId(httpRequest);
-        adminService.verifyCaregiverCapability(userId, capabilityId, request.getReason());
-    }
-
-    @PostMapping("/capabilities/{capabilityId}/reject")
-    @ResponseStatus(HttpStatus.OK)
-    public void rejectCaregiverCapability(
-            @PathVariable UUID capabilityId,
-            @Valid @RequestBody RejectRequest request,
-            HttpServletRequest httpRequest
-    ) {
-    	UUID userId = validateAdminAndGetUserId(httpRequest);
-        adminService.rejectCaregiverCapability(userId, capabilityId, request.getReason());
-    }
-
-    // =========================
-    // Caregiver Certification
-    // =========================
-
-    @PostMapping("/certifications/{certificationId}/verify")
-    @ResponseStatus(HttpStatus.OK)
-    public void verifyCaregiverCertification(
-            @PathVariable UUID certificationId,
-            @Valid @RequestBody VerifyRequest request,
-            HttpServletRequest httpRequest
-    ) {
-    	UUID userId = validateAdminAndGetUserId(httpRequest);
-        adminService.verifyCaregiverCertification(userId, certificationId, request.getReason());
-    }
-
-    @PostMapping("/certifications/{certificationId}/reject")
-    @ResponseStatus(HttpStatus.OK)
-    public void rejectCaregiverCertification(
-            @PathVariable UUID certificationId,
-            @Valid @RequestBody RejectRequest request,
-            HttpServletRequest httpRequest
-    ) {
-    	UUID userId = validateAdminAndGetUserId(httpRequest);
-        adminService.rejectCaregiverCertification(userId, certificationId, request.getReason());
     }
 
     // =========================

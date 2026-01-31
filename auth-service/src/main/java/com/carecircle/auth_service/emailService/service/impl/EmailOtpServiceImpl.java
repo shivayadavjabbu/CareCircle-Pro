@@ -41,30 +41,47 @@ public class EmailOtpServiceImpl implements EmailOtpService {
     @Override
     @Transactional
     public void sendOtp(String email, Role role, String password) {
-        logger.info("Sending OTP to email: {} for role: {}", email, role);
-
-        // 🔥 clear old OTP
-        otpRepository.deleteByEmailAndRole(email, role);
+        logger.info("Processing OTP request for email: {} and role: {}", email, role);
 
         String otp = generateOtp();
+        LocalDateTime newExpiresAt = LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES);
 
-        EmailOtp emailOtp = new EmailOtp();
-        emailOtp.setEmail(email);
-        emailOtp.setRole(role);
-        emailOtp.setOtp(otp);
-        if (password != null) {
-            emailOtp.setPassword(password);
+        // Check if OTP already exists for this email+role
+        EmailOtp emailOtp = otpRepository.findByEmailAndRole(email, role).orElse(null);
+
+        if (emailOtp != null) {
+            // 🔄 Update existing OTP record instead of delete+create
+            logger.info("Existing OTP found for email: {} and role: {}. Previous expiration: {}. Updating with new OTP.", 
+                    email, role, emailOtp.getExpiresAt());
+            
+            emailOtp.setOtp(otp);
+            emailOtp.setAttempts(0);  // Reset attempts on re-request
+            emailOtp.setExpiresAt(newExpiresAt);
+            if (password != null) {
+                emailOtp.setPassword(password);
+            }
+            
+            logger.debug("OTP record updated - attempts reset to 0, new expiration: {}", newExpiresAt);
+        } else {
+            // ✨ Create new OTP record
+            logger.info("No existing OTP found for email: {} and role: {}. Creating new OTP record.", email, role);
+            
+            emailOtp = new EmailOtp();
+            emailOtp.setEmail(email);
+            emailOtp.setRole(role);
+            emailOtp.setOtp(otp);
+            if (password != null) {
+                emailOtp.setPassword(password);
+            }
+            emailOtp.setAttempts(0);
+            emailOtp.setExpiresAt(newExpiresAt);
         }
-        emailOtp.setAttempts(0);
-        emailOtp.setExpiresAt(
-            LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES)
-        );
 
         otpRepository.save(emailOtp);
 
         mailSenderService.sendOtpMail(email, otp, role.name());
         
-        logger.info("OTP sent successfully to email: {} for role: {}", email, role);
+        logger.info("OTP sent successfully to email: {} for role: {}. Expires at: {}", email, role, newExpiresAt);
     }
 
     @Override

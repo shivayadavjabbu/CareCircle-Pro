@@ -1,5 +1,6 @@
 package com.carecircle.user_profile_service.admin.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
@@ -8,34 +9,39 @@ import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
  * Service interface for admin verification and moderation operations.
  */
 public interface AdminService {
-	
+
 	void createAdminProfile(
-	        UUID userId,
-	        String adminEmail, 
-	        String fullName,
-	        String phoneNumber,
-	        String adminLevel
-	);
+			UUID userId,
+			String adminEmail,
+			String fullName,
+			String phoneNumber,
+			String adminLevel);
 
 	AdminProfileResponse getMyProfile(UUID userId);
 
-    // ===== Caregiver Profile =====
+	AdminProfileResponse updateMyProfile(
+			UUID userId,
+			String fullName,
+			String phoneNumber,
+			String adminLevel);
 
-    void verifyCaregiverProfile(UUID userId, UUID caregiverId, String reason);
+	void deleteMyProfile(UUID userId);
 
-    void rejectCaregiverProfile(UUID userId, UUID caregiverId, String reason);
+	// ===== Statistics & Listing =====
 
-    void disableCaregiverProfile(UUID userId, UUID caregiverId, String reason);
+	com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse getStatistics();
 
-    // ===== Caregiver Capability =====
+	List<com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse> getAllParents();
 
-    void verifyCaregiverCapability(UUID userId, UUID capabilityId, String reason);
+	List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(UUID parentId);
 
-    void rejectCaregiverCapability(UUID userId, UUID capabilityId, String reason);
+	List<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers();
 
-    // ===== Caregiver Certification =====
+	// ===== Caregiver Profile =====
 
-    void verifyCaregiverCertification(UUID userId, UUID certificationId, String reason);
+	void verifyCaregiverProfile(UUID userId, UUID caregiverId, String reason);
 
-    void rejectCaregiverCertification(UUID userId, UUID certificationId, String reason);
+	void rejectCaregiverProfile(UUID userId, UUID caregiverId, String reason);
+
+	void disableCaregiverProfile(UUID userId, UUID caregiverId, String reason);
 }

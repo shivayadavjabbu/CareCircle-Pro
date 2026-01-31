@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import PasswordInput from "../components/PasswordInput";
+import { register } from "../api/authApi";
 
 export default function RegisterParent() {
   const [email, setEmail] = useState("");
@@ -18,42 +19,14 @@ export default function RegisterParent() {
     setSuccessMessage(""); // Clear previous success messages
 
     try {
-      const response = await fetch("/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim(),
-          role: "ROLE_PARENT",
-        }),
-      });
+      await register(email, password, "ROLE_PARENT");
 
-      const text = await response.text();
-      let data = null;
-      try { data = JSON.parse(text); } catch (e) { }
-
-      const serverMessage = data?.message || data?.error || text || "Registration failed";
-
-      if (!response.ok) {
-        const isExistingEmail = response.status === 409 ||
-          /exist|already|taken|conflict/i.test(serverMessage);
-
-        if (isExistingEmail) {
-          setError("Email already exists. Please login.");
-          setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);
-          return;
-        }
-        throw new Error(serverMessage);
-      }
-
-      setSuccessMessage("Registered successfully! Redirecting...");
-      setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);
+      setSuccessMessage("OTP Sent to email! Redirecting to verification...");
+      setTimeout(() => navigate("/verify-account", { state: { email, role: "ROLE_PARENT" } }), 1500);
 
     } catch (error) {
       console.error("Registration error:", error);
-      const msg = error.message.toLowerCase();
+      const msg = error.message ? error.message.toLowerCase() : "unknown error";
       if (/exist|already|taken|conflict/i.test(msg)) {
         setError("Email already exists. Please login.");
         setTimeout(() => navigate("/login", { state: { role: "ROLE_PARENT" } }), 2000);

@@ -17,6 +17,14 @@ public class CreateAdminProfileRequest {
     
     private UUID userId; 
 
+    @NotBlank(message = "Address is required")
+    private String address;
+
+    @NotBlank(message = "City is required")
+    private String city;
+
+    public CreateAdminProfileRequest() {}
+
     public String getFullName() {
         return fullName;
     }
@@ -31,5 +39,13 @@ public class CreateAdminProfileRequest {
     
     public UUID getUserId() {
     	return userId; 
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
     }
 }

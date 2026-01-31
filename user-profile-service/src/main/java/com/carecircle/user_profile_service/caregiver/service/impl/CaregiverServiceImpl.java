@@ -2,11 +2,7 @@ package com.carecircle.user_profile_service.caregiver.service.impl;
 
 import com.carecircle.user_profile_service.caregiver.exception.CaregiverProfileAlreadyExistsException;
 import com.carecircle.user_profile_service.caregiver.exception.CaregiverProfileNotFoundException;
-import com.carecircle.user_profile_service.caregiver.model.CaregiverCapability;
-import com.carecircle.user_profile_service.caregiver.model.CaregiverCertification;
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
-import com.carecircle.user_profile_service.caregiver.repository.CaregiverCapabilityRepository;
-import com.carecircle.user_profile_service.caregiver.repository.CaregiverCertificationRepository;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
 import com.carecircle.user_profile_service.caregiver.service.CaregiverService;
 import org.springframework.stereotype.Service;
@@ -27,19 +23,13 @@ import java.util.UUID;
 public class CaregiverServiceImpl implements CaregiverService {
 
     private final CaregiverProfileRepository profileRepository;
-    private final CaregiverCapabilityRepository capabilityRepository;
-    private final CaregiverCertificationRepository certificationRepository;
     private final MatchingIntegrationService matchingService;
 
     public CaregiverServiceImpl(
             CaregiverProfileRepository profileRepository,
-            CaregiverCapabilityRepository capabilityRepository,
-            CaregiverCertificationRepository certificationRepository,
             MatchingIntegrationService matchingService
     ) {
         this.profileRepository = profileRepository;
-        this.capabilityRepository = capabilityRepository;
-        this.certificationRepository = certificationRepository;
         this.matchingService = matchingService;
     }
 
@@ -53,12 +43,8 @@ public class CaregiverServiceImpl implements CaregiverService {
             String phoneNumber,
             Integer age,
             String gender,
-            String addressLine1,
-            String addressLine2,
+            String address,
             String city,
-            String state,
-            String pincode,
-            String country,
             String bio,
             Integer experienceYears
     ) {
@@ -66,13 +52,13 @@ public class CaregiverServiceImpl implements CaregiverService {
         	 throw new CaregiverProfileAlreadyExistsException(userEmail);
         });
 
-        // Resolve City ID
-        UUID cityId = null;
-        if (city != null && !city.isBlank()) {
-             cityId = matchingService.getCityByName(city)
-                    .map(MatchingIntegrationService.CityDto::id)
-                    .orElse(null); // Or throw exception if strict
+        // Validate City
+        if (city == null || city.isBlank()) {
+             throw new IllegalArgumentException("City is required");
         }
+        
+        matchingService.getCityByName(city)
+                .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
 
         CaregiverProfile profile = new CaregiverProfile(
         		userId,
@@ -81,13 +67,8 @@ public class CaregiverServiceImpl implements CaregiverService {
                 phoneNumber,
                 age,
                 gender,
-                addressLine1,
-                addressLine2,
+                address,
                 city,
-                cityId,
-                state,
-                pincode,
-                country,
                 bio,
                 experienceYears
         );
@@ -107,152 +88,39 @@ public class CaregiverServiceImpl implements CaregiverService {
             UUID  userId,
             String fullName,
             String phoneNumber,
-            String addressLine1,
-            String addressLine2,
+            String address,
             String city,
-            String state,
-            String pincode,
-            String country,
             String bio,
             Integer experienceYears
     ) {
         CaregiverProfile profile = getMyProfile(userId);
 
-        // Resolve City ID if changed or needed
-        UUID cityId = profile.getCityId();
+        // Validate City if changed
         if (city != null && !city.equals(profile.getCity())) {
-             cityId = matchingService.getCityByName(city)
-                    .map(MatchingIntegrationService.CityDto::id)
-                    .orElse(cityId); 
+            if (city.isBlank()) {
+                throw new IllegalArgumentException("City cannot be empty");
+            }
+            matchingService.getCityByName(city)
+                    .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+            profile.setCity(city);
         }
 
-        // Controlled updates only (no verification, no ratings)
-        profile = new CaregiverProfile(
-        		profile.getUserId(),
-                profile.getUserEmail(),
-                fullName,
-                phoneNumber,
-                profile.getAge(),
-                profile.getGender(),
-                addressLine1,
-                addressLine2,
-                city,
-                cityId,
-                state,
-                pincode,
-                country,
-                bio,
-                experienceYears
-        );
-        
+        // Update only the fields that should change (preserving ID, age, gender, etc.)
+        profile.setFullName(fullName);
+        profile.setPhoneNumber(phoneNumber);
+        profile.setAddress(address);
+        profile.setBio(bio);
+        profile.setExperienceYears(experienceYears);
+
+        // Save will trigger @PreUpdate to update the updatedAt timestamp
         return profileRepository.save(profile);
     }
 
     @Override
     public void deleteProfile(UUID userId) {
         CaregiverProfile profile = getMyProfile(userId);
-        // Hard delete - this will cascade to capabilities and certifications
+        // Hard delete
         profileRepository.delete(profile);
-    }
-
-
-
-    // ===== Capabilities =====
-
-    @Override
-    public CaregiverCapability addCapability(
-            UUID userId,
-            String serviceType,
-            String description,
-            Integer minChildAge,
-            Integer maxChildAge,
-            Boolean requiresCertification
-    ) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-
-        // Resolve Service ID
-        UUID serviceId = matchingService.getServiceByCode(serviceType)
-                .map(MatchingIntegrationService.ServiceDto::id)
-                .orElse(null);
-
-        CaregiverCapability capability = new CaregiverCapability(
-                caregiver,
-				serviceType,
-                description,
-                minChildAge,
-                maxChildAge,
-                requiresCertification,
-                serviceId
-        );
-
-        return capabilityRepository.save(capability);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CaregiverCapability> getMyCapabilities(UUID userId) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-        return capabilityRepository.findAllByCaregiver(caregiver);
-    }
-
-    @Override
-    public void deleteCapability(UUID userId, UUID capabilityId) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-        CaregiverCapability capability = capabilityRepository
-                .findById(capabilityId)
-                .orElseThrow(() -> new RuntimeException("Capability not found"));
-        
-        if (!capability.getCaregiver().getId().equals(caregiver.getId())) {
-             throw new RuntimeException("Access denied");
-        }
-        capabilityRepository.delete(capability);
-    }
-
-    // ===== Certifications =====
-
-    @Override
-    public CaregiverCertification addCertification(
-            UUID userId,
-            String certificationName,
-            String issuedBy,
-            LocalDate validTill
-    ) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-
-        // Resolve Service ID (matching by name for certifications)
-        UUID serviceId = matchingService.getServiceByName(certificationName)
-                .map(MatchingIntegrationService.ServiceDto::id)
-                .orElse(null);
-
-        CaregiverCertification certification = new CaregiverCertification(
-                caregiver,
-                certificationName,
-                issuedBy,
-                validTill,
-                serviceId
-        );
-
-        return certificationRepository.save(certification);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CaregiverCertification> getMyCertifications(UUID userId) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-        return certificationRepository.findAllByCaregiver(caregiver);
-    }
-
-    @Override
-    public void deleteCertification(UUID userId, UUID certificationId) {
-        CaregiverProfile caregiver = getMyProfile(userId);
-        CaregiverCertification cert = certificationRepository
-                .findById(certificationId)
-                .orElseThrow(() -> new RuntimeException("Certification not found"));
-
-        if (!cert.getCaregiver().getId().equals(caregiver.getId())) {
-             throw new RuntimeException("Access denied");
-        }
-        certificationRepository.delete(cert);
     }
 }
 

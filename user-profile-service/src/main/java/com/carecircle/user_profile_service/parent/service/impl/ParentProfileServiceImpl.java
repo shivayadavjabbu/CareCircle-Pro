@@ -58,16 +58,16 @@ public class ParentProfileServiceImpl implements ParentProfileService{
         	 throw new ParentProfileAlreadyExistsException(userEmail);
         }
 
-        // Resolve City ID
-        UUID cityId = null;
-        if (city != null && !city.isBlank()) {
-             cityId = matchingService.getCityByName(city)
-                    .map(MatchingIntegrationService.CityDto::id)
-                    .orElse(null);
+        // Validate City
+        if (city == null || city.isBlank()) {
+             throw new IllegalArgumentException("City is required");
         }
+        
+//        matchingService.getCityByName(city)
+//                .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
 
         ParentProfile profile =
-                new ParentProfile(userId, userEmail, fullName, phoneNumber, address, cityId);
+                new ParentProfile(userId, userEmail, fullName, phoneNumber, address, city);
 
         return parentProfileRepository.save(profile);
     }
@@ -108,25 +108,23 @@ public class ParentProfileServiceImpl implements ParentProfileService{
 	) {
 		ParentProfile profile = getProfileByUserId(userId);
 
-		// Resolve City ID if city changed
-		UUID cityId = profile.getCityId();
-		if (city != null && !city.equals(profile.getAddress())) {
-			cityId = matchingService.getCityByName(city)
-					.map(MatchingIntegrationService.CityDto::id)
-					.orElse(cityId);
+		// Validate City if changed
+		if (city != null && !city.equals(profile.getCity())) {
+			if (city.isBlank()) {
+                throw new IllegalArgumentException("City cannot be empty");
+            }
+            matchingService.getCityByName(city)
+                    .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+			profile.setCity(city);
 		}
 
-		// Create updated profile
-		ParentProfile updatedProfile = new ParentProfile(
-				profile.getUserId(),
-				profile.getUserEmail(),
-				fullName,
-				phoneNumber,
-				address,
-				cityId
-		);
+		// Update only the fields that should change (preserving ID, userId, etc.)
+		profile.setFullName(fullName);
+		profile.setPhoneNumber(phoneNumber);
+		profile.setAddress(address);
 
-		return parentProfileRepository.save(updatedProfile);
+		// Save will trigger @PreUpdate to update the updatedAt timestamp
+		return parentProfileRepository.save(profile);
 	}
 
 	@Override

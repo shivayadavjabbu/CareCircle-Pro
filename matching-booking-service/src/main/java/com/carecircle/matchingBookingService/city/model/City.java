@@ -78,4 +78,17 @@ public class City {
     public void deactivate() {
         this.active = false;
     }
+
+    // Setters for updateable fields
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 }

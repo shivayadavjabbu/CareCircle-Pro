@@ -21,8 +21,11 @@ public class MatchingIntegrationService {
         this.restClient = restClientBuilder.baseUrl(MATCHING_SERVICE_URL).build();
     }
 
-    public record CityDto(UUID id, String name, String state, String country, Boolean active) {}
-    public record ServiceDto(UUID id, String code, String name, String category, Double basePrice, Boolean active) {}
+    public record CityDto(UUID id, String name, String state, String country, Boolean active) {
+    }
+
+    public record ServiceDto(UUID id, String code, String name, String category, Double basePrice, Boolean active) {
+    }
 
     /**
      * Fetch all active cities from matching-booking-service.
@@ -34,7 +37,8 @@ public class MatchingIntegrationService {
 
             List<CityDto> cities = requestSpec
                     .retrieve()
-                    .body(new ParameterizedTypeReference<List<CityDto>>() {});
+                    .body(new ParameterizedTypeReference<List<CityDto>>() {
+                    });
 
             return cities != null ? cities : Collections.emptyList();
         } catch (Exception e) {
@@ -73,7 +77,8 @@ public class MatchingIntegrationService {
 
             List<ServiceDto> services = requestSpec
                     .retrieve()
-                    .body(new ParameterizedTypeReference<List<ServiceDto>>() {});
+                    .body(new ParameterizedTypeReference<List<ServiceDto>>() {
+                    });
 
             return services != null ? services : Collections.emptyList();
         } catch (Exception e) {
@@ -122,6 +127,46 @@ public class MatchingIntegrationService {
         }
     }
 
+    /**
+     * Fetch city by ID from matching-booking-service.
+     */
+    public Optional<CityDto> getCityById(UUID cityId) {
+        try {
+            var requestSpec = restClient.get()
+                    .uri("/cities/" + cityId);
+            addAuthHeaders(requestSpec);
+
+            CityDto city = requestSpec
+                    .retrieve()
+                    .body(CityDto.class);
+
+            return Optional.ofNullable(city);
+        } catch (Exception e) {
+            System.err.println("Error fetching city by ID: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Fetch service by ID from matching-booking-service.
+     */
+    public Optional<ServiceDto> getServiceById(UUID serviceId) {
+        try {
+            var requestSpec = restClient.get()
+                    .uri("/services/" + serviceId);
+            addAuthHeaders(requestSpec);
+
+            ServiceDto service = requestSpec
+                    .retrieve()
+                    .body(ServiceDto.class);
+
+            return Optional.ofNullable(service);
+        } catch (Exception e) {
+            System.err.println("Error fetching service by ID: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
     private void addAuthHeaders(RestClient.RequestHeadersSpec<?> requestSpec) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
@@ -131,10 +176,14 @@ public class MatchingIntegrationService {
             String userRole = currentRequest.getHeader("X-User-Role");
             String userId = currentRequest.getHeader("X-User-Id");
 
-            if (auth != null) requestSpec.header("Authorization", auth);
-            if (userEmail != null) requestSpec.header("X-User-Email", userEmail);
-            if (userRole != null) requestSpec.header("X-User-Role", userRole);
-            if (userId != null) requestSpec.header("X-User-Id", userId);
+            if (auth != null)
+                requestSpec.header("Authorization", auth);
+            if (userEmail != null)
+                requestSpec.header("X-User-Email", userEmail);
+            if (userRole != null)
+                requestSpec.header("X-User-Role", userRole);
+            if (userId != null)
+                requestSpec.header("X-User-Id", userId);
         }
     }
 }

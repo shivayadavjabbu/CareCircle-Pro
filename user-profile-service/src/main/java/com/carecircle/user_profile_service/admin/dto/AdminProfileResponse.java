@@ -14,6 +14,8 @@ public class AdminProfileResponse {
     private final String adminLevel;
     private final Boolean isActive;
     private final LocalDateTime createdAt;
+    private final String address;
+    private final String city;
 
     public AdminProfileResponse(
             UUID id,
@@ -21,7 +23,9 @@ public class AdminProfileResponse {
             String userEmail,
             String adminLevel,
             Boolean isActive,
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            String address,
+            String city
     ) {
         this.id = id;
         this.fullName = fullName;
@@ -29,6 +33,8 @@ public class AdminProfileResponse {
         this.adminLevel = adminLevel;
         this.isActive = isActive;
         this.createdAt = createdAt;
+        this.address = address;
+        this.city = city;
     }
 
     public UUID getId() {
@@ -53,5 +59,13 @@ public class AdminProfileResponse {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCity() {
+        return city;
     }
 }

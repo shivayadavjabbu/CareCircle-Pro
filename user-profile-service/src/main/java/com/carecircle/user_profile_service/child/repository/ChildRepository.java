@@ -37,4 +37,13 @@ public interface ChildRepository extends JpaRepository<Child, UUID> {
      * Delete the children only using the parent
      */
     void deleteByIdAndParent(UUID id, ParentProfile parent);
+    
+    /**
+     * Count children belonging to a specific parent.
+     *
+     * @param parent owning parent profile
+     * @return number of children
+     */
+    long countByParent(ParentProfile parent);
+    
 }

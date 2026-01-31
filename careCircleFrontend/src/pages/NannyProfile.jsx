@@ -14,12 +14,8 @@ export default function NannyProfile() {
     phoneNumber: "",
     age: "",
     gender: "",
-    addressLine1: "",
-    addressLine2: "",
+    address: "",
     city: "",
-    state: "",
-    pincode: "",
-    country: "India",
     bio: "",
     experienceYears: "",
   });
@@ -73,12 +69,8 @@ export default function NannyProfile() {
         phoneNumber: profile.phoneNumber.trim(),
         age: Number(profile.age),
         gender: profile.gender.toUpperCase(),
-        addressLine1: profile.addressLine1.trim(),
-        addressLine2: profile.addressLine2.trim(),
+        address: profile.address.trim(),
         city: profile.city.trim(),
-        state: profile.state.trim(),
-        pincode: profile.pincode.trim(),
-        country: profile.country.trim(),
         bio: profile.bio.trim(),
         experienceYears: Number(profile.experienceYears || 0),
       };
@@ -167,39 +159,15 @@ export default function NannyProfile() {
           <option value="Other">Other</option>
         </select>
 
-        <input name="addressLine1" placeholder="Address Line 1 *" value={profile.addressLine1}
+        <textarea name="address" placeholder="Address *" value={profile.address}
+          onChange={(e) => handleChange(e, setProfile, profile)}
+          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300 resize-y min-h-[80px]"
+        />
+
+        <input name="city" placeholder="City *" value={profile.city}
           onChange={(e) => handleChange(e, setProfile, profile)}
           className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
         />
-
-        <input name="addressLine2" placeholder="Address Line 2" value={profile.addressLine2}
-          onChange={(e) => handleChange(e, setProfile, profile)}
-          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-        />
-
-        <div className="grid grid-cols-2 gap-3.5">
-          <input name="city" placeholder="City *" value={profile.city}
-            onChange={(e) => handleChange(e, setProfile, profile)}
-            className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-          />
-
-          <input name="state" placeholder="State *" value={profile.state}
-            onChange={(e) => handleChange(e, setProfile, profile)}
-            className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3.5">
-          <input name="pincode" placeholder="Pincode *" value={profile.pincode}
-            onChange={(e) => handleChange(e, setProfile, profile)}
-            className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-          />
-
-          <input name="country" value={profile.country}
-            onChange={(e) => handleChange(e, setProfile, profile)}
-            className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-          />
-        </div>
 
         <input type="number" name="experienceYears" value={profile.experienceYears}
           placeholder="Experience (years)"

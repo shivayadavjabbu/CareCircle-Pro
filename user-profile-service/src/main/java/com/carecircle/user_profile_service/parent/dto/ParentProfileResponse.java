@@ -14,17 +14,20 @@ public class ParentProfileResponse {
     private final String fullName;
     private final String phoneNumber;
     private final String address;
+    private final String city;
     private final LocalDateTime createdAt;
 
     public ParentProfileResponse(
             String fullName,
             String phoneNumber,
             String address,
+            String city,
             LocalDateTime createdAt
     ) {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.city = city;
         this.createdAt = createdAt;
     }
 
@@ -38,6 +41,10 @@ public class ParentProfileResponse {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public LocalDateTime getCreatedAt() {

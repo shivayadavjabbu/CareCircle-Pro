@@ -11,6 +11,10 @@ export default function RegistrationForm({ userType }) {
     experience: ""
   });
 
+
+const [passwordStrength, setPasswordStrength] = useState("");
+const [passwordError, setPasswordError] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -25,6 +29,36 @@ export default function RegistrationForm({ userType }) {
       alert("✅ Nanny registered successfully! Our team will contact you.");
     }
   };
+
+const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+
+    // 1. Update the form data (keep your existing logic here)
+    handleChange(e);
+
+    // 2. Check Password Length (Must be > 6 characters)
+    if (newPassword.length < 8) {
+        setPasswordError("Password must be at least 8 characters long.");
+        setPasswordStrength("Too Short ❌");
+        return; // Stop here
+    } else {
+        setPasswordError(""); // Clear error
+    }
+
+    // 3. Check Password Strength (Simple Logic)
+    // Strong = Has Number + Special Char + Uppercase
+    const hasNumber = /\d/.test(newPassword);
+    const hasSpecial = /[!@#$%^&*]/.test(newPassword);
+    const hasUpper = /[A-Z]/.test(newPassword);
+
+    if (hasNumber && hasSpecial && hasUpper) {
+        setPasswordStrength("Strong 💪");
+    } else if (hasNumber || hasSpecial) {
+        setPasswordStrength("Medium ⚠️");
+    } else {
+        setPasswordStrength("Weak 👎");
+    }
+};
 
   return (
     <div className="form-wrapper">

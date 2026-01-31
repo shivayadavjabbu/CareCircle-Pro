@@ -7,6 +7,8 @@ export default function AdminProfile() {
     const [formData, setFormData] = useState({
         fullName: "",
         phoneNumber: "",
+        address: "",
+        city: "",
         adminLevel: "ADMIN",
     });
 
@@ -67,6 +69,31 @@ export default function AdminProfile() {
                             name="phoneNumber"
                             placeholder="e.g. +91 9000000000"
                             value={formData.phoneNumber}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 transition-all placeholder-gray-300"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-gray-600 ml-1">Address</label>
+                        <textarea
+                            name="address"
+                            placeholder="Your full address..."
+                            value={formData.address}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-3 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 transition-all placeholder-gray-300 resize-y min-h-[80px]"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-sm font-semibold text-gray-600 ml-1">City</label>
+                        <input
+                            type="text"
+                            name="city"
+                            placeholder="e.g. Hyderabad"
+                            value={formData.city}
                             onChange={handleChange}
                             required
                             className="w-full p-3 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 transition-all placeholder-gray-300"

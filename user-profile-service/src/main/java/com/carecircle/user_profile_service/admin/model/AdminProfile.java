@@ -39,23 +39,11 @@ public class AdminProfile {
 
     // ===== Address (optional) =====
 
-    @Column(name = "address_line1")
-    private String addressLine1;
-
-    @Column(name = "address_line2")
-    private String addressLine2;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "city")
     private String city;
-
-    @Column(name = "state")
-    private String state;
-
-    @Column(name = "pincode")
-    private String pincode;
-
-    @Column(name = "country")
-    private String country;
 
     // ===== Status =====
 
@@ -80,24 +68,16 @@ public class AdminProfile {
             String fullName,
             String phoneNumber,
             String adminLevel,
-            String addressLine1,
-            String addressLine2,
-            String city,
-            String state,
-            String pincode,
-            String country
+            String address,
+            String city
     ) {
     	this.userId = userId; 
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.adminLevel = adminLevel;
-        this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
+        this.address = address;
         this.city = city;
-        this.state = state;
-        this.pincode = pincode;
-        this.country = country;
         this.isActive = true;
     }
 
@@ -142,28 +122,12 @@ public class AdminProfile {
         return adminLevel;
     }
 
-    public String getAddressLine1() {
-        return addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
+    public String getAddress() {
+        return address;
     }
 
     public String getCity() {
         return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String getPincode() {
-        return pincode;
-    }
-
-    public String getCountry() {
-        return country;
     }
 
     public Boolean getIsActive() {
@@ -176,5 +140,31 @@ public class AdminProfile {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    // ===== Setters for updateable fields =====
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setAdminLevel(String adminLevel) {
+        this.adminLevel = adminLevel;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

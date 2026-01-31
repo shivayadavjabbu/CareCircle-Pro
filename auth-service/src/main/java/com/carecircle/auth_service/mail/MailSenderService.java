@@ -26,6 +26,7 @@ public class MailSenderService {
           + "Valid for 5 minutes.\n\n"
           + "— CareCircle Team"
         );
+
         mailSender.send(message);
     }
 }

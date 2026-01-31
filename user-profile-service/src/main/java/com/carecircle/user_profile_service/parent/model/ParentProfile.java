@@ -67,19 +67,19 @@ public class ParentProfile {
 
     // ===== Extended Location Info =====
 
-    @Column(name = "city_id")
-    private UUID cityId;
+    @Column(name = "city", nullable = false)
+    private String city;
 	
 	protected  ParentProfile() {		
 	}
 	
-    public ParentProfile(UUID userId, String userEmail, String fullName, String phoneNumber, String address, UUID cityId) {
+    public ParentProfile(UUID userId, String userEmail, String fullName, String phoneNumber, String address, String city) {
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.userId = userId; 
-        this.cityId = cityId;
+        this.city = city;
     }
 	
 	
@@ -132,11 +132,29 @@ public class ParentProfile {
         return children;
     }
 
-    public UUID getCityId() {
-        return cityId;
+    public String getCity() {
+        return city;
     }
 
-    public void setCityId(UUID cityId) {
-        this.cityId = cityId;
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    // ===== Setters for updateable profile fields =====
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

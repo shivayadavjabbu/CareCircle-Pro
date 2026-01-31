@@ -2,11 +2,13 @@ package com.carecircle.user_profile_service.parent.controller;
 
 import com.carecircle.user_profile_service.parent.dto.CreateParentProfileRequest;
 import com.carecircle.user_profile_service.parent.dto.ParentProfileResponse;
+import com.carecircle.user_profile_service.parent.dto.UpdateParentProfileRequest;
 import com.carecircle.user_profile_service.parent.model.ParentProfile;
 import com.carecircle.user_profile_service.parent.service.ParentProfileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -79,7 +81,7 @@ public class ParentProfileController {
      */
     @PutMapping
     public ParentProfileResponse updateProfile(
-            @Valid @RequestBody CreateParentProfileRequest request,
+            @Valid @RequestBody UpdateParentProfileRequest request,
             HttpServletRequest httpRequest
     ) {
         UUID userId = extractUserId(httpRequest);
@@ -137,11 +139,13 @@ public class ParentProfileController {
         }
     }
 
+   
     private ParentProfileResponse mapToResponse(ParentProfile profile) {
         return new ParentProfileResponse(
                 profile.getFullName(),
                 profile.getPhoneNumber(),
                 profile.getAddress(),
+                profile.getCity(),
                 profile.getCreatedAt()
         );
     }

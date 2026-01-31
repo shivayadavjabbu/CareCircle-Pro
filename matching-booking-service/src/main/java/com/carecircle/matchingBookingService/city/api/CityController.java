@@ -46,4 +46,55 @@ public class CityController {
         return cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
                 .orElseThrow(() -> new RuntimeException("City not found: " + name));
     }
+
+    @GetMapping("/cities/{id}")
+    public City getCityById(@PathVariable java.util.UUID id) {
+        return cityRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new RuntimeException("City not found: " + id));
+    }
+
+    @GetMapping("/cities/id")
+    public java.util.UUID getCityIdByName(@RequestParam String name) {
+        return cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
+                .map(City::getId)
+                .orElseThrow(() -> new RuntimeException("City not found: " + name));
+    }
+
+    // ADMIN UPDATES & DELETES
+
+    @PutMapping("/admin/cities/{id}")
+    public City updateCity(
+            @PathVariable java.util.UUID id,
+            @RequestHeader("X-User-Role") String role,
+            @RequestBody com.carecircle.matchingBookingService.city.api.dto.UpdateCityRequest request
+    ) {
+        if (!"ROLE_ADMIN".equals(role)) {
+            throw new RuntimeException("Only admin can update cities");
+        }
+
+        City city = cityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("City not found: " + id));
+
+        city.setName(request.getName());
+        city.setState(request.getState());
+        city.setCountry(request.getCountry());
+
+        return cityRepository.save(city);
+    }
+
+    @DeleteMapping("/admin/cities/{id}")
+    public void deleteCity(
+            @PathVariable java.util.UUID id,
+            @RequestHeader("X-User-Role") String role
+    ) {
+        if (!"ROLE_ADMIN".equals(role)) {
+            throw new RuntimeException("Only admin can delete cities");
+        }
+
+        City city = cityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("City not found: " + id));
+
+        city.deactivate();
+        cityRepository.save(city);
+    }
 }

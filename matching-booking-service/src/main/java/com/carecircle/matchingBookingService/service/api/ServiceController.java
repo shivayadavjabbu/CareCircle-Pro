@@ -55,4 +55,68 @@ public class ServiceController {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Service not found for name: " + name));
     }
+
+    @GetMapping("/services/{id}")
+    public ServiceEntity getServiceById(@PathVariable java.util.UUID id) {
+        return serviceRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new RuntimeException("Service not found: " + id));
+    }
+
+    @GetMapping("/services/id")
+    public java.util.UUID getServiceId(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code
+    ) {
+        if (name != null) {
+            return serviceRepository.findByActiveTrue().stream()
+                    .filter(s -> s.getName().equalsIgnoreCase(name))
+                    .findFirst()
+                    .map(ServiceEntity::getId)
+                    .orElseThrow(() -> new RuntimeException("Service not found for name: " + name));
+        } else if (code != null) {
+             return serviceRepository.findByCodeIgnoreCaseAndActiveTrue(code)
+                    .map(ServiceEntity::getId)
+                    .orElseThrow(() -> new RuntimeException("Service not found for code: " + code));
+        } else {
+             throw new RuntimeException("Either 'name' or 'code' parameter is required");
+        }
+    }
+
+    // ADMIN UPDATES & DELETES
+
+    @PutMapping("/admin/services/{id}")
+    public ServiceEntity updateService(
+            @PathVariable java.util.UUID id,
+            @RequestHeader("X-User-Role") String role,
+            @RequestBody com.carecircle.matchingBookingService.service.api.dto.UpdateServiceRequest request
+    ) {
+        if (!"ROLE_ADMIN".equals(role)) {
+            throw new RuntimeException("Only admin can update services");
+        }
+
+        ServiceEntity service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found: " + id));
+
+        service.setName(request.getName());
+        service.setCategory(request.getCategory());
+        service.setBasePrice(request.getBasePrice());
+
+        return serviceRepository.save(service);
+    }
+
+    @DeleteMapping("/admin/services/{id}")
+    public void deleteService(
+            @PathVariable java.util.UUID id,
+            @RequestHeader("X-User-Role") String role
+    ) {
+        if (!"ROLE_ADMIN".equals(role)) {
+            throw new RuntimeException("Only admin can delete services");
+        }
+
+        ServiceEntity service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found: " + id));
+
+        service.deactivate();
+        serviceRepository.save(service);
+    }
 }

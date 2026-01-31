@@ -11,4 +11,17 @@ public interface CaregiverServiceRepository extends JpaRepository<CaregiverServi
     List<CaregiverService> findByCaregiverIdAndActiveTrue(UUID caregiverId);
 
     List<CaregiverService> findByServiceIdAndActiveTrue(UUID serviceId);
+
+    List<CaregiverService> findByCaregiverId(UUID caregiverId);
+
+    java.util.Optional<CaregiverService> findByCaregiverIdAndServiceId(UUID caregiverId, UUID serviceId);
+
+    // Search Methods
+    org.springframework.data.domain.Page<CaregiverService> findByCityAndServiceIdAndActiveTrue(String city, UUID serviceId, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<CaregiverService> findByCityAndActiveTrue(String city, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<CaregiverService> findByServiceIdAndActiveTrue(UUID serviceId, org.springframework.data.domain.Pageable pageable);
+    
+    org.springframework.data.domain.Page<CaregiverService> findByActiveTrue(org.springframework.data.domain.Pageable pageable);
 }

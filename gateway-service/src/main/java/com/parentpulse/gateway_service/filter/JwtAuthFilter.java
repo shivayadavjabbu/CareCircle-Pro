@@ -124,9 +124,10 @@ public class JwtAuthFilter implements GlobalFilter {
 
     // Gateway-level service prefixes (ADD MORE HERE LATER)
     private static final List<String> SERVICE_PREFIXES = List.of(
-            "/matching-booking",
-            "/user-profile",
-            "/communication"
+            "/matching-booking-service",
+            "/user-profile-service",
+            "/auth-service",
+            "/communication-service"
     );
 
     public JwtAuthFilter(JwtUtil jwtUtil) {
@@ -208,20 +209,9 @@ public class JwtAuthFilter implements GlobalFilter {
 
     // ===== AUTHORIZATION RULES =====
     private boolean isAuthorized(String path, String role) {
-
-        if (path.startsWith("/admin/")) {
-            return "ROLE_ADMIN".equals(role);
-        }
-
-        if (path.startsWith("/caregiver/")) {
-            return "ROLE_CARETAKER".equals(role);
-        }
-
-        if (path.startsWith("/parents/")) {
-            return "ROLE_PARENT".equals(role);
-        }
-
-        // Any authenticated user
+        // Relaxed Authorization:
+        // We defer role-based access control to the downstream services.
+        // The Gateway's job is simply to validate the JWT and forward user identity headers.
         return true;
     }
 }

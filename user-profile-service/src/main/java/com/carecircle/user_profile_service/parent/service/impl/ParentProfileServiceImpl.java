@@ -63,8 +63,8 @@ public class ParentProfileServiceImpl implements ParentProfileService{
              throw new IllegalArgumentException("City is required");
         }
         
-        matchingService.getCityByName(city)
-                .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+//        matchingService.getCityByName(city)
+//                .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
 
         ParentProfile profile =
                 new ParentProfile(userId, userEmail, fullName, phoneNumber, address, city);

@@ -8,6 +8,7 @@ export default function ParentProfile() {
     fullName: "",
     phoneNumber: "",
     address: "",
+    city: "",
   });
 
   const [message, setMessage] = useState("");
@@ -22,6 +23,7 @@ export default function ParentProfile() {
             fullName: data.fullName || "",
             phoneNumber: data.phoneNumber || "",
             address: data.address || "",
+            city: data.city || "",
           });
         }
       } catch (error) {
@@ -100,6 +102,19 @@ export default function ParentProfile() {
               onChange={handleChange}
               required
               className="w-full p-3 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-red-400 focus:ring-4 focus:ring-red-400/10 transition-all placeholder-gray-300 min-h-[100px] resize-y"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-600 ml-1">City</label>
+            <input
+              type="text"
+              name="city"
+              placeholder="e.g. New York"
+              value={formData.city}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border-2 border-gray-100 rounded-xl focus:outline-none focus:border-red-400 focus:ring-4 focus:ring-red-400/10 transition-all placeholder-gray-300"
             />
           </div>
 

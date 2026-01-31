@@ -122,6 +122,46 @@ public class MatchingIntegrationService {
         }
     }
 
+    /**
+     * Fetch city by ID from matching-booking-service.
+     */
+    public Optional<CityDto> getCityById(UUID cityId) {
+        try {
+            var requestSpec = restClient.get()
+                    .uri("/cities/" + cityId);
+            addAuthHeaders(requestSpec);
+
+            CityDto city = requestSpec
+                    .retrieve()
+                    .body(CityDto.class);
+
+            return Optional.ofNullable(city);
+        } catch (Exception e) {
+            System.err.println("Error fetching city by ID: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Fetch service by ID from matching-booking-service.
+     */
+    public Optional<ServiceDto> getServiceById(UUID serviceId) {
+        try {
+            var requestSpec = restClient.get()
+                    .uri("/services/" + serviceId);
+            addAuthHeaders(requestSpec);
+
+            ServiceDto service = requestSpec
+                    .retrieve()
+                    .body(ServiceDto.class);
+
+            return Optional.ofNullable(service);
+        } catch (Exception e) {
+            System.err.println("Error fetching service by ID: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
     private void addAuthHeaders(RestClient.RequestHeadersSpec<?> requestSpec) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {

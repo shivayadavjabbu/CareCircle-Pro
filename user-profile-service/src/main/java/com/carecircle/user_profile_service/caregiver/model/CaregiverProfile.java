@@ -47,23 +47,11 @@ public class CaregiverProfile {
 
     // ===== Address (mandatory) =====
 
-    @Column(name = "address_line1", nullable = false)
-    private String addressLine1;
-
-    @Column(name = "address_line2")
-    private String addressLine2;
+    @Column(name = "address", nullable = false)
+    private String address;
 
     @Column(name = "city", nullable = false)
     private String city;
-
-    @Column(name = "state", nullable = false)
-    private String state;
-
-    @Column(name = "pincode", nullable = false)
-    private String pincode;
-
-    @Column(name = "country", nullable = false)
-    private String country;
 
     // ===== Professional Info =====
 
@@ -84,17 +72,6 @@ public class CaregiverProfile {
     @Column(name = "rejection_reason")
     private String rejectionReason;
 
-    // ===== Rating Aggregates (READ-ONLY) =====
-
-    @Column(name = "overall_rating", nullable = false)
-    private Double overallRating = 0.0;
-
-    @Column(name = "total_reviews", nullable = false)
-    private Integer totalReviews = 0;
-
-    @Column(name = "rating_last_updated")
-    private LocalDateTime ratingLastUpdated;
-
     // ===== Audit =====
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -102,19 +79,6 @@ public class CaregiverProfile {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    // ===== Relationships (Cascading) =====
-
-    @OneToMany(mappedBy = "caregiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CaregiverCapability> capabilities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "caregiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CaregiverCertification> certifications = new ArrayList<>();
-
-    // ===== Extended Location Info =====
-
-    @Column(name = "city_id")
-    private UUID cityId;
 
     protected CaregiverProfile() {
         // JPA only
@@ -127,12 +91,8 @@ public class CaregiverProfile {
             String phoneNumber,
             Integer age,
             String gender,
-            String addressLine1,
-            String addressLine2,
+            String address,
             String city,
-            String state,
-            String pincode,
-            String country,
             String bio,
             Integer experienceYears
     ) {
@@ -142,41 +102,12 @@ public class CaregiverProfile {
         this.phoneNumber = phoneNumber;
         this.age = age;
         this.gender = gender;
-        this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
+        this.address = address;
         this.city = city;
-        this.state = state;
-        this.pincode = pincode;
-        this.country = country;
         this.bio = bio;
         this.experienceYears = experienceYears;
         this.verificationStatus = "PENDING";
-        this.verificationStatus = "PENDING";
         this.isActive = true;
-        this.overallRating = 0.0;
-        this.totalReviews = 0;
-    }
-
-    // Overloaded constructor for cityId support
-    public CaregiverProfile(
-            UUID userId, 
-            String userEmail,
-            String fullName,
-            String phoneNumber,
-            Integer age,
-            String gender,
-            String addressLine1,
-            String addressLine2,
-            String city,
-            UUID cityId,
-            String state,
-            String pincode,
-            String country,
-            String bio,
-            Integer experienceYears
-    ) {
-        this(userId, userEmail, fullName, phoneNumber, age, gender, addressLine1, addressLine2, city, state, pincode, country, bio, experienceYears);
-        this.cityId = cityId;
     }
 
     @PrePersist
@@ -220,28 +151,12 @@ public class CaregiverProfile {
         return gender;
     }
 
-    public String getAddressLine1() {
-        return addressLine1;
-    }
-
-    public String getAddressLine2() {
-        return addressLine2;
+    public String getAddress() {
+        return address;
     }
 
     public String getCity() {
         return city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public String getPincode() {
-        return pincode;
-    }
-
-    public String getCountry() {
-        return country;
     }
 
     public String getBio() {
@@ -262,18 +177,6 @@ public class CaregiverProfile {
 
     public String getRejectionReason() {
         return rejectionReason;
-    }
-
-    public Double getOverallRating() {
-        return overallRating;
-    }
-
-    public Integer getTotalReviews() {
-        return totalReviews;
-    }
-
-    public LocalDateTime getRatingLastUpdated() {
-        return ratingLastUpdated;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -304,21 +207,34 @@ public class CaregiverProfile {
         this.isActive = true;
     }
 
-    public List<CaregiverCapability> getCapabilities() {
-        return capabilities;
+    // ===== Setters for updateable profile fields =====
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public List<CaregiverCertification> getCertifications() {
-        return certifications;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public UUID getCityId() {
-        return cityId;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public void setCityId(UUID cityId) {
-        this.cityId = cityId;
+    public void setCity(String city) {
+        this.city = city;
     }
 
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setExperienceYears(Integer experienceYears) {
+        this.experienceYears = experienceYears;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 }
 

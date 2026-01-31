@@ -11,6 +11,7 @@ import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
 import com.carecircle.user_profile_service.parent.repository.ParentProfileRepository;
 import com.carecircle.user_profile_service.child.repository.ChildRepository;
+import com.carecircle.user_profile_service.common.exception.CityNotFoundException;
 import com.carecircle.user_profile_service.common.service.MatchingIntegrationService;
 import com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse;

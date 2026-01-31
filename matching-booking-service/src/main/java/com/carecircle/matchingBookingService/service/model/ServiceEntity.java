@@ -8,7 +8,7 @@ import java.util.UUID;
 @Table(
         name = "services",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_service_code", columnNames = {"code"})
+                @UniqueConstraint(name = "uk_service_name", columnNames = {"service_name"})
         }
 )
 public class ServiceEntity {
@@ -18,11 +18,11 @@ public class ServiceEntity {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "code", nullable = false, updatable = false)
-    private String code;
+    @Column(name = "service_name", nullable = false, updatable = false)
+    private String serviceName;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "category", nullable = false)
     private String category;
@@ -43,9 +43,9 @@ public class ServiceEntity {
         // JPA only
     }
 
-    public ServiceEntity(String code, String name, String category, Double basePrice) {
-        this.code = code;
-        this.name = name;
+    public ServiceEntity(String serviceName, String description, String category, Double basePrice) {
+        this.serviceName = serviceName;
+        this.description = description;
         this.category = category;
         this.basePrice = basePrice;
         this.active = true;
@@ -66,12 +66,12 @@ public class ServiceEntity {
         return id;
     }
 
-    public String getCode() {
-        return code;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
     public String getCategory() {
@@ -91,8 +91,8 @@ public class ServiceEntity {
     }
 
     // Setters for updateable fields
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setCategory(String category) {

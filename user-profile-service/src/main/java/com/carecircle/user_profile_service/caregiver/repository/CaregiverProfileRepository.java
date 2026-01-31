@@ -2,6 +2,8 @@ package com.carecircle.user_profile_service.caregiver.repository;
 
 
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -18,6 +20,9 @@ public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfi
      */
     Optional<CaregiverProfile> findByUserEmail(String userEmail);
     Optional<CaregiverProfile> findByUserId(UUID userId);
+
+    Page<CaregiverProfile> findByCityIgnoreCase(String city, Pageable pageable);
+    Page<CaregiverProfile> findAll(Pageable pageable);
 
     /**
      * Fetch all caregivers visible to parents.

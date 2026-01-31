@@ -27,8 +27,8 @@ public class ServiceController {
         }
 
         ServiceEntity service = new ServiceEntity(
-                request.getCode(),
-                request.getName(),
+                request.getServiceName(),
+                request.getDescription(),
                 request.getCategory(),
                 request.getBasePrice()
         );
@@ -43,17 +43,15 @@ public class ServiceController {
     }
 
     @GetMapping("/services/lookup")
-    public ServiceEntity getServiceByCode(@RequestParam String code) {
-        return serviceRepository.findByCodeIgnoreCaseAndActiveTrue(code)
-                .orElseThrow(() -> new RuntimeException("Service not found for code: " + code));
+    public ServiceEntity getServiceByServiceName(@RequestParam String serviceName) {
+        return serviceRepository.findByServiceNameIgnoreCaseAndActiveTrue(serviceName)
+                .orElseThrow(() -> new RuntimeException("Service not found for serviceName: " + serviceName));
     }
 
-    @GetMapping("/services/lookup-by-name")
-    public ServiceEntity getServiceByName(@RequestParam String name) {
-        return serviceRepository.findByActiveTrue().stream()
-                .filter(s -> s.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Service not found for name: " + name));
+    @GetMapping("/services/lookup-by-description")
+    public ServiceEntity getServiceByDescription(@RequestParam String description) {
+         return serviceRepository.findByDescriptionIgnoreCaseAndActiveTrue(description)
+                .orElseThrow(() -> new RuntimeException("Service not found for description: " + description));
     }
 
     @GetMapping("/services/{id}")
@@ -64,21 +62,19 @@ public class ServiceController {
 
     @GetMapping("/services/id")
     public java.util.UUID getServiceId(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String code
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String serviceName
     ) {
-        if (name != null) {
-            return serviceRepository.findByActiveTrue().stream()
-                    .filter(s -> s.getName().equalsIgnoreCase(name))
-                    .findFirst()
+        if (description != null) {
+            return serviceRepository.findByDescriptionIgnoreCaseAndActiveTrue(description)
                     .map(ServiceEntity::getId)
-                    .orElseThrow(() -> new RuntimeException("Service not found for name: " + name));
-        } else if (code != null) {
-             return serviceRepository.findByCodeIgnoreCaseAndActiveTrue(code)
+                    .orElseThrow(() -> new RuntimeException("Service not found for description: " + description));
+        } else if (serviceName != null) {
+             return serviceRepository.findByServiceNameIgnoreCaseAndActiveTrue(serviceName)
                     .map(ServiceEntity::getId)
-                    .orElseThrow(() -> new RuntimeException("Service not found for code: " + code));
+                    .orElseThrow(() -> new RuntimeException("Service not found for serviceName: " + serviceName));
         } else {
-             throw new RuntimeException("Either 'name' or 'code' parameter is required");
+             throw new RuntimeException("Either 'description' or 'serviceName' parameter is required");
         }
     }
 
@@ -97,7 +93,7 @@ public class ServiceController {
         ServiceEntity service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found: " + id));
 
-        service.setName(request.getName());
+        service.setDescription(request.getDescription());
         service.setCategory(request.getCategory());
         service.setBasePrice(request.getBasePrice());
 

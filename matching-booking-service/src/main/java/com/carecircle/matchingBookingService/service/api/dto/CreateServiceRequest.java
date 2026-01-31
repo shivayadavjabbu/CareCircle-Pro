@@ -2,17 +2,17 @@ package com.carecircle.matchingBookingService.service.api.dto;
 
 public class CreateServiceRequest {
 
-    private String code;
-    private String name;
+    private String serviceName;
+    private String description;
     private String category;
     private Double basePrice;
 
-    public String getCode() {
-        return code;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
     public String getCategory() {

@@ -9,12 +9,22 @@ import com.carecircle.user_profile_service.admin.repository.VerificationAuditRep
 import com.carecircle.user_profile_service.admin.service.AdminService;
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
+import com.carecircle.user_profile_service.parent.model.ParentProfile;
 import com.carecircle.user_profile_service.parent.repository.ParentProfileRepository;
+import com.carecircle.user_profile_service.child.dto.ChildResponse;
 import com.carecircle.user_profile_service.child.repository.ChildRepository;
+import com.carecircle.user_profile_service.common.exception.CityNotFoundException;
+import com.carecircle.user_profile_service.common.service.MatchingIntegrationService;
 import com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import com.carecircle.user_profile_service.common.dto.PagedResponse;
+import java.util.stream.Collectors;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -29,33 +39,42 @@ public class AdminServiceImpl implements AdminService {
 
         private final AdminProfileRepository adminProfileRepository;
         private final VerificationAuditRepository auditRepository;
+        private final MatchingIntegrationService matchingIntegrationService; // Added MatchingService
 
         private final CaregiverProfileRepository caregiverProfileRepository;
         private final ParentProfileRepository parentProfileRepository;
         private final ChildRepository childRepository;
 
         @Override
-        public void createAdminProfile(
-                        UUID userId,
-                        String adminEmail,
-                        String fullName,
-                        String phoneNumber,
-                        String adminLevel) {
-                if (adminProfileRepository.findByUserEmail(adminEmail).isPresent()) {
-                        throw new RuntimeException("Admin profile already exists");
-                }
-
-                AdminProfile admin = new AdminProfile(
-                                userId,
-                                adminEmail,
-                                fullName,
-                                phoneNumber,
-                                adminLevel,
-                                null,
-                                null);
-
-                adminProfileRepository.save(admin);
+    public void createAdminProfile(
+            UUID userId,
+            String adminEmail,
+            String fullName,
+            String phoneNumber,
+            String adminLevel,
+            String address,
+            String city) {
+        if (adminProfileRepository.findByUserEmail(adminEmail).isPresent()) {
+            throw new RuntimeException("Admin profile already exists");
         }
+
+        // Validate City
+        if (city != null && !city.isBlank()) {
+        	matchingIntegrationService.getCityByName(city)
+                     .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+        }
+
+        AdminProfile admin = new AdminProfile(
+                userId,
+                adminEmail,
+                fullName,
+                phoneNumber,
+                adminLevel,
+                address,
+                city);
+
+        adminProfileRepository.save(admin);
+    }
 
         @Override
         public AdminProfileResponse getMyProfile(UUID userId) {
@@ -74,32 +93,44 @@ public class AdminServiceImpl implements AdminService {
         }
 
         @Override
-        public AdminProfileResponse updateMyProfile(
-                        UUID userId,
-                        String fullName,
-                        String phoneNumber,
-                        String adminLevel) {
-                AdminProfile admin = adminProfileRepository.findByUserId(userId)
-                                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
+    public AdminProfileResponse updateMyProfile(
+            UUID userId,
+            String fullName,
+            String phoneNumber,
+            String adminLevel,
+            String address,
+            String city) {
+        AdminProfile admin = adminProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AdminProfileNotFoundException(String.valueOf(userId)));
 
-                // Update only the fields that should change
-                admin.setFullName(fullName);
-                admin.setPhoneNumber(phoneNumber);
-                admin.setAdminLevel(adminLevel);
-
-                // Save will trigger @PreUpdate to update the updatedAt timestamp
-                AdminProfile saved = adminProfileRepository.save(admin);
-
-                return new AdminProfileResponse(
-                                saved.getId(),
-                                saved.getFullName(),
-                                saved.getUserEmail(),
-                                saved.getAdminLevel(),
-                                saved.getIsActive(),
-                                saved.getCreatedAt(),
-                                saved.getAddress(),
-                                saved.getCity());
+        // Validate City if changed/provided
+        if (city != null && !city.equals(admin.getCity())) {
+            if (!city.isBlank()) {
+            	matchingIntegrationService.getCityByName(city)
+                        .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
+            }
+            admin.setCity(city);
         }
+
+        // Update other fields
+        admin.setFullName(fullName);
+        admin.setPhoneNumber(phoneNumber);
+        admin.setAdminLevel(adminLevel);
+        admin.setAddress(address);
+
+        // Save will trigger @PreUpdate to update the updatedAt timestamp
+        AdminProfile saved = adminProfileRepository.save(admin);
+
+        return new AdminProfileResponse(
+                saved.getId(),
+                saved.getFullName(),
+                saved.getUserEmail(),
+                saved.getAdminLevel(),
+                saved.getIsActive(),
+                saved.getCreatedAt(),
+                saved.getAddress(),
+                saved.getCity());
+    }
 
         @Override
         public void deleteMyProfile(UUID userId) {
@@ -114,76 +145,124 @@ public class AdminServiceImpl implements AdminService {
         // Statistics & Listing
         // =========================
 
-        @Override
-        public com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse getStatistics() {
-                long totalParents = parentProfileRepository.count();
-                long totalChildren = childRepository.count();
-                long totalCaregivers = caregiverProfileRepository.count();
+    @Override
+    public AdminStatisticsResponse getStatistics() {
+            long totalParents = parentProfileRepository.count();
+            long totalChildren = childRepository.count();
+            long totalCaregivers = caregiverProfileRepository.count();
 
-                return new com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse(
-                                totalParents,
-                                totalChildren,
-                                totalCaregivers);
+            return new AdminStatisticsResponse(
+                            totalParents,
+                            totalChildren,
+                            totalCaregivers);
+    }
+
+
+    @Override
+    public PagedResponse<ParentSummaryResponse> getAllParents(String city, int page, int size) {
+        if (city != null && !city.isBlank()) {
+            matchingIntegrationService.getCityByName(city)
+                    .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
         }
 
-        @Override
-        public java.util.List<ParentSummaryResponse> getAllParents() {
-                return parentProfileRepository.findAll().stream()
-                                .map(parent -> {
-                                        long childCount = childRepository.countByParent(parent);
-                                        return new ParentSummaryResponse(
-                                                        parent.getId(),
-                                                        parent.getFullName(),
-                                                        parent.getUserEmail(),
-                                                        parent.getCity(),
-                                                        childCount);
-                                })
-                                .collect(java.util.stream.Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ParentProfile> parentsPage;
+
+        if (city != null && !city.isBlank()) {
+            parentsPage = parentProfileRepository.findByCityIgnoreCase(city, pageable);
+        } else {
+            parentsPage = parentProfileRepository.findAll(pageable);
         }
 
-        @Override
-        public java.util.List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(
-                        UUID parentId) {
-                com.carecircle.user_profile_service.parent.model.ParentProfile parent = parentProfileRepository
-                                .findById(parentId)
-                                .orElseThrow(() -> new RuntimeException("Parent not found"));
+        List<ParentSummaryResponse> content = parentsPage.getContent().stream()
+                .map(parent -> {
+                    long childCount = childRepository.countByParent(parent);
+                    return new ParentSummaryResponse(
+                            parent.getId(),
+                            parent.getFullName(),
+                            parent.getUserEmail(),
+                            parent.getCity(),
+                            childCount);
+                })
+                .collect(Collectors.toList());
 
-                return childRepository.findAllByParent(parent).stream()
-                                .map(child -> new com.carecircle.user_profile_service.child.dto.ChildResponse(
-                                                child.getId(),
-                                                child.getName(),
-                                                child.getAge(),
-                                                child.getGender(),
-                                                child.getSpecialNeeds(),
-                                                child.getCreatedAt()))
-                                .collect(java.util.stream.Collectors.toList());
+        return new PagedResponse<>(
+                content,
+                parentsPage.getNumber(),
+                parentsPage.getSize(),
+                parentsPage.getTotalElements(),
+                parentsPage.getTotalPages(),
+                parentsPage.isLast());
+    }
+
+    @Override
+    public java.util.List<ChildResponse> getChildrenForParent(
+            UUID parentId) {
+        ParentProfile parent = parentProfileRepository
+                .findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent not found"));
+
+        return childRepository.findAllByParent(parent).stream()
+                .map(child -> new ChildResponse(
+                        child.getId(),
+                        child.getName(),
+                        child.getAge(),
+                        child.getGender(),
+                        child.getSpecialNeeds(),
+                        child.getCreatedAt()))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public PagedResponse<CaregiverSummaryResponse> getAllCaregivers(String city, int page, int size) {
+        if (city != null && !city.isBlank()) {
+            matchingIntegrationService.getCityByName(city)
+                    .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
         }
 
-        @Override
-        public java.util.List<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers() {
-                return caregiverProfileRepository.findAll().stream()
-                                .map(caregiver -> new com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse(
-                                                caregiver.getId(),
-                                                caregiver.getFullName(),
-                                                caregiver.getUserEmail(),
-                                                caregiver.getCity(),
-                                                caregiver.getVerificationStatus(),
-                                                caregiver.getIsActive(),
-                                                caregiver.getExperienceYears()))
-                                .collect(java.util.stream.Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CaregiverProfile> caregiversPage;
+
+        if (city != null && !city.isBlank()) {
+            caregiversPage = caregiverProfileRepository.findByCityIgnoreCase(city, pageable);
+        } else {
+            caregiversPage = caregiverProfileRepository.findAll(pageable);
         }
+
+        List<CaregiverSummaryResponse> content = caregiversPage.getContent().stream()
+                .map(caregiver -> new CaregiverSummaryResponse(
+                        caregiver.getId(),
+                        caregiver.getFullName(),
+                        caregiver.getUserEmail(),
+                        caregiver.getCity(),
+                        caregiver.getVerificationStatus(),
+                        caregiver.getIsActive(),
+                        caregiver.getExperienceYears()))
+                .collect(Collectors.toList());
+
+        return new PagedResponse<>(
+                content,
+                caregiversPage.getNumber(),
+                caregiversPage.getSize(),
+                caregiversPage.getTotalElements(),
+                caregiversPage.getTotalPages(),
+                caregiversPage.isLast());
+    }
 
         public AdminServiceImpl(
                         AdminProfileRepository adminProfileRepository,
                         VerificationAuditRepository auditRepository,
                         CaregiverProfileRepository caregiverProfileRepository,
-                        com.carecircle.user_profile_service.parent.repository.ParentProfileRepository parentProfileRepository,
-                        com.carecircle.user_profile_service.child.repository.ChildRepository childRepository) {
+                        ParentProfileRepository parentProfileRepository,
+                        ChildRepository childRepository, 
+                        MatchingIntegrationService matchingIntegrationService
+                        ) {
                 this.adminProfileRepository = adminProfileRepository;
                 this.auditRepository = auditRepository;
                 this.caregiverProfileRepository = caregiverProfileRepository;
                 this.parentProfileRepository = parentProfileRepository;
                 this.childRepository = childRepository;
+                this.matchingIntegrationService = matchingIntegrationService;
         }
 
         // =========================

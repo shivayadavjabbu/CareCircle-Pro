@@ -8,6 +8,7 @@ import com.carecircle.user_profile_service.caregiver.service.CaregiverService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.carecircle.user_profile_service.common.service.MatchingIntegrationService;
+import com.carecircle.user_profile_service.common.exception.CityNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,14 +24,14 @@ import java.util.UUID;
 public class CaregiverServiceImpl implements CaregiverService {
 
     private final CaregiverProfileRepository profileRepository;
-    private final MatchingIntegrationService matchingService;
+    private final MatchingIntegrationService matchingIntegrationService;
 
     public CaregiverServiceImpl(
             CaregiverProfileRepository profileRepository,
-            MatchingIntegrationService matchingService
+            MatchingIntegrationService matchingIntegrationService
     ) {
         this.profileRepository = profileRepository;
-        this.matchingService = matchingService;
+        this.matchingIntegrationService = matchingIntegrationService;
     }
 
     // ===== Caregiver Profile =====
@@ -57,8 +58,8 @@ public class CaregiverServiceImpl implements CaregiverService {
              throw new IllegalArgumentException("City is required");
         }
         
-        matchingService.getCityByName(city)
-                .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+        matchingIntegrationService.getCityByName(city)
+                .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
 
         CaregiverProfile profile = new CaregiverProfile(
         		userId,
@@ -100,8 +101,8 @@ public class CaregiverServiceImpl implements CaregiverService {
             if (city.isBlank()) {
                 throw new IllegalArgumentException("City cannot be empty");
             }
-            matchingService.getCityByName(city)
-                    .orElseThrow(() -> new IllegalArgumentException("City not found: " + city));
+            matchingIntegrationService.getCityByName(city)
+                    .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
             profile.setCity(city);
         }
 

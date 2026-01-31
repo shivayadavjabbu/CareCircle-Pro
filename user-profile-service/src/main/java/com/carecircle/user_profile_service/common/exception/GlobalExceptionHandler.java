@@ -67,7 +67,8 @@ public class GlobalExceptionHandler {
     // Bad Request (400)
     // =========================
     @ExceptionHandler({
-            InvalidVerificationStateException.class
+            InvalidVerificationStateException.class,
+            CityNotFoundException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(RuntimeException ex) {
         return ResponseEntity

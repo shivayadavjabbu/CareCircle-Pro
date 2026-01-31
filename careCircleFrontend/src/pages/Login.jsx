@@ -93,6 +93,13 @@ export default function Login() {
             >
               Caregiver
             </button>
+            <button
+              type="button"
+              onClick={() => setRole("ROLE_ADMIN")}
+              className={`flex-1 py-1.5 rounded-md text-[13px] font-medium transition-all ${role === "ROLE_ADMIN" ? "bg-white shadow-sm text-[#1d1d1f]" : "text-[#86868b] hover:text-[#1d1d1f]"}`}
+            >
+              Admin
+            </button>
           </div>
 
           <div className="space-y-4">
@@ -141,7 +148,7 @@ export default function Login() {
 
             <button
               type="button"
-              onClick={() => navigate(role === "ROLE_PARENT" ? "/register-parent" : "/register-nanny")}
+              onClick={() => navigate("/register", { state: { role } })}
               className="text-[#0071e3] text-sm font-medium hover:underline text-center"
             >
               Create your CareCircle ID
@@ -156,7 +163,7 @@ export default function Login() {
           </div>
 
         </form>
-      </div>
+      </div >
 
       <footer className="mt-12 text-[#86868b] text-xs">
         <p>Copyright © 2026 CareCircle Inc. All rights reserved.</p>
@@ -166,6 +173,6 @@ export default function Login() {
           <a href="#" className="hover:underline">Terms of Use</a>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }

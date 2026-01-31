@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { isValidPassword } from "../utils/passwordValidation";
 
 export default function Register() {
   const navigate = useNavigate();
 
+  const location = useLocation();
   const [form, setForm] = useState({
-    role: "ROLE_PARENT",
+    role: location.state?.role || "ROLE_PARENT",
     name: "",
     email: "",
     password: "",
@@ -21,7 +22,8 @@ export default function Register() {
 
   const roles = [
     { value: "ROLE_PARENT", label: "👨‍👩‍👧 Parent", description: "Looking for childcare services" },
-    { value: "ROLE_CARETAKER", label: "👩‍⚕️ Nanny/Caregiver", description: "Offering childcare services" }
+    { value: "ROLE_CARETAKER", label: "👩‍⚕️ Nanny/Caregiver", description: "Offering childcare services" },
+    { value: "ROLE_ADMIN", label: "🛡️ Admin", description: "Platform administrator" }
   ];
 
   const handleChange = (e) => {

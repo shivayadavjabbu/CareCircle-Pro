@@ -124,14 +124,29 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-bold text-slate-700 ml-1 mb-2">Who are you?</label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={handleChange}
-                className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e')] bg-no-repeat bg-[right_10px_center] bg-[length:16px] pr-10"
-              >
-                {roles.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
+              <div className="flex justify-center p-1 bg-slate-100 rounded-xl mb-4">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, role: "ROLE_PARENT" })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${form.role === "ROLE_PARENT" ? "bg-white shadow-sm text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                >
+                  Parent
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, role: "ROLE_CARETAKER" })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${form.role === "ROLE_CARETAKER" ? "bg-white shadow-sm text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                >
+                  Caregiver
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, role: "ROLE_ADMIN" })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${form.role === "ROLE_ADMIN" ? "bg-white shadow-sm text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                >
+                  Admin
+                </button>
+              </div>
               {selectedRole && <p className="mt-2 text-[11px] text-slate-500 italic px-3 py-1.5 bg-slate-50 rounded-lg border-l-2 border-indigo-500">{selectedRole.description}</p>}
             </div>
 

@@ -4,6 +4,8 @@ import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.carecircle.user_profile_service.parent.model.ParentProfile;
 import java.util.List;
@@ -25,4 +27,6 @@ public interface ParentProfileRepository extends JpaRepository<ParentProfile, UU
 	Optional<ParentProfile> findByUserEmail(String userEmail);
 	Optional<ParentProfile> findByUserId(UUID userId);
 
+	Page<ParentProfile> findByCityIgnoreCase(String city, Pageable pageable);
+    Page<ParentProfile> findAll(Pageable pageable);
 }

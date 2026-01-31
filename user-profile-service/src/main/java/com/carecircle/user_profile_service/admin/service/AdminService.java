@@ -3,7 +3,11 @@ package com.carecircle.user_profile_service.admin.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.carecircle.user_profile_service.common.dto.PagedResponse;
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
+import com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse;
+import com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse;
+import com.carecircle.user_profile_service.child.dto.ChildResponse;
 
 /**
  * Service interface for admin verification and moderation operations.
@@ -33,13 +37,15 @@ public interface AdminService {
 
 	// ===== Statistics & Listing =====
 
-	com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse getStatistics();
+	 AdminStatisticsResponse getStatistics();
 
-	List<com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse> getAllParents();
+	PagedResponse<ParentSummaryResponse> getAllParents(
+            String city, int page, int size);
 
-	List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(UUID parentId);
+	java.util.List<ChildResponse> getChildrenForParent(UUID parentId);
 
-	List<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers();
+	PagedResponse<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers(
+            String city, int page, int size);
 
 	// ===== Caregiver Profile =====
 

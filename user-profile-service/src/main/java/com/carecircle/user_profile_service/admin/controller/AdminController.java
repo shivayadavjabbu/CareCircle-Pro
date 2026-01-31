@@ -1,6 +1,7 @@
 package com.carecircle.user_profile_service.admin.controller;
 
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
+import com.carecircle.user_profile_service.common.dto.PagedResponse;
 import com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse;
 import com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse;
 import com.carecircle.user_profile_service.admin.dto.CreateAdminProfileRequest;
@@ -99,9 +100,14 @@ public class AdminController {
     }
 
     @GetMapping("/parents")
-    public List<ParentSummaryResponse> getAllParents(HttpServletRequest httpRequest) {
+    public PagedResponse<ParentSummaryResponse> getAllParents(
+            @RequestParam(required = false) String city,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest httpRequest
+    ) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getAllParents();
+        return adminService.getAllParents(city, page, size);
     }
 
     @GetMapping("/parents/{parentId}/children")
@@ -114,9 +120,14 @@ public class AdminController {
     }
 
     @GetMapping("/caregivers")
-    public List<CaregiverSummaryResponse> getAllCaregivers(HttpServletRequest httpRequest) {
+    public PagedResponse<CaregiverSummaryResponse> getAllCaregivers(
+            @RequestParam(required = false) String city,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest httpRequest
+    ) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getAllCaregivers();
+        return adminService.getAllCaregivers(city, page, size);
     }
 
 

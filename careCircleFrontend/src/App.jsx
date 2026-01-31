@@ -15,6 +15,7 @@ import ParentProfile from "./pages/ParentProfile";
 import BabyDetails from "./pages/BabyDetails";
 import ForgotPassword from "./pages/ForgotPassword";
 import UpdatePassword from "./pages/UpdatePassword";
+import VerifyAccount from "./pages/VerifyAccount";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProfile from "./pages/AdminProfile";
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/update-password" element={<UpdatePassword />} />
+        <Route path="/verify-account" element={<VerifyAccount />} />
 
         {/* Registration */}
         <Route path="/register-parent" element={<RegisterParent />} />

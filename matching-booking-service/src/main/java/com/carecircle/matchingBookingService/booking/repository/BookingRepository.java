@@ -1,6 +1,8 @@
 package com.carecircle.matchingBookingService.booking.repository;
 
 import com.carecircle.matchingBookingService.booking.model.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -27,5 +29,12 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             java.time.LocalDate endDate,
             java.time.LocalDate startDate
     );
+    
+    // Paginated status filtering
+    Page<Booking> findByParentIdAndStatusIn(UUID parentId, List<String> statuses, Pageable pageable);
+    
+    Page<Booking> findByCaregiverIdAndStatusIn(UUID caregiverId, List<String> statuses, Pageable pageable);
+    
+    Page<Booking> findByStatusIn(List<String> statuses, Pageable pageable);
 
 }

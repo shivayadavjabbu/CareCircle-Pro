@@ -165,6 +165,24 @@ public class Booking {
     public String getStatus() {
         return status;
     }
+    
+    // ===== Setters for time/date =====
+    
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+    
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+    
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+    
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 
     // ===== State transitions =====
 

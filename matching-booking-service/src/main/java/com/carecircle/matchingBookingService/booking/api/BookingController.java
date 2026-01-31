@@ -1,5 +1,6 @@
 package com.carecircle.matchingBookingService.booking.api;
 
+import com.carecircle.matchingBookingService.booking.api.dto.BookingDetailResponse;
 import com.carecircle.matchingBookingService.booking.api.dto.CreateBookingRequest;
 import com.carecircle.matchingBookingService.booking.model.Booking;
 import com.carecircle.matchingBookingService.booking.model.BookingChild;
@@ -10,6 +11,7 @@ import com.carecircle.matchingBookingService.service.repository.ServiceRepositor
 import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoUnit;
+import java.util.stream.Collectors;
 import java.util.UUID;
 
 @RestController
@@ -80,6 +82,17 @@ public class BookingController {
                 totalUnits,
                 pricePerUnit * totalUnits
         ));
+        
+        // Set time/date based on booking type
+        if ("HOURLY".equals(request.getBookingType())) {
+            booking.setStartTime(request.getStartTime());
+            booking.setEndTime(request.getEndTime());
+        } else {
+            booking.setStartDate(request.getStartDate());
+            booking.setEndDate(request.getEndDate());
+        }
+        
+        bookingRepository.save(booking);
 
         request.getChildren().forEach(child ->
                 bookingChildRepository.save(
@@ -94,5 +107,42 @@ public class BookingController {
         );
 
         return booking;
+    }
+    
+    @GetMapping("/{bookingId}")
+    public BookingDetailResponse getBooking(
+            @PathVariable UUID bookingId
+    ) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        
+        var children = bookingChildRepository.findByBookingId(bookingId)
+                .stream()
+                .map(child -> new BookingDetailResponse.ChildDetail(
+                        child.getChildId(),
+                        child.getChildName(),
+                        child.getAge(),
+                        child.getSpecialNeeds()
+                ))
+                .collect(Collectors.toList());
+        
+        return new BookingDetailResponse(
+                booking.getId(),
+                booking.getParentId(),
+                booking.getCaregiverId(),
+                booking.getServiceId(),
+                booking.getBookingType(),
+                booking.getStartTime(),
+                booking.getEndTime(),
+                booking.getStartDate(),
+                booking.getEndDate(),
+                booking.getPricePerUnit(),
+                booking.getTotalUnits(),
+                booking.getFinalPrice(),
+                booking.getStatus(),
+                children,
+                null, // createdAt
+                null  // updatedAt
+        );
     }
 }

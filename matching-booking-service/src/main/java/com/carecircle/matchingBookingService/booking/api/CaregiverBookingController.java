@@ -52,7 +52,7 @@ public class CaregiverBookingController {
             throw new RuntimeException("Booking is not in REQUESTED state");
         }
 
-        // Hourly overlap check
+        // Hourly overlap check BEFORE accepting
         if ("HOURLY".equals(booking.getBookingType())) {
             boolean conflict =
                     bookingRepository
@@ -67,11 +67,8 @@ public class CaregiverBookingController {
                 throw new RuntimeException("Booking time conflicts with existing booking");
             }
         }
-
-        booking.accept();
         
-        
-     // Daily overlap check
+        // Daily overlap check BEFORE accepting
         if ("DAILY".equals(booking.getBookingType())) {
             boolean conflict =
                     bookingRepository
@@ -87,6 +84,8 @@ public class CaregiverBookingController {
             }
         }
         
+        // Only accept after validation passes
+        booking.accept();
         return bookingRepository.save(booking);
 
     }

@@ -66,4 +66,15 @@ public class CaregiverRating {
         this.totalReviews = newTotalReviews;
         this.lastUpdated = LocalDateTime.now();
     }
+    
+    public void updateWithNewRating(Double newRating) {
+        if (this.totalReviews == 0) {
+            this.overallRating = newRating;
+            this.totalReviews = 1;
+        } else {
+            this.overallRating = ((this.overallRating * this.totalReviews) + newRating) / (this.totalReviews + 1);
+            this.totalReviews++;
+        }
+        this.lastUpdated = LocalDateTime.now();
+    }
 }

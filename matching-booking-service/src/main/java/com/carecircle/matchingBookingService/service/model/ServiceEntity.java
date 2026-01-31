@@ -89,4 +89,17 @@ public class ServiceEntity {
     public void deactivate() {
         this.active = false;
     }
+
+    // Setters for updateable fields
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setBasePrice(Double basePrice) {
+        this.basePrice = basePrice;
+    }
 }

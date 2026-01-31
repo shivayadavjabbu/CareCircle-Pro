@@ -1,5 +1,6 @@
 package com.carecircle.user_profile_service.admin.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
@@ -19,6 +20,25 @@ public interface AdminService {
 
 	AdminProfileResponse getMyProfile(UUID userId);
 
+	AdminProfileResponse updateMyProfile(
+	        UUID userId,
+	        String fullName,
+	        String phoneNumber,
+	        String adminLevel
+	);
+
+	void deleteMyProfile(UUID userId);
+
+    // ===== Statistics & Listing =====
+
+    com.carecircle.user_profile_service.admin.dto.AdminStatisticsResponse getStatistics();
+
+    List<com.carecircle.user_profile_service.admin.dto.ParentSummaryResponse> getAllParents();
+
+    List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(UUID parentId);
+
+    List<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers();
+
     // ===== Caregiver Profile =====
 
     void verifyCaregiverProfile(UUID userId, UUID caregiverId, String reason);
@@ -26,16 +46,4 @@ public interface AdminService {
     void rejectCaregiverProfile(UUID userId, UUID caregiverId, String reason);
 
     void disableCaregiverProfile(UUID userId, UUID caregiverId, String reason);
-
-    // ===== Caregiver Capability =====
-
-    void verifyCaregiverCapability(UUID userId, UUID capabilityId, String reason);
-
-    void rejectCaregiverCapability(UUID userId, UUID capabilityId, String reason);
-
-    // ===== Caregiver Certification =====
-
-    void verifyCaregiverCertification(UUID userId, UUID certificationId, String reason);
-
-    void rejectCaregiverCertification(UUID userId, UUID certificationId, String reason);
 }

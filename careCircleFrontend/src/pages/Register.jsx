@@ -8,12 +8,8 @@ export default function Register() {
   const location = useLocation();
   const [form, setForm] = useState({
     role: location.state?.role || "ROLE_PARENT",
-    name: "",
     email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    city: ""
+    password: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -43,8 +39,8 @@ export default function Register() {
       return;
     }
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match!");
+    if (!isValidPassword(form.password)) {
+      setError("Password must be 8+ chars, with 2 numbers and 1 special symbol.");
       return;
     }
 
@@ -55,11 +51,8 @@ export default function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           role: form.role,
-          name: form.name,
           email: form.email,
-          password: form.password,
-          phone: form.phone,
-          city: form.city
+          password: form.password
         })
       });
 
@@ -151,35 +144,13 @@ export default function Register() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-bold text-slate-700 ml-1">Full Name</label>
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Enter your full name" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-slate-700 ml-1">Email</label>
-                <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="name@example.com" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-slate-700 ml-1">Phone</label>
-                <input name="phone" value={form.phone} onChange={handleChange} placeholder="+91 00000 00000" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-slate-700 ml-1">Password</label>
-                <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-slate-700 ml-1">Confirm</label>
-                <input name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} placeholder="••••••••" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
-              </div>
+              <label className="block text-sm font-bold text-slate-700 ml-1">Email</label>
+              <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="name@example.com" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-bold text-slate-700 ml-1">City</label>
-              <input name="city" value={form.city} onChange={handleChange} placeholder="Enter your city" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
+              <label className="block text-sm font-bold text-slate-700 ml-1">Password</label>
+              <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
             </div>
 
             {error && (

@@ -4,10 +4,12 @@ import com.carecircle.matchingBookingService.city.model.City;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CityRepository extends JpaRepository<City, UUID> {
 
     List<City> findByActiveTrue();
-    java.util.Optional<City> findByNameIgnoreCaseAndActiveTrue(String name);
+    Optional<City> findByNameIgnoreCaseAndActiveTrue(String name);
+    Optional<City> findByIdAndActiveTrue(UUID id);
 }

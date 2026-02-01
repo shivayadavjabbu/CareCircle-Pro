@@ -27,8 +27,7 @@ import ManageServices from "./pages/ManageServices";
 // New Nanny pages
 import NannyProfile from "./pages/NannyProfile";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
-// import NannyQualification from "./pages/NannyQualification";
-// import NannyCertification from "./pages/NannyCertification";
+import FindCaregivers from "./pages/FindCaregivers";
 
 export default function App() {
   return (
@@ -55,6 +54,7 @@ export default function App() {
         <Route path="/parent-dashboard" element={<ParentDashboard />} />
         <Route path="/parent-profile" element={<ParentProfile />} />
         <Route path="/baby-details" element={<BabyDetails />} />
+        <Route path="/find-nanny" element={<FindCaregivers />} />
 
         {/* Admin flow */}
         <Route path="/admin-login" element={<AdminLogin />} />

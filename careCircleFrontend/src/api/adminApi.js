@@ -93,8 +93,12 @@ export const deleteAdminProfile = async () => {
     return true;
 };
 
-export const getAllCaregivers = async (city = "", page = 0, size = 10) => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregivers?city=${city}&page=${page}&size=${size}`, {
+export const getAllCaregivers = async (city = "", statuses = [], page = 0, size = 5) => {
+    let url = `${API_BASE_URL}/admin/caregivers?city=${city}&page=${page}&size=${size}`;
+    if (statuses && statuses.length > 0) {
+        url += `&status=${statuses.join(",")}`;
+    }
+    const res = await fetch(url, {
         method: "GET",
         headers: getHeaders(),
     });

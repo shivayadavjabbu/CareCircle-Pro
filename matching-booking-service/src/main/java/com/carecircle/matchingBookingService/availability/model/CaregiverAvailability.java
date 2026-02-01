@@ -1,20 +1,16 @@
 package com.carecircle.matchingBookingService.availability.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "caregiver_availability",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_caregiver_day_time",
-                        columnNames = {"caregiver_id", "day_of_week", "start_time", "end_time"}
-                )
-        }
-)
+@Table(name = "caregiver_availability", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_caregiver_date_time", columnNames = { "caregiver_id", "available_date",
+                "start_time", "end_time" })
+})
 public class CaregiverAvailability {
 
     @Id
@@ -25,8 +21,11 @@ public class CaregiverAvailability {
     @Column(name = "caregiver_id", nullable = false)
     private UUID caregiverId;
 
-    @Column(name = "day_of_week", nullable = false)
-    private String dayOfWeek; // MONDAY .. SUNDAY
+    @Column(name = "day_of_week")
+    private String dayOfWeek; // MONDAY .. SUNDAY (deprecated, kept for backward compatibility)
+
+    @Column(name = "available_date")
+    private LocalDate availableDate;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
@@ -51,10 +50,21 @@ public class CaregiverAvailability {
             UUID caregiverId,
             String dayOfWeek,
             LocalTime startTime,
-            LocalTime endTime
-    ) {
+            LocalTime endTime) {
         this.caregiverId = caregiverId;
         this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.active = true;
+    }
+
+    public CaregiverAvailability(
+            UUID caregiverId,
+            LocalDate availableDate,
+            LocalTime startTime,
+            LocalTime endTime) {
+        this.caregiverId = caregiverId;
+        this.availableDate = availableDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.active = true;
@@ -81,6 +91,10 @@ public class CaregiverAvailability {
 
     public String getDayOfWeek() {
         return dayOfWeek;
+    }
+
+    public LocalDate getAvailableDate() {
+        return availableDate;
     }
 
     public LocalTime getStartTime() {

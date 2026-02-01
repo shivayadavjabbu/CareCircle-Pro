@@ -25,19 +25,16 @@ public class CaregiverAvailabilityController {
     public ResponseEntity<CaregiverAvailability> addAvailability(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
-            @RequestBody CreateAvailabilityRequest request
-    ) {
+            @RequestBody CreateAvailabilityRequest request) {
         if (!"ROLE_CARETAKER".equals(role)) {
             throw new RuntimeException("Only caregiver can add availability");
         }
 
-        CaregiverAvailability availability =
-                new CaregiverAvailability(
-                        caregiverId,
-                        request.getDayOfWeek(),
-                        request.getStartTime(),
-                        request.getEndTime()
-                );
+        CaregiverAvailability availability = new CaregiverAvailability(
+                caregiverId,
+                request.getAvailableDate(),
+                request.getStartTime(),
+                request.getEndTime());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(availabilityRepository.save(availability));
     }
@@ -46,8 +43,7 @@ public class CaregiverAvailabilityController {
     @GetMapping
     public ResponseEntity<List<CaregiverAvailability>> getMyAvailability(
             @RequestHeader("X-User-Id") UUID caregiverId,
-            @RequestHeader("X-User-Role") String role
-    ) {
+            @RequestHeader("X-User-Role") String role) {
         if (!"ROLE_CARETAKER".equals(role)) {
             throw new RuntimeException("Only caregiver can view availability");
         }

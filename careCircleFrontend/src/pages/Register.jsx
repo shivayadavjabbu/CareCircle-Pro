@@ -14,16 +14,16 @@ export default function Register() {
     password: ""
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    if (token) {
-      if (role === "ROLE_PARENT") navigate("/parent-dashboard");
-      else if (role === "ROLE_CARETAKER") navigate("/nanny-profile");
-      else if (role === "ROLE_ADMIN") navigate("/admin-dashboard");
-      else navigate("/");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const role = localStorage.getItem("role");
+  //   if (token) {
+  //     if (role === "ROLE_PARENT") navigate("/parent-dashboard");
+  //     else if (role === "ROLE_CARETAKER") navigate("/nanny-profile");
+  //     else if (role === "ROLE_ADMIN") navigate("/admin-dashboard");
+  //     else navigate("/");
+  //   }
+  // }, [navigate]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

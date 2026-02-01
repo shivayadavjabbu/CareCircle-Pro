@@ -4,7 +4,11 @@ import com.carecircle.communication.dto.request.AddParticipantRequest;
 import com.carecircle.communication.dto.request.CreateChatRoomRequest;
 import com.carecircle.communication.dto.request.SendMessageRequest;
 import com.carecircle.communication.dto.response.ChatMessageResponse;
+import com.carecircle.communication.dto.response.ChatRoomSummaryResponse;
 import com.carecircle.communication.service.interfaces.ChatService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,12 +54,31 @@ public class ChatController {
     }
     
     @GetMapping("/rooms/{roomId}/messages")
-    public ResponseEntity<List<ChatMessageResponse>> getRoomMessages(
+    public ResponseEntity<Page<ChatMessageResponse>> getRoomMessages(
+            @PathVariable UUID roomId,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(
+                chatService.getRoomMessages(roomId, userId, pageable)
+        );
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<ChatRoomSummaryResponse>> getMyChatRooms(
+            @RequestHeader("X-User-Id") UUID userId
+    ) {
+        return ResponseEntity.ok(chatService.getMyChatRooms(userId));
+    }
+
+    @PutMapping("/rooms/{roomId}/read")
+    public ResponseEntity<Void> markAsRead(
             @PathVariable UUID roomId,
             @RequestHeader("X-User-Id") UUID userId
     ) {
-        return ResponseEntity.ok(
-                chatService.getRoomMessages(roomId, userId)
-        );
+        chatService.markAsRead(roomId, userId);
+        return ResponseEntity.ok().build();
     }
 }

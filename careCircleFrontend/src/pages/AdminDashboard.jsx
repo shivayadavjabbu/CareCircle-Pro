@@ -151,6 +151,22 @@ export default function AdminDashboard() {
             <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
           </div>
 
+          {/* Manage Services (Action) */}
+          <div className="card-apple md:col-span-2 flex items-center justify-between cursor-pointer group" onClick={() => navigate("/admin/services")}>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#34c759] p-3 rounded-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 0 0 3.182 0l4.318-4.318a2.25 2.25 0 0 0 0-3.182L10.58 3.659a2.25 2.25 0 0 0-1.591-.659ZM6 6h1.5v1.5H6V6Z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1d1d1f]">Manage Services</h3>
+                <p className="text-sm text-gray-500">Configure core offerings & pricing</p>
+              </div>
+            </div>
+            <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
+          </div>
+
 
 
           {/* Edit Profile Card */}

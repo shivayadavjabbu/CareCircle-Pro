@@ -139,11 +139,48 @@ export const rejectCaregiver = async (id, reason) => {
 };
 
 export const getBookings = async (type = "active", page = 0, limit = 5) => {
-    // type: active, completed, cancelled
     const res = await fetch(`${API_BASE_URL}/admin/bookings/${type}?page=${page}&limit=${limit}`, {
         method: "GET",
         headers: getHeaders(),
     });
     if (!res.ok) throw new Error(`Failed to fetch ${type} bookings`);
     return res.json();
+};
+
+export const getServices = async () => {
+    const res = await fetch(`${API_BASE_URL}/services`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch services");
+    return res.json();
+};
+
+export const createService = async (data) => {
+    const res = await fetch(`${API_BASE_URL}/admin/services`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create service");
+    return res.json();
+};
+
+export const updateService = async (id, data) => {
+    const res = await fetch(`${API_BASE_URL}/admin/services/${id}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update service");
+    return res.json();
+};
+
+export const deleteService = async (id) => {
+    const res = await fetch(`${API_BASE_URL}/admin/services/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to delete service");
+    return true;
 };

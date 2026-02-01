@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../api/authApi";
-export default function RegisterNanny() {
+export default function RegisterCaretaker() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -38,7 +38,7 @@ export default function RegisterNanny() {
   return (
     <div className="min-h-screen pt-28 flex items-center justify-center bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] p-5">
       <div className="bg-white w-full max-w-[420px] p-[30px] rounded-[14px] shadow-[0_12px_35px_rgba(0,0,0,0.18)]">
-        <h2 className="text-center mb-5 text-[#553c9a] font-bold text-2xl">Register as Caregiver</h2>
+        <h2 className="text-center mb-5 text-[#553c9a] font-bold text-2xl">Register as Caretaker</h2>
 
         {error && (
           <div className="text-center text-red-600 font-semibold mb-3 p-2 bg-red-50 rounded-lg animate-in fade-in slide-in-from-top-1 duration-300">

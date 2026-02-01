@@ -7,7 +7,7 @@ import {
   addCapability,
   getCaregiverProfile
 } from "../api/caregiverApi";
-export default function NannyProfile() {
+export default function CaretakerProfile() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
@@ -90,12 +90,12 @@ export default function NannyProfile() {
       if (isUpdate) {
         await updateCaregiverProfile(payload);
         setMessage("✅ Profile updated successfully!");
-        setTimeout(() => navigate("/nanny-dashboard"), 1500);
+        setTimeout(() => navigate("/caretaker-dashboard"), 1500);
       } else {
         await createCaregiverProfile(payload);
         setIsUpdate(true);
         setMessage("✅ Profile saved successfully! Redirecting to dashboard...");
-        setTimeout(() => navigate("/nanny-dashboard"), 1500);
+        setTimeout(() => navigate("/caretaker-dashboard"), 1500);
       }
     } catch (error) {
       console.error("FULL PROFILE ERROR:", error);
@@ -146,7 +146,7 @@ export default function NannyProfile() {
   /* ================= UI ================= */
   return (
     <div className="max-w-[700px] mx-auto mt-32 mb-10 p-8 bg-white rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] font-sans">
-      <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">Nanny / Caregiver Onboarding</h2>
+      <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">Caretaker Onboarding</h2>
 
       {message && <p className={`mb-5 text-center font-semibold ${message.includes("✅") ? "text-green-600" : "text-red-600"}`}>{message}</p>}
 

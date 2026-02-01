@@ -105,6 +105,61 @@ export default function FindCaregivers() {
                     </button>
                 </div>
 
+                {/* Quick Filters */}
+                <div className="mb-10 animate-in-apple" style={{ animationDelay: '0.2s' }}>
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-[#1d1d1f] mb-3">Browse by Service</h3>
+                        <div className="flex flex-wrap gap-3">
+                            {services.map(s => (
+                                <button
+                                    key={s.id}
+                                    onClick={() => setFilters(prev => ({ ...prev, serviceId: s.id }))}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filters.serviceId === s.id
+                                            ? "bg-[#0071e3] text-white shadow-md transform scale-105"
+                                            : "bg-white text-gray-600 border border-gray-200 hover:border-[#0071e3] hover:text-[#0071e3]"
+                                        }`}
+                                >
+                                    {s.serviceName}
+                                </button>
+                            ))}
+                            {filters.serviceId && (
+                                <button
+                                    onClick={() => setFilters(prev => ({ ...prev, serviceId: "" }))}
+                                    className="px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-gray-600"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold text-[#1d1d1f] mb-3">Popular Locations</h3>
+                        <div className="flex flex-wrap gap-3">
+                            {cities.map(c => (
+                                <button
+                                    key={c.id}
+                                    onClick={() => setFilters(prev => ({ ...prev, city: c.name }))}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filters.city === c.name
+                                            ? "bg-[#1d1d1f] text-white shadow-md transform scale-105"
+                                            : "bg-white text-gray-600 border border-gray-200 hover:border-[#1d1d1f] hover:text-[#1d1d1f]"
+                                        }`}
+                                >
+                                    {c.name}
+                                </button>
+                            ))}
+                            {filters.city && (
+                                <button
+                                    onClick={() => setFilters(prev => ({ ...prev, city: "" }))}
+                                    className="px-4 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-gray-600"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Results Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loading && caregivers.length === 0 ? (

@@ -7,6 +7,7 @@ import com.carecircle.matchingBookingService.booking.repository.BookingRatingRep
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverRating;
 import com.carecircle.matchingBookingService.caregiver.repository.CaregiverRatingRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class BookingCompleteAndRateController {
     }
 
     @PostMapping("/{bookingId}/complete")
-    public Booking completeBooking(
+    public ResponseEntity<Booking> completeBooking(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID bookingId
@@ -52,11 +53,11 @@ public class BookingCompleteAndRateController {
         }
 
         booking.complete();
-        return bookingRepository.save(booking);
+        return ResponseEntity.ok(bookingRepository.save(booking));
     }
 
     @PostMapping("/{bookingId}/rate")
-    public BookingRating rateBooking(
+    public ResponseEntity<BookingRating> rateBooking(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID bookingId,
@@ -109,6 +110,6 @@ public class BookingCompleteAndRateController {
         caregiverRating.updateWithNewRating(request.getRating().doubleValue());
         caregiverRatingRepository.save(caregiverRating);
 
-        return bookingRating;
+        return ResponseEntity.ok(bookingRating);
     }
 }

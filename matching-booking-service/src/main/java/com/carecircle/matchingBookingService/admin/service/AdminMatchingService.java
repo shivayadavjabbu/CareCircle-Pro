@@ -1,6 +1,8 @@
 package com.carecircle.matchingBookingService.admin.service;
 
+import com.carecircle.matchingBookingService.admin.dto.CertificationVerificationAuditResponse;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -14,5 +16,5 @@ public interface AdminMatchingService {
     
     void disableCertification(UUID adminId, String adminEmail, UUID certificationId, String reason);
 
-    List<com.carecircle.matchingBookingService.admin.model.VerificationAudit> getAllAudits();
+    List<CertificationVerificationAuditResponse> getCertificationAudits();
 }

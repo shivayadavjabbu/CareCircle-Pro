@@ -18,5 +18,7 @@ public interface AdminProfileRepository extends JpaRepository<AdminProfile, UUID
      */
     Optional<AdminProfile> findByUserEmail(String userEmail);
     Optional<AdminProfile> findByUserId(UUID userId);
+    
+    List<AdminProfile> findByUserIdIn(List<UUID> userIds);
 }
 

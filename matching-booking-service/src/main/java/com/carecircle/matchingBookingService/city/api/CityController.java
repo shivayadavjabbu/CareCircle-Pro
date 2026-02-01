@@ -3,9 +3,12 @@ package com.carecircle.matchingBookingService.city.api;
 import com.carecircle.matchingBookingService.city.api.dto.CreateCityRequest;
 import com.carecircle.matchingBookingService.city.model.City;
 import com.carecircle.matchingBookingService.city.repository.CityRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class CityController {
@@ -18,7 +21,7 @@ public class CityController {
 
     // ADMIN ONLY
     @PostMapping("/admin/cities")
-    public City createCity(
+    public ResponseEntity<City> createCity(
             @RequestHeader("X-User-Role") String role,
             @RequestBody CreateCityRequest request
     ) {
@@ -32,39 +35,42 @@ public class CityController {
                 request.getCountry()
         );
 
-        return cityRepository.save(city);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cityRepository.save(city));
     }
 
     // PUBLIC
     @GetMapping("/cities")
-    public List<City> getActiveCities() {
-        return cityRepository.findByActiveTrue();
+    public ResponseEntity<List<City>> getActiveCities() {
+        return ResponseEntity.ok(cityRepository.findByActiveTrue());
     }
 
     @GetMapping("/cities/lookup")
-    public City getCityByName(@RequestParam String name) {
-        return cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
+    public ResponseEntity<City> getCityByName(@RequestParam String name) {
+        City city = cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
                 .orElseThrow(() -> new RuntimeException("City not found: " + name));
+        return ResponseEntity.ok(city);
     }
 
     @GetMapping("/cities/{id}")
-    public City getCityById(@PathVariable java.util.UUID id) {
-        return cityRepository.findByIdAndActiveTrue(id)
+    public ResponseEntity<City> getCityById(@PathVariable UUID id) {
+        City city = cityRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new RuntimeException("City not found: " + id));
+        return ResponseEntity.ok(city);
     }
 
     @GetMapping("/cities/id")
-    public java.util.UUID getCityIdByName(@RequestParam String name) {
-        return cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
+    public ResponseEntity<UUID> getCityIdByName(@RequestParam String name) {
+        UUID cityId = cityRepository.findByNameIgnoreCaseAndActiveTrue(name)
                 .map(City::getId)
                 .orElseThrow(() -> new RuntimeException("City not found: " + name));
+        return ResponseEntity.ok(cityId);
     }
 
     // ADMIN UPDATES & DELETES
 
     @PutMapping("/admin/cities/{id}")
-    public City updateCity(
-            @PathVariable java.util.UUID id,
+    public ResponseEntity<City> updateCity(
+            @PathVariable UUID id,
             @RequestHeader("X-User-Role") String role,
             @RequestBody com.carecircle.matchingBookingService.city.api.dto.UpdateCityRequest request
     ) {
@@ -79,12 +85,12 @@ public class CityController {
         city.setState(request.getState());
         city.setCountry(request.getCountry());
 
-        return cityRepository.save(city);
+        return ResponseEntity.ok(cityRepository.save(city));
     }
 
     @DeleteMapping("/admin/cities/{id}")
-    public void deleteCity(
-            @PathVariable java.util.UUID id,
+    public ResponseEntity<Void> deleteCity(
+            @PathVariable UUID id,
             @RequestHeader("X-User-Role") String role
     ) {
         if (!"ROLE_ADMIN".equals(role)) {
@@ -96,5 +102,6 @@ public class CityController {
 
         city.deactivate();
         cityRepository.save(city);
+        return ResponseEntity.noContent().build();
     }
 }

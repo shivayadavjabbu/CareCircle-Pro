@@ -3,9 +3,9 @@ package com.carecircle.user_profile_service.admin.service.impl;
 import com.carecircle.user_profile_service.admin.dto.AdminProfileResponse;
 import com.carecircle.user_profile_service.admin.exception.*;
 import com.carecircle.user_profile_service.admin.model.AdminProfile;
-import com.carecircle.user_profile_service.admin.model.VerificationAudit;
+import com.carecircle.user_profile_service.admin.model.ProfileVerificationAudit;
 import com.carecircle.user_profile_service.admin.repository.AdminProfileRepository;
-import com.carecircle.user_profile_service.admin.repository.VerificationAuditRepository;
+import com.carecircle.user_profile_service.admin.repository.ProfileVerificationAuditRepository;
 import com.carecircle.user_profile_service.admin.service.AdminService;
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 import com.carecircle.user_profile_service.caregiver.repository.CaregiverProfileRepository;
@@ -22,7 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import com.carecircle.user_profile_service.common.dto.PagedResponse;
+import com.carecircle.user_profile_service.admin.dto.ProfileVerificationAuditResponse;
 import java.util.stream.Collectors;
+import java.util.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminServiceImpl implements AdminService {
 
         private final AdminProfileRepository adminProfileRepository;
-        private final VerificationAuditRepository auditRepository;
+        private final ProfileVerificationAuditRepository auditRepository;
         private final MatchingIntegrationService matchingIntegrationService; // Added MatchingService
 
         private final CaregiverProfileRepository caregiverProfileRepository;
@@ -251,7 +253,7 @@ public class AdminServiceImpl implements AdminService {
 
         public AdminServiceImpl(
                         AdminProfileRepository adminProfileRepository,
-                        VerificationAuditRepository auditRepository,
+                        ProfileVerificationAuditRepository auditRepository,
                         CaregiverProfileRepository caregiverProfileRepository,
                         ParentProfileRepository parentProfileRepository,
                         ChildRepository childRepository, 
@@ -287,7 +289,7 @@ public class AdminServiceImpl implements AdminService {
                         String previousStatus,
                         String newStatus,
                         String reason) {
-                VerificationAudit audit = new VerificationAudit(
+                ProfileVerificationAudit audit = new ProfileVerificationAudit(
                                 admin,
                                 targetType,
                                 targetId,
@@ -373,5 +375,41 @@ public class AdminServiceImpl implements AdminService {
                                 "ACTIVE",
                                 "DISABLED",
                                 reason);
+        }
+
+        @Override
+        public List<ProfileVerificationAuditResponse> getProfileAudits() {
+                List<ProfileVerificationAudit> audits = auditRepository.findAll();
+                if (audits.isEmpty()) return Collections.emptyList();
+
+                // Group target IDs by type to fetch names in batch
+                Set<UUID> caregiverIds = audits.stream()
+                        .filter(a -> "CAREGIVER_PROFILE".equals(a.getTargetType()))
+                        .map(ProfileVerificationAudit::getTargetId)
+                        .collect(Collectors.toSet());
+
+                Map<UUID, String> caregiverNames = caregiverProfileRepository.findAllById(caregiverIds).stream()
+                        .collect(Collectors.toMap(CaregiverProfile::getId, CaregiverProfile::getFullName));
+
+                return audits.stream().map(a -> {
+                        String caregiverName = "Unknown";
+                        if ("CAREGIVER_PROFILE".equals(a.getTargetType())) {
+                                caregiverName = caregiverNames.getOrDefault(a.getTargetId(), "Unknown Caregiver");
+                        }
+
+                        return new ProfileVerificationAuditResponse(
+                                a.getId(),
+                                a.getAdmin().getUserId(),
+                                a.getAdmin().getFullName(),
+                                a.getTargetType(),
+                                a.getTargetId(),
+                                caregiverName,
+                                a.getAction(),
+                                a.getPreviousStatus(),
+                                a.getNewStatus(),
+                                a.getReason(),
+                                a.getCreatedAt()
+                        );
+                }).sorted(Comparator.comparing(ProfileVerificationAuditResponse::getCreatedAt).reversed()).toList();
         }
 }

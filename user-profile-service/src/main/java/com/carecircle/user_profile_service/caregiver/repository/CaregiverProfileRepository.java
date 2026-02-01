@@ -20,6 +20,8 @@ public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfi
      */
     Optional<CaregiverProfile> findByUserEmail(String userEmail);
     Optional<CaregiverProfile> findByUserId(UUID userId);
+    
+    List<CaregiverProfile> findByUserIdIn(List<UUID> userIds);
 
     Page<CaregiverProfile> findByCityIgnoreCase(String city, Pageable pageable);
     Page<CaregiverProfile> findAll(Pageable pageable);

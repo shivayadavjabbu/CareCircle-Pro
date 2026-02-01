@@ -5,6 +5,7 @@ import com.carecircle.matchingBookingService.booking.repository.BookingRepositor
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class AdminBookingController {
     }
 
     @GetMapping("/active")
-    public Page<Booking> getActiveBookings(
+    public ResponseEntity<Page<Booking>> getActiveBookings(
             @RequestHeader("X-User-Role") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
@@ -32,11 +33,11 @@ public class AdminBookingController {
         
         Pageable pageable = PageRequest.of(page, limit);
         List<String> activeStatuses = Arrays.asList("REQUESTED", "ACCEPTED");
-        return bookingRepository.findByStatusIn(activeStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByStatusIn(activeStatuses, pageable));
     }
 
     @GetMapping("/completed")
-    public Page<Booking> getCompletedBookings(
+    public ResponseEntity<Page<Booking>> getCompletedBookings(
             @RequestHeader("X-User-Role") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
@@ -47,11 +48,11 @@ public class AdminBookingController {
         
         Pageable pageable = PageRequest.of(page, limit);
         List<String> completedStatuses = Arrays.asList("COMPLETED");
-        return bookingRepository.findByStatusIn(completedStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByStatusIn(completedStatuses, pageable));
     }
 
     @GetMapping("/cancelled")
-    public Page<Booking> getCancelledBookings(
+    public ResponseEntity<Page<Booking>> getCancelledBookings(
             @RequestHeader("X-User-Role") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
@@ -62,11 +63,11 @@ public class AdminBookingController {
         
         Pageable pageable = PageRequest.of(page, limit);
         List<String> cancelledStatuses = Arrays.asList("CANCELLED", "REJECTED");
-        return bookingRepository.findByStatusIn(cancelledStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByStatusIn(cancelledStatuses, pageable));
     }
     
     @GetMapping
-    public Page<Booking> getAllBookings(
+    public ResponseEntity<Page<Booking>> getAllBookings(
             @RequestHeader("X-User-Role") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
@@ -76,6 +77,6 @@ public class AdminBookingController {
         }
         
         Pageable pageable = PageRequest.of(page, limit);
-        return bookingRepository.findAll(pageable);
+        return ResponseEntity.ok(bookingRepository.findAll(pageable));
     }
 }

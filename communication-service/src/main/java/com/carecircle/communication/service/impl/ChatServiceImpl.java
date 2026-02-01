@@ -13,6 +13,7 @@ import com.carecircle.communication.repository.chat.ChatParticipantRepository;
 import com.carecircle.communication.repository.chat.ChatRoomRepository;
 import com.carecircle.communication.service.interfaces.BlockService;
 import com.carecircle.communication.service.interfaces.ChatService;
+import com.carecircle.communication.service.UserIntegrationService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class ChatServiceImpl implements ChatService {
     private final NotificationService notificationService;
     private final BlockService blockService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserIntegrationService userIntegrationService;
 
     public ChatServiceImpl(
             ChatRoomRepository chatRoomRepository,
@@ -38,7 +40,8 @@ public class ChatServiceImpl implements ChatService {
             ChatMessageRepository chatMessageRepository, 
             NotificationService notificationService, 
             BlockService blockService,
-            SimpMessagingTemplate messagingTemplate
+            SimpMessagingTemplate messagingTemplate,
+            UserIntegrationService userIntegrationService
     ) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatParticipantRepository = chatParticipantRepository;
@@ -46,6 +49,7 @@ public class ChatServiceImpl implements ChatService {
         this.notificationService = notificationService;
         this.blockService = blockService;
         this.messagingTemplate = messagingTemplate;
+        this.userIntegrationService = userIntegrationService;
     }
 
     @Override
@@ -92,6 +96,12 @@ public class ChatServiceImpl implements ChatService {
         
         // Broadcast to WebSocket subscribers
         ChatMessageResponse response = mapToResponse(savedMessage);
+        
+        // Enrich single message sender name
+        userIntegrationService.getUsersInfo(List.of(senderId)).values().stream()
+                .findFirst()
+                .ifPresent(u -> response.setSenderName(u.fullName()));
+
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
 
         participants.stream()
@@ -117,9 +127,20 @@ public class ChatServiceImpl implements ChatService {
             throw new IllegalStateException("User is not a participant of this chat room");
         }
 
-        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId)
-                .stream()
-                .map(this::mapToResponse)
+        List<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        
+        // Enrich in batch
+        List<UUID> senderIds = messages.stream().map(ChatMessage::getSenderId).distinct().toList();
+        var userMap = userIntegrationService.getUsersInfo(senderIds);
+
+        return messages.stream()
+                .map(m -> {
+                    ChatMessageResponse res = mapToResponse(m);
+                    if (userMap.containsKey(m.getSenderId())) {
+                        res.setSenderName(userMap.get(m.getSenderId()).fullName());
+                    }
+                    return res;
+                })
                 .toList();
     }
 

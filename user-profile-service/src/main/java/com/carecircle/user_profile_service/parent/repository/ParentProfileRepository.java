@@ -25,6 +25,8 @@ public interface ParentProfileRepository extends JpaRepository<ParentProfile, UU
 	 */
 	Optional<ParentProfile> findByUserEmail(String userEmail);
 	Optional<ParentProfile> findByUserId(UUID userId);
+	
+	List<ParentProfile> findByUserIdIn(List<UUID> userIds);
 
 	Page<ParentProfile> findByCityIgnoreCase(String city, Pageable pageable);
     Page<ParentProfile> findAll(Pageable pageable);

@@ -2,6 +2,7 @@ package com.carecircle.matchingBookingService.booking.api;
 
 import com.carecircle.matchingBookingService.booking.model.Booking;
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public class ParentBookingController {
     }
 
     @GetMapping("/my")
-    public List<Booking> getMyBookings(
+    public ResponseEntity<List<Booking>> getMyBookings(
             @RequestHeader("X-User-Id") UUID parentId
     ) {
-        return bookingRepository.findByParentId(parentId);
+        return ResponseEntity.ok(bookingRepository.findByParentId(parentId));
     }
 }

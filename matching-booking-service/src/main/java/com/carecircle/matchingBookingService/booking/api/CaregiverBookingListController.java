@@ -2,6 +2,7 @@ package com.carecircle.matchingBookingService.booking.api;
 
 import com.carecircle.matchingBookingService.booking.model.Booking;
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +19,9 @@ public class CaregiverBookingListController {
     }
 
     @GetMapping
-    public List<Booking> getCaregiverBookings(
+    public ResponseEntity<List<Booking>> getCaregiverBookings(
             @RequestHeader("X-User-Id") UUID caregiverId
     ) {
-        return bookingRepository.findByCaregiverId(caregiverId);
+        return ResponseEntity.ok(bookingRepository.findByCaregiverId(caregiverId));
     }
 }

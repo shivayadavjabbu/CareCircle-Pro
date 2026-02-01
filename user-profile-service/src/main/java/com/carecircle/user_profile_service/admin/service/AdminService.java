@@ -54,4 +54,6 @@ public interface AdminService {
 	void rejectCaregiverProfile(UUID userId, UUID caregiverId, String reason);
 
 	void disableCaregiverProfile(UUID userId, UUID caregiverId, String reason);
+
+	List<com.carecircle.user_profile_service.admin.dto.ProfileVerificationAuditResponse> getProfileAudits();
 }

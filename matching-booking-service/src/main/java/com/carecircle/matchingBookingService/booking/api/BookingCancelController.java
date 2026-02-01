@@ -2,6 +2,7 @@ package com.carecircle.matchingBookingService.booking.api;
 
 import com.carecircle.matchingBookingService.booking.model.Booking;
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class BookingCancelController {
     }
 
     @PostMapping("/{bookingId}/cancel")
-    public Booking cancelBooking(
+    public ResponseEntity<Booking> cancelBooking(
             @RequestHeader("X-User-Id") UUID userId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID bookingId
@@ -42,8 +43,6 @@ public class BookingCancelController {
         }
 
         booking.cancel();
-        return bookingRepository.save(booking);
+        return ResponseEntity.ok(bookingRepository.save(booking));
     }
 }
-
-	

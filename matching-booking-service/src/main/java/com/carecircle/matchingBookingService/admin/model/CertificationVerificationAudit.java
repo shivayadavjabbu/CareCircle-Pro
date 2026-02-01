@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "verification_audits")
-public class VerificationAudit {
+@Table(name = "certification_verification_audits")
+public class CertificationVerificationAudit {
 
     @Id
     @GeneratedValue
@@ -21,28 +21,6 @@ public class VerificationAudit {
 
     @Column(name = "target_type", nullable = false, updatable = false)
     private String targetType; // SERVICE / CERTIFICATION
-    
-    // ...
-
-    public VerificationAudit(
-            UUID adminId,
-            String adminEmail,
-            String targetType,
-            UUID targetId,
-            String action,
-            String previousStatus,
-            String newStatus,
-            String reason
-    ) {
-        this.adminId = adminId;
-        this.adminEmail = adminEmail;
-        this.targetType = targetType;
-        this.targetId = targetId;
-        this.action = action;
-        this.previousStatus = previousStatus;
-        this.newStatus = newStatus;
-        this.reason = reason;
-    }
 
     @Column(name = "target_id", nullable = false, updatable = false)
     private UUID targetId;
@@ -62,12 +40,13 @@ public class VerificationAudit {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected VerificationAudit() {
+    protected CertificationVerificationAudit() {
         // JPA only
     }
 
-    public VerificationAudit(
+    public CertificationVerificationAudit(
             UUID adminId,
+            String adminEmail,
             String targetType,
             UUID targetId,
             String action,
@@ -76,6 +55,7 @@ public class VerificationAudit {
             String reason
     ) {
         this.adminId = adminId;
+        this.adminEmail = adminEmail;
         this.targetType = targetType;
         this.targetId = targetId;
         this.action = action;
@@ -89,43 +69,14 @@ public class VerificationAudit {
         this.createdAt = LocalDateTime.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getAdminId() {
-        return adminId;
-    }
-
-    public String getAdminEmail() {
-        return adminEmail;
-    }
-
-    public String getTargetType() {
-        return targetType;
-    }
-
-    public UUID getTargetId() {
-        return targetId;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public String getPreviousStatus() {
-        return previousStatus;
-    }
-
-    public String getNewStatus() {
-        return newStatus;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public UUID getId() { return id; }
+    public UUID getAdminId() { return adminId; }
+    public String getAdminEmail() { return adminEmail; }
+    public String getTargetType() { return targetType; }
+    public UUID getTargetId() { return targetId; }
+    public String getAction() { return action; }
+    public String getPreviousStatus() { return previousStatus; }
+    public String getNewStatus() { return newStatus; }
+    public String getReason() { return reason; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

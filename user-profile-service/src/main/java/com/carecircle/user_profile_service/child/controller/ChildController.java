@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,8 +40,7 @@ public class ChildController {
      * Creates a new child for the authenticated parent.
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ChildResponse createChild(
+    public ResponseEntity<ChildResponse> createChild(
     		@Valid @RequestBody CreateChildRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -56,29 +56,30 @@ public class ChildController {
                 request.getSpecialNeeds()
         );
 
-        return mapToResponse(child);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponse(child));
     }
 
     /**
      * Returns all children belonging to the authenticated parent.
      */
     @GetMapping
-    public List<ChildResponse> getMyChildren(HttpServletRequest httpRequest) {
+    public ResponseEntity<List<ChildResponse>> getMyChildren(HttpServletRequest httpRequest) {
         String userEmail = extractUserEmail(httpRequest);
         UUID userId =  extractUserId(httpRequest);
         validateParentRole(httpRequest);
 
-        return childService.getChildrenForParent(userId)
+        List<ChildResponse> children = childService.getChildrenForParent(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+        return ResponseEntity.ok(children);
     }
 
     /**
      * Updates child details if the child belongs to the authenticated parent.
      */
     @PutMapping("/{childId}")
-    public ChildResponse updateChild(
+    public ResponseEntity<ChildResponse> updateChild(
             @PathVariable UUID childId,
             @Valid @RequestBody UpdateChildRequest request,
             HttpServletRequest httpRequest
@@ -96,15 +97,14 @@ public class ChildController {
                 request.getSpecialNeeds()
         );
 
-        return mapToResponse(updatedChild);
+        return ResponseEntity.ok(mapToResponse(updatedChild));
     }
     
     /**
      * Deletes a child owned by the authenticated parent.
      */
     @DeleteMapping("/{childId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteChild(
+    public ResponseEntity<Void> deleteChild(
             @PathVariable UUID childId,
             HttpServletRequest httpRequest
     ) {
@@ -113,6 +113,7 @@ public class ChildController {
         validateParentRole(httpRequest);
 
         childService.deleteChild(userId, childId);
+        return ResponseEntity.noContent().build();
     }
     
     
@@ -120,7 +121,7 @@ public class ChildController {
      * Returns details of a specific child owned by the authenticated parent.
      */
     @GetMapping("/{childId}")
-    public ChildResponse getChildById(
+    public ResponseEntity<ChildResponse> getChildById(
             @PathVariable UUID childId,
             HttpServletRequest httpRequest
     ) {
@@ -130,7 +131,7 @@ public class ChildController {
 
         Child child = childService.getChildById(userId, childId);
 
-        return mapToResponse(child);
+        return ResponseEntity.ok(mapToResponse(child));
     }
 
     

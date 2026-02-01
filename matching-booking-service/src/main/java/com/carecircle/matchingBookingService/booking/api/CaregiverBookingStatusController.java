@@ -5,6 +5,7 @@ import com.carecircle.matchingBookingService.booking.repository.BookingRepositor
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -22,35 +23,35 @@ public class CaregiverBookingStatusController {
     }
 
     @GetMapping("/active")
-    public Page<Booking> getActiveBookings(
+    public ResponseEntity<Page<Booking>> getActiveBookings(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
     ) {
         Pageable pageable = PageRequest.of(page, limit);
         List<String> activeStatuses = Arrays.asList("REQUESTED", "ACCEPTED");
-        return bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, activeStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, activeStatuses, pageable));
     }
 
     @GetMapping("/completed")
-    public Page<Booking> getCompletedBookings(
+    public ResponseEntity<Page<Booking>> getCompletedBookings(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
     ) {
         Pageable pageable = PageRequest.of(page, limit);
         List<String> completedStatuses = Arrays.asList("COMPLETED");
-        return bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, completedStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, completedStatuses, pageable));
     }
 
     @GetMapping("/cancelled")
-    public Page<Booking> getCancelledBookings(
+    public ResponseEntity<Page<Booking>> getCancelledBookings(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
     ) {
         Pageable pageable = PageRequest.of(page, limit);
         List<String> cancelledStatuses = Arrays.asList("CANCELLED", "REJECTED");
-        return bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, cancelledStatuses, pageable);
+        return ResponseEntity.ok(bookingRepository.findByCaregiverIdAndStatusIn(caregiverId, cancelledStatuses, pageable));
     }
 }

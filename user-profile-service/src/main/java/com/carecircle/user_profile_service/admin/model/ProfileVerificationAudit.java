@@ -1,46 +1,34 @@
 package com.carecircle.user_profile_service.admin.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
  * Represents an immutable audit record for verification and moderation actions
- * performed by administrators.
- *
- * This entity is append-only and provides full traceability for
- * who changed what, when, and why.
+ * performed by administrators on user profiles.
  */
 @Entity
-@Table(name = "verification_audits")
-public class VerificationAudit {
+@Table(name = "profile_verification_audits")
+public class ProfileVerificationAudit {
 
-	@Id
-	@GeneratedValue
-	@Column(name = "id", nullable = false, updatable = false)
-	private UUID id;
-
-    // ===== Actor (Admin) =====
+    @Id
+    @GeneratedValue
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false, updatable = false)
     private AdminProfile admin;
 
-    // ===== Target (Polymorphic Reference) =====
-
     @Column(name = "target_type", nullable = false, updatable = false)
-    private String targetType;
-    // CAREGIVER_PROFILE / CAREGIVER_CAPABILITY / CAREGIVER_CERTIFICATION
+    private String targetType; // CAREGIVER_PROFILE
 
     @Column(name = "target_id", nullable = false, updatable = false)
     private UUID targetId;
 
-    // ===== Action & State Transition =====
-
     @Column(name = "action", nullable = false, updatable = false)
-    private String action;
-    // VERIFY / REJECT / DISABLE / ENABLE
+    private String action; // VERIFY / REJECT / DISABLE
 
     @Column(name = "previous_status", nullable = false, updatable = false)
     private String previousStatus;
@@ -48,21 +36,17 @@ public class VerificationAudit {
     @Column(name = "new_status", nullable = false, updatable = false)
     private String newStatus;
 
-    // ===== Metadata =====
-
     @Column(name = "reason", length = 1000)
     private String reason;
-
-    // ===== Audit =====
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected VerificationAudit() {
+    protected ProfileVerificationAudit() {
         // JPA only
     }
 
-    public VerificationAudit(
+    public ProfileVerificationAudit(
             AdminProfile admin,
             String targetType,
             UUID targetId,
@@ -85,42 +69,14 @@ public class VerificationAudit {
         this.createdAt = LocalDateTime.now();
     }
 
-    // ===== Getters only (immutable entity) =====
-
-    public UUID getId() {
-        return id;
-    }
-
-    public AdminProfile getAdmin() {
-        return admin;
-    }
-
-    public String getTargetType() {
-        return targetType;
-    }
-
-    public UUID getTargetId() {
-        return targetId;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public String getPreviousStatus() {
-        return previousStatus;
-    }
-
-    public String getNewStatus() {
-        return newStatus;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    // Getters
+    public UUID getId() { return id; }
+    public AdminProfile getAdmin() { return admin; }
+    public String getTargetType() { return targetType; }
+    public UUID getTargetId() { return targetId; }
+    public String getAction() { return action; }
+    public String getPreviousStatus() { return previousStatus; }
+    public String getNewStatus() { return newStatus; }
+    public String getReason() { return reason; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }
-

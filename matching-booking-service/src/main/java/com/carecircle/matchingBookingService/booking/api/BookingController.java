@@ -8,10 +8,14 @@ import com.carecircle.matchingBookingService.booking.repository.BookingChildRepo
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
 import com.carecircle.matchingBookingService.caregiver.repository.CaregiverServiceRepository;
 import com.carecircle.matchingBookingService.service.repository.ServiceRepository;
+import com.carecircle.matchingBookingService.common.service.UserIntegrationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,21 +26,24 @@ public class BookingController {
     private final BookingChildRepository bookingChildRepository;
     private final CaregiverServiceRepository caregiverServiceRepository;
     private final ServiceRepository serviceRepository;
+    private final UserIntegrationService userService;
 
     public BookingController(
             BookingRepository bookingRepository,
             BookingChildRepository bookingChildRepository,
             CaregiverServiceRepository caregiverServiceRepository,
-            ServiceRepository serviceRepository
+            ServiceRepository serviceRepository,
+            UserIntegrationService userService
     ) {
         this.bookingRepository = bookingRepository;
         this.bookingChildRepository = bookingChildRepository;
         this.caregiverServiceRepository = caregiverServiceRepository;
         this.serviceRepository = serviceRepository;
+        this.userService = userService;
     }
 
     @PostMapping
-    public Booking createBooking(
+    public ResponseEntity<Booking> createBooking(
             @RequestHeader("X-User-Id") UUID parentId,
             @RequestBody CreateBookingRequest request
     ) {
@@ -106,11 +113,11 @@ public class BookingController {
                 )
         );
 
-        return booking;
+        return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
     
     @GetMapping("/{bookingId}")
-    public BookingDetailResponse getBooking(
+    public ResponseEntity<BookingDetailResponse> getBooking(
             @PathVariable UUID bookingId
     ) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -126,10 +133,16 @@ public class BookingController {
                 ))
                 .collect(Collectors.toList());
         
-        return new BookingDetailResponse(
+        var userInfo = userService.getUsersInfo(List.of(booking.getParentId(), booking.getCaregiverId()));
+        String parentName = userInfo.containsKey(booking.getParentId()) ? userInfo.get(booking.getParentId()).fullName() : "Unknown Parent";
+        String caregiverName = userInfo.containsKey(booking.getCaregiverId()) ? userInfo.get(booking.getCaregiverId()).fullName() : "Unknown Caregiver";
+
+        BookingDetailResponse response = new BookingDetailResponse(
                 booking.getId(),
                 booking.getParentId(),
+                parentName,
                 booking.getCaregiverId(),
+                caregiverName,
                 booking.getServiceId(),
                 booking.getBookingType(),
                 booking.getStartTime(),
@@ -141,8 +154,9 @@ public class BookingController {
                 booking.getFinalPrice(),
                 booking.getStatus(),
                 children,
-                null, // createdAt
-                null  // updatedAt
+                booking.getCreatedAt(),
+                booking.getUpdatedAt()
         );
+        return ResponseEntity.ok(response);
     }
 }

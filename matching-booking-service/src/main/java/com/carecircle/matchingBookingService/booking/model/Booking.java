@@ -17,7 +17,15 @@ import java.util.UUID;
 )
 public class Booking {
 
-    @Id
+    public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	@Id
     @GeneratedValue
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
@@ -132,6 +140,10 @@ public class Booking {
 
     public String getBookingType() {
         return bookingType;
+    }
+    
+    public LocalDateTime getUpdatedAt() {
+    	return this.updatedAt;
     }
 
     public LocalTime getStartTime() {

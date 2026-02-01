@@ -2,6 +2,7 @@ package com.carecircle.matchingBookingService.booking.api;
 
 import com.carecircle.matchingBookingService.booking.model.Booking;
 import com.carecircle.matchingBookingService.booking.repository.BookingRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class CaregiverBookingController {
 
 
     @PostMapping("/{bookingId}/reject")
-    public Booking rejectBooking(
+    public ResponseEntity<Booking> rejectBooking(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @PathVariable UUID bookingId
     ) {
@@ -34,11 +35,11 @@ public class CaregiverBookingController {
         }
 
         booking.reject();
-        return bookingRepository.save(booking);
+        return ResponseEntity.ok(bookingRepository.save(booking));
     }
     
     @PostMapping("/{bookingId}/accept")
-    public Booking acceptBooking(
+    public ResponseEntity<Booking> acceptBooking(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @PathVariable UUID bookingId
     ) {
@@ -61,7 +62,7 @@ public class CaregiverBookingController {
                                     "ACCEPTED",
                                     booking.getEndTime(),
                                     booking.getStartTime()
-                            );
+                             );
 
             if (conflict) {
                 throw new RuntimeException("Booking time conflicts with existing booking");
@@ -77,7 +78,7 @@ public class CaregiverBookingController {
                                     "ACCEPTED",
                                     booking.getEndDate(),
                                     booking.getStartDate()
-                            );
+                             );
 
             if (conflict) {
                 throw new RuntimeException("Booking date range conflicts with existing booking");
@@ -86,9 +87,9 @@ public class CaregiverBookingController {
         
         // Only accept after validation passes
         booking.accept();
-        return bookingRepository.save(booking);
+        return ResponseEntity.ok(bookingRepository.save(booking));
 
     }
     
-   
+    
 }

@@ -7,6 +7,7 @@ public class ChatMessageResponse {
 
     private UUID id;
     private UUID senderId;
+    private String senderName;
     private String content;
     private String messageType;
     private LocalDateTime createdAt;
@@ -21,6 +22,12 @@ public class ChatMessageResponse {
 	}
 	public void setSenderId(UUID senderId) {
 		this.senderId = senderId;
+	}
+	public String getSenderName() {
+		return senderName;
+	}
+	public void setSenderName(String senderName) {
+		this.senderName = senderName;
 	}
 	public String getContent() {
 		return content;

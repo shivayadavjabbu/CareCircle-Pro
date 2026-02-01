@@ -3,6 +3,8 @@ package com.carecircle.matchingBookingService.caregiver.api;
 import com.carecircle.matchingBookingService.caregiver.api.dto.CreateCaregiverServiceRequest;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverService;
 import com.carecircle.matchingBookingService.caregiver.repository.CaregiverServiceRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +33,7 @@ public class CaregiverServiceController {
     // ===========================
 
     @PostMapping("/services")
-    public CaregiverService addService(
+    public ResponseEntity<CaregiverService> addService(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @RequestBody CreateCaregiverServiceRequest request
@@ -59,28 +61,15 @@ public class CaregiverServiceController {
                     }
                 });
 
-        return caregiverServiceRepository.save(caregiverService);
+        return ResponseEntity.status(HttpStatus.CREATED).body(caregiverServiceRepository.save(caregiverService));
     }
 
     @GetMapping("/services")
-    public List<CaregiverService> getMyServices(
+    public ResponseEntity<List<CaregiverService>> getMyServices(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role
     ) {
-        if (!"ROLE_CARETAKER".equals(role)) {
-            // Allow admin or parent to view? 
-            // Original code restricted to caregiver. Assuming simple view for now.
-             // If this is "getMyServices", implies self.
-             // If we need public view, usually it's by caregiverId query param.
-             // Sticking to original logic for "getMyServices" via header.
-        	if("ROLE_ADMIN".equals(role)) {
-        		// Admin might want to see specific caregiver services, but here we rely on header ID which is the caller.
-        		// So this endpoint is specifically for the caller.
-        		// We will keep it restricted or check requirements. 
-        		// Assuming just self-view for now.
-        	}
-        }
-        return caregiverServiceRepository.findByCaregiverIdAndActiveTrue(caregiverId);
+        return ResponseEntity.ok(caregiverServiceRepository.findByCaregiverIdAndActiveTrue(caregiverId));
     }
     
     // ===========================
@@ -88,7 +77,7 @@ public class CaregiverServiceController {
     // ===========================
 
     @PostMapping("/certifications")
-    public com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification addCertification(
+    public ResponseEntity<com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification> addCertification(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @RequestBody com.carecircle.matchingBookingService.caregiver.api.dto.CreateCaregiverCertificationRequest request
@@ -118,14 +107,14 @@ public class CaregiverServiceController {
                     });
         }
 
-        return savedCert;
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCert);
     }
 
     @GetMapping("/certifications")
-    public List<com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification> getMyCertifications(
+    public ResponseEntity<List<com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification>> getMyCertifications(
             @RequestHeader("X-User-Id") UUID caregiverId
     ) {
-        return certificationRepository.findByCaregiverId(caregiverId);
+        return ResponseEntity.ok(certificationRepository.findByCaregiverId(caregiverId));
     }
     
     // ===========================
@@ -133,27 +122,22 @@ public class CaregiverServiceController {
     // ===========================
 
     @GetMapping("/rating")
-    public com.carecircle.matchingBookingService.caregiver.model.CaregiverRating getMyRating(
+    public ResponseEntity<com.carecircle.matchingBookingService.caregiver.model.CaregiverRating> getMyRating(
             @RequestHeader("X-User-Id") UUID caregiverId
     ) {
         // Return empty/default if not present
-        return ratingRepository.findByCaregiverId(caregiverId)
-                .orElse(new com.carecircle.matchingBookingService.caregiver.model.CaregiverRating(caregiverId));
+        return ResponseEntity.ok(ratingRepository.findByCaregiverId(caregiverId)
+                .orElse(new com.carecircle.matchingBookingService.caregiver.model.CaregiverRating(caregiverId)));
     }
+
     @PutMapping("/services")
-    public CaregiverService updateService(
+    public ResponseEntity<CaregiverService> updateService(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
-            @RequestBody CreateCaregiverServiceRequest request // Reusing Create request for simplicity, ideally Update DTO
+            @RequestBody CreateCaregiverServiceRequest request 
     ) {
         validateCaregiver(role);
         
-        // Find existing service by ID is tricky if we don't pass ID in URL. 
-        // Assuming we pass serviceId in body or logic is find by serviceId(type) for this caregiver.
-        // The CreateCaregiverServiceRequest has serviceId (which is the Service Type ID).
-        // WE need the CaregiverService ID (the row ID). CreateCaregiverServiceRequest doesn't have it.
-        // Let's assume we find by (CaregiverId + ServiceTypeId).
-
         CaregiverService service = caregiverServiceRepository.findByCaregiverIdAndServiceId(caregiverId, request.getServiceId())
                 .orElseThrow(() -> new RuntimeException("Service not found for this caregiver"));
 
@@ -165,8 +149,6 @@ public class CaregiverServiceController {
             service.setCity(request.getCity());
         }
 
-        // On update, we might want to deactivate if critical info changed, but for now, 
-        // let's just ensure it respects certification if exists.
         certificationRepository.findByCaregiverIdAndServiceId(caregiverId, request.getServiceId())
                 .ifPresent(cert -> {
                     if (!"VERIFIED".equals(cert.getVerificationStatus())) {
@@ -174,11 +156,11 @@ public class CaregiverServiceController {
                     }
                 });
         
-        return caregiverServiceRepository.save(service);
+        return ResponseEntity.ok(caregiverServiceRepository.save(service));
     }
 
     @DeleteMapping("/services/{serviceTypeId}")
-    public void deleteService(
+    public ResponseEntity<Void> deleteService(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID serviceTypeId
@@ -187,12 +169,13 @@ public class CaregiverServiceController {
         CaregiverService service = caregiverServiceRepository.findByCaregiverIdAndServiceId(caregiverId, serviceTypeId)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
         caregiverServiceRepository.delete(service);
+        return ResponseEntity.noContent().build();
     }
     
     // Updates
     
     @PutMapping("/certifications/{id}")
-    public com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification updateCertification(
+    public ResponseEntity<com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification> updateCertification(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID id,
@@ -209,8 +192,6 @@ public class CaregiverServiceController {
         cert.setName(request.getName());
         cert.setIssuedBy(request.getIssuedBy());
         cert.setValidTill(request.getValidTill());
-        // Do NOT allow changing Service ID easily? For now assuming simple update.
-        // Important: RESET STATUS
         cert.setVerificationStatus("PENDING");
         
         // Lock Service
@@ -222,11 +203,11 @@ public class CaregiverServiceController {
                     });
         }
         
-        return certificationRepository.save(cert);
+        return ResponseEntity.ok(certificationRepository.save(cert));
     }
 
     @DeleteMapping("/certifications/{id}")
-    public void deleteCertification(
+    public ResponseEntity<Void> deleteCertification(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @PathVariable UUID id
@@ -249,11 +230,12 @@ public class CaregiverServiceController {
         }
         
         certificationRepository.delete(cert);
+        return ResponseEntity.noContent().build();
     }
 
     // Cleanup Endpoint
     @DeleteMapping("/all")
-    public void deleteCaregiverData(
+    public ResponseEntity<Void> deleteCaregiverData(
             @RequestHeader("X-User-Id") UUID caregiverId,
              @RequestHeader("X-User-Role") String role
     ) {
@@ -266,6 +248,7 @@ public class CaregiverServiceController {
          // Delete all services
          List<CaregiverService> services = caregiverServiceRepository.findByCaregiverId(caregiverId);
          caregiverServiceRepository.deleteAll(services);
+         return ResponseEntity.noContent().build();
     }
 
     // Helpers

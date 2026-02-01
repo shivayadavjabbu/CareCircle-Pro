@@ -3,6 +3,8 @@ package com.carecircle.matchingBookingService.availability.api;
 import com.carecircle.matchingBookingService.availability.api.dto.CreateAvailabilityRequest;
 import com.carecircle.matchingBookingService.availability.model.CaregiverAvailability;
 import com.carecircle.matchingBookingService.availability.repository.CaregiverAvailabilityRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class CaregiverAvailabilityController {
 
     // CAREGIVER ONLY
     @PostMapping
-    public CaregiverAvailability addAvailability(
+    public ResponseEntity<CaregiverAvailability> addAvailability(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role,
             @RequestBody CreateAvailabilityRequest request
@@ -37,12 +39,12 @@ public class CaregiverAvailabilityController {
                         request.getEndTime()
                 );
 
-        return availabilityRepository.save(availability);
+        return ResponseEntity.status(HttpStatus.CREATED).body(availabilityRepository.save(availability));
     }
 
     // CAREGIVER VIEW
     @GetMapping
-    public List<CaregiverAvailability> getMyAvailability(
+    public ResponseEntity<List<CaregiverAvailability>> getMyAvailability(
             @RequestHeader("X-User-Id") UUID caregiverId,
             @RequestHeader("X-User-Role") String role
     ) {
@@ -50,6 +52,6 @@ public class CaregiverAvailabilityController {
             throw new RuntimeException("Only caregiver can view availability");
         }
 
-        return availabilityRepository.findByCaregiverIdAndActiveTrue(caregiverId);
+        return ResponseEntity.ok(availabilityRepository.findByCaregiverIdAndActiveTrue(caregiverId));
     }
 }

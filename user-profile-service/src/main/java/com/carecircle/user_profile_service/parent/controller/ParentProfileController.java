@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -39,8 +40,7 @@ public class ParentProfileController {
      * Creates a parent profile for the authenticated user.
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ParentProfileResponse createProfile(
+    public ResponseEntity<ParentProfileResponse> createProfile(
     		 @Valid @RequestBody CreateParentProfileRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -58,14 +58,14 @@ public class ParentProfileController {
                 request.getCity()
         );
 
-        return mapToResponse(profile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponse(profile));
     }
 
     /**
      * Fetches the authenticated parent's profile.
      */
     @GetMapping("/me")
-    public ParentProfileResponse getMyProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<ParentProfileResponse> getMyProfile(HttpServletRequest httpRequest) {
         String userEmail = extractUserEmail(httpRequest);
         UUID userId = extractUserId(httpRequest);
         validateParentRole(httpRequest);
@@ -73,14 +73,14 @@ public class ParentProfileController {
         ParentProfile profile =
                 parentProfileService.getProfileByUserId(userId);
 
-        return mapToResponse(profile);
+        return ResponseEntity.ok(mapToResponse(profile));
     }
 
     /**
      * Updates the authenticated parent's profile.
      */
     @PutMapping
-    public ParentProfileResponse updateProfile(
+    public ResponseEntity<ParentProfileResponse> updateProfile(
             @Valid @RequestBody UpdateParentProfileRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -95,18 +95,18 @@ public class ParentProfileController {
                 request.getCity()
         );
 
-        return mapToResponse(profile);
+        return ResponseEntity.ok(mapToResponse(profile));
     }
 
     /**
      * Deletes the authenticated parent's profile (cascades to children).
      */
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<Void> deleteProfile(HttpServletRequest httpRequest) {
         UUID userId = extractUserId(httpRequest);
         validateParentRole(httpRequest);
         parentProfileService.deleteProfile(userId);
+        return ResponseEntity.noContent().build();
     }
 
 

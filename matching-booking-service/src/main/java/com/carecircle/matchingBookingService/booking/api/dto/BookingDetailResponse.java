@@ -10,7 +10,9 @@ public class BookingDetailResponse {
     
     private UUID id;
     private UUID parentId;
+    private String parentName;
     private UUID caregiverId;
+    private String caregiverName;
     private UUID serviceId;
     private String bookingType;
     
@@ -30,8 +32,8 @@ public class BookingDetailResponse {
     private LocalDateTime updatedAt;
     
     public BookingDetailResponse(
-            UUID id, UUID parentId, UUID caregiverId, UUID serviceId,
-            String bookingType, LocalTime startTime, LocalTime endTime,
+            UUID id, UUID parentId, String parentName, UUID caregiverId, String caregiverName, 
+            UUID serviceId, String bookingType, LocalTime startTime, LocalTime endTime,
             LocalDate startDate, LocalDate endDate, Double pricePerUnit,
             Integer totalUnits, Double finalPrice, String status,
             List<ChildDetail> children, LocalDateTime createdAt,
@@ -39,7 +41,9 @@ public class BookingDetailResponse {
     ) {
         this.id = id;
         this.parentId = parentId;
+        this.parentName = parentName;
         this.caregiverId = caregiverId;
+        this.caregiverName = caregiverName;
         this.serviceId = serviceId;
         this.bookingType = bookingType;
         this.startTime = startTime;
@@ -77,7 +81,9 @@ public class BookingDetailResponse {
     // Getters
     public UUID getId() { return id; }
     public UUID getParentId() { return parentId; }
+    public String getParentName() { return parentName; }
     public UUID getCaregiverId() { return caregiverId; }
+    public String getCaregiverName() { return caregiverName; }
     public UUID getServiceId() { return serviceId; }
     public String getBookingType() { return bookingType; }
     public LocalTime getStartTime() { return startTime; }

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -42,37 +43,36 @@ public class AdminController {
     }
     
     @PostMapping("/profile")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createAdminProfile(
+    public ResponseEntity<Void> createAdminProfile(
             @Valid @RequestBody CreateAdminProfileRequest request,
             HttpServletRequest httpRequest
     ) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
-
         adminService.createAdminProfile(
-        		userId,
-        		httpRequest.getHeader(USER_EMAIL_HEADER),
+                userId,
+                httpRequest.getHeader(USER_EMAIL_HEADER),
                 request.getFullName(),
                 request.getPhoneNumber(),
                 request.getAdminLevel(),
                 request.getAddress(),
                 request.getCity()
         );
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/profile")
-    public AdminProfileResponse getMyProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<AdminProfileResponse> getMyProfile(HttpServletRequest httpRequest) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
-        return adminService.getMyProfile(userId);
+        return ResponseEntity.ok(adminService.getMyProfile(userId));
     }
 
     @PutMapping("/profile")
-    public AdminProfileResponse updateMyProfile(
+    public ResponseEntity<AdminProfileResponse> updateMyProfile(
             @Valid @RequestBody UpdateAdminProfileRequest request,
             HttpServletRequest httpRequest
     ) {
         UUID userId = validateAdminAndGetUserId(httpRequest);
-        return adminService.updateMyProfile(
+        AdminProfileResponse response = adminService.updateMyProfile(
                 userId,
                 request.getFullName(),
                 request.getPhoneNumber(),
@@ -80,13 +80,14 @@ public class AdminController {
                 request.getAddress(),
                 request.getCity()
         );
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/profile")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMyProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<Void> deleteMyProfile(HttpServletRequest httpRequest) {
         UUID userId = validateAdminAndGetUserId(httpRequest);
         adminService.deleteMyProfile(userId);
+        return ResponseEntity.noContent().build();
     }
 
     // =========================
@@ -94,76 +95,82 @@ public class AdminController {
     // =========================
 
     @GetMapping("/stats")
-    public AdminStatisticsResponse getStatistics(HttpServletRequest httpRequest) {
+    public ResponseEntity<AdminStatisticsResponse> getStatistics(HttpServletRequest httpRequest) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getStatistics();
+        return ResponseEntity.ok(adminService.getStatistics());
     }
 
     @GetMapping("/parents")
-    public PagedResponse<ParentSummaryResponse> getAllParents(
+    public ResponseEntity<PagedResponse<ParentSummaryResponse>> getAllParents(
             @RequestParam(required = false) String city,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest
     ) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getAllParents(city, page, size);
+        return ResponseEntity.ok(adminService.getAllParents(city, page, size));
     }
 
     @GetMapping("/parents/{parentId}/children")
-    public List<com.carecircle.user_profile_service.child.dto.ChildResponse> getChildrenForParent(
+    public ResponseEntity<List<com.carecircle.user_profile_service.child.dto.ChildResponse>> getChildrenForParent(
             @PathVariable UUID parentId,
             HttpServletRequest httpRequest
     ) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getChildrenForParent(parentId);
+        return ResponseEntity.ok(adminService.getChildrenForParent(parentId));
     }
 
     @GetMapping("/caregivers")
-    public PagedResponse<CaregiverSummaryResponse> getAllCaregivers(
+    public ResponseEntity<PagedResponse<CaregiverSummaryResponse>> getAllCaregivers(
             @RequestParam(required = false) String city,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest
     ) {
         validateAdminAndGetUserId(httpRequest);
-        return adminService.getAllCaregivers(city, page, size);
+        return ResponseEntity.ok(adminService.getAllCaregivers(city, page, size));
     }
 
 
     // Caregiver Profile
 
     @PostMapping("/caregivers/{caregiverId}/verify")
-    @ResponseStatus(HttpStatus.OK)
-    public void verifyCaregiverProfile(
+    public ResponseEntity<Void> verifyCaregiverProfile(
             @PathVariable UUID caregiverId,
             @Valid @RequestBody VerifyRequest request,
             HttpServletRequest httpRequest
     ) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
         adminService.verifyCaregiverProfile(userId, caregiverId, request.getReason());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/caregivers/{caregiverId}/reject")
-    @ResponseStatus(HttpStatus.OK)
-    public void rejectCaregiverProfile(
+    public ResponseEntity<Void> rejectCaregiverProfile(
             @PathVariable UUID caregiverId,
             @Valid @RequestBody RejectRequest request,
             HttpServletRequest httpRequest
     ) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
         adminService.rejectCaregiverProfile(userId, caregiverId, request.getReason());
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/caregivers/{caregiverId}/disable")
-    @ResponseStatus(HttpStatus.OK)
-    public void disableCaregiverProfile(
+    public ResponseEntity<Void> disableCaregiverProfile(
             @PathVariable UUID caregiverId,
             @Valid @RequestBody DisableRequest request,
             HttpServletRequest httpRequest
     ) {
     	UUID userId = validateAdminAndGetUserId(httpRequest);
         adminService.disableCaregiverProfile(userId, caregiverId, request.getReason());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/audits/profiles")
+    public ResponseEntity<List<com.carecircle.user_profile_service.admin.dto.ProfileVerificationAuditResponse>> getProfileAudits(HttpServletRequest httpRequest) {
+        validateAdminAndGetUserId(httpRequest);
+        return ResponseEntity.ok(adminService.getProfileAudits());
     }
 
     // =========================

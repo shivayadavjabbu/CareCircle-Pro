@@ -15,43 +15,39 @@ spring:
         - id: auth-service
           uri: http://localhost:8081
           predicates:
-            - Path=/auth/**
+            - Path=/auth-service/**
+          filters:
+            - StripPrefix=1
 
         # =========================
         # USER PROFILE SERVICE
         # =========================
-        - id: parents-route
+        - id: user-profile-service
           uri: http://localhost:8083
           predicates:
-            - Path=/parents/**
-
-        - id: caregiver-route
-          uri: http://localhost:8083
-          predicates:
-            - Path=/caregiver/**
-
-        - id: admin-route
-          uri: http://localhost:8083
-          predicates:
-            - Path=/admin/**
+            - Path=/user-profile-service/**
+          filters:
+            - StripPrefix=1
 
         # =========================
         # MATCHING / BOOKING
         # =========================
-        - id: matching-booking
+        - id: matching-booking-service
           uri: http://localhost:8085
           predicates:
-            - Path=/matching-booking/**
+            - Path=/matching-booking-service/**
           filters:
             - StripPrefix=1
 
         # =========================
         # COMMUNICATION SERVICE (REST)
         # =========================
-        - id: communication-rest
+        - id: communication-service
           uri: http://localhost:8082
           predicates:
-            - Path=/chats/**
+            - Path=/communication-service/**
+          filters:
+            - StripPrefix=1
 
 
         # =========================

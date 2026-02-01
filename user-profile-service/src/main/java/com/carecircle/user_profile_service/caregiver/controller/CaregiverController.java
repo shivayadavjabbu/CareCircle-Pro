@@ -8,6 +8,7 @@ import com.carecircle.user_profile_service.caregiver.service.CaregiverService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -37,8 +38,7 @@ public class CaregiverController {
     // =========================
 
     @PostMapping("/profile")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CaregiverProfileResponse createProfile(
+    public ResponseEntity<CaregiverProfileResponse> createProfile(
             @Valid @RequestBody CreateCaregiverProfileRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -60,19 +60,19 @@ public class CaregiverController {
                 request.getExperienceYears()
         );
 
-        return mapProfile(profile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapProfile(profile));
     }
 
     @GetMapping("/profile")
-    public CaregiverProfileResponse getMyProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<CaregiverProfileResponse> getMyProfile(HttpServletRequest httpRequest) {
         validateCaregiverRole(httpRequest);
         UUID userId = extractUserId(httpRequest);
 
-        return mapProfile(caregiverService.getMyProfile(userId));
+        return ResponseEntity.ok(mapProfile(caregiverService.getMyProfile(userId)));
     }
 
     @PutMapping("/profile")
-    public CaregiverProfileResponse updateMyProfile(
+    public ResponseEntity<CaregiverProfileResponse> updateMyProfile(
             @Valid @RequestBody UpdateCaregiverProfileRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -89,15 +89,15 @@ public class CaregiverController {
                 request.getExperienceYears()
         );
 
-        return mapProfile(profile);
+        return ResponseEntity.ok(mapProfile(profile));
     }
 
     @DeleteMapping("/profile")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMyProfile(HttpServletRequest httpRequest) {
+    public ResponseEntity<Void> deleteMyProfile(HttpServletRequest httpRequest) {
         validateCaregiverRole(httpRequest);
         UUID userId = extractUserId(httpRequest);
         caregiverService.deleteProfile(userId);
+        return ResponseEntity.noContent().build();
     }
 
     // =========================

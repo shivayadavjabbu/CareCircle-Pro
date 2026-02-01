@@ -184,3 +184,32 @@ export const deleteService = async (id) => {
     if (!res.ok) throw new Error("Failed to delete service");
     return true;
 };
+
+export const createCity = async (data) => {
+    const res = await fetch(`${API_BASE_URL}/admin/cities`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create city");
+    return res.json();
+};
+
+export const updateCity = async (id, data) => {
+    const res = await fetch(`${API_BASE_URL}/admin/cities/${id}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update city");
+    return res.json();
+};
+
+export const deleteCity = async (id) => {
+    const res = await fetch(`${API_BASE_URL}/admin/cities/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to delete city");
+    return true;
+};

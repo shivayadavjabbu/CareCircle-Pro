@@ -23,6 +23,7 @@ import AdminProfile from "./pages/AdminProfile";
 import ManageCaregivers from "./pages/ManageCaregivers";
 import ManageBookings from "./pages/ManageBookings";
 import ManageServices from "./pages/ManageServices";
+import ManageCities from "./pages/ManageCities";
 
 // New Nanny pages
 import NannyProfile from "./pages/NannyProfile";
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="/admin/nannies" element={<ManageCaregivers />} />
         <Route path="/admin/bookings" element={<ManageBookings />} />
         <Route path="/admin/services" element={<ManageServices />} />
+        <Route path="/admin/cities" element={<ManageCities />} />
 
         {/* Nanny onboarding flow */}
         <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />

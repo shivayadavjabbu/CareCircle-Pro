@@ -117,11 +117,12 @@ public class AdminController {
     @GetMapping("/caregivers")
     public ResponseEntity<PagedResponse<CaregiverSummaryResponse>> getAllCaregivers(
             @RequestParam(required = false) String city,
+            @RequestParam(required = false) List<String> status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest) {
         validateAdminAndGetUserId(httpRequest);
-        return ResponseEntity.ok(adminService.getAllCaregivers(city, page, size));
+        return ResponseEntity.ok(adminService.getAllCaregivers(city, status, page, size));
     }
 
     // Caregiver Profile

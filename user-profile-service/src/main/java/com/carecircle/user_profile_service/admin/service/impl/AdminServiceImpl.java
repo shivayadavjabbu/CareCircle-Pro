@@ -229,7 +229,8 @@ public class AdminServiceImpl implements AdminService {
         }
 
         @Override
-        public PagedResponse<CaregiverSummaryResponse> getAllCaregivers(String city, int page, int size) {
+        public PagedResponse<CaregiverSummaryResponse> getAllCaregivers(String city, List<String> statuses, int page,
+                        int size) {
                 if (city != null && !city.isBlank()) {
                         matchingIntegrationService.getCityByName(city)
                                         .orElseThrow(() -> new CityNotFoundException("City not found: " + city));
@@ -239,9 +240,19 @@ public class AdminServiceImpl implements AdminService {
                 Page<CaregiverProfile> caregiversPage;
 
                 if (city != null && !city.isBlank()) {
-                        caregiversPage = caregiverProfileRepository.findByCityIgnoreCase(city, pageable);
+                        if (statuses != null && !statuses.isEmpty()) {
+                                caregiversPage = caregiverProfileRepository
+                                                .findByCityIgnoreCaseAndVerificationStatusIn(city, statuses, pageable);
+                        } else {
+                                caregiversPage = caregiverProfileRepository.findByCityIgnoreCase(city, pageable);
+                        }
                 } else {
-                        caregiversPage = caregiverProfileRepository.findAll(pageable);
+                        if (statuses != null && !statuses.isEmpty()) {
+                                caregiversPage = caregiverProfileRepository.findByVerificationStatusIn(statuses,
+                                                pageable);
+                        } else {
+                                caregiversPage = caregiverProfileRepository.findAll(pageable);
+                        }
                 }
 
                 List<CaregiverSummaryResponse> content = caregiversPage.getContent().stream()

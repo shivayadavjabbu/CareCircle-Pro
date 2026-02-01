@@ -1,6 +1,5 @@
 package com.carecircle.user_profile_service.caregiver.repository;
 
-
 import com.carecircle.user_profile_service.caregiver.model.CaregiverProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +18,18 @@ public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfi
      * Fetch caregiver profile by authenticated user email.
      */
     Optional<CaregiverProfile> findByUserEmail(String userEmail);
+
     Optional<CaregiverProfile> findByUserId(UUID userId);
-    
+
     List<CaregiverProfile> findByUserIdIn(List<UUID> userIds);
 
+    Page<CaregiverProfile> findByCityIgnoreCaseAndVerificationStatusIn(String city, List<String> statuses,
+            Pageable pageable);
+
+    Page<CaregiverProfile> findByVerificationStatusIn(List<String> statuses, Pageable pageable);
+
     Page<CaregiverProfile> findByCityIgnoreCase(String city, Pageable pageable);
+
     Page<CaregiverProfile> findAll(Pageable pageable);
 
     /**
@@ -32,7 +38,5 @@ public interface CaregiverProfileRepository extends JpaRepository<CaregiverProfi
      */
     List<CaregiverProfile> findAllByVerificationStatusAndIsActive(
             String verificationStatus,
-            Boolean isActive
-    );
+            Boolean isActive);
 }
-

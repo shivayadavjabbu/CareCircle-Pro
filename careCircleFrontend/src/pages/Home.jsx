@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import heroImage from "../assets/happy_nanny_hero.png";
+import heroImage from "../assets/happy_caregiver_hero.png";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,20 +25,20 @@ export default function Home() {
               </span>
             </h1>
             <p className="text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
-              Connect with top-rated, background-checked nannies and babysitters in your neighborhood. Simple, secure, and stress-free.
+              Connect with top-rated, background-checked caregivers and babysitters in your neighborhood. Simple, secure, and stress-free.
             </p>
             <div className="flex flex-wrap gap-4">
               <button
-                onClick={() => navigate("/register-parent")}
+                onClick={() => navigate("/auth")}
                 className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 btn-premium"
               >
-                Hire a Nanny
+                Hire a Caregiver
               </button>
               <button
-                onClick={() => navigate("/register-nanny")}
+                onClick={() => navigate("/auth")}
                 className="px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl border-2 border-slate-100 shadow-lg hover:border-slate-200 hover:-translate-y-1 transition-all active:scale-95 btn-premium"
               >
-                Become a Sitter
+                Become a Caregiver
               </button>
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function Home() {
             <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
               <img
                 src={heroImage}
-                alt="Happy Nanny"
+                alt="Happy Caregiver"
                 className="w-full h-auto object-cover"
               />
               <div className="absolute bottom-6 left-6 right-6 p-6 glass-card rounded-2xl border border-white/30">
@@ -101,7 +101,7 @@ export default function Home() {
             <p className="text-indigo-100 text-lg mb-12 max-w-2xl mx-auto">Join the CareCircle community today and experience the future of childcare services.</p>
             <div className="flex flex-wrap justify-center gap-6">
               <button
-                onClick={() => navigate("/register-parent")}
+                onClick={() => navigate("/auth")}
                 className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-2xl hover:bg-slate-50 transition-all active:scale-95 shadow-xl"
               >
                 Get Started Now

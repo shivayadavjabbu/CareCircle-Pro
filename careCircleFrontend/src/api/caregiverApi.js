@@ -8,23 +8,48 @@ const getHeaders = () => {
   };
 };
 
+async function handleResponse(response) {
+  const text = await response.text();
+  let data = null;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    // Not JSON
+  }
+
+  if (!response.ok) {
+    if (response.status === 404) return null;
+    const message = data?.message || data?.error || text || "Request failed";
+    throw new Error(message);
+  }
+
+  return data || text;
+}
+
 export const createCaregiverProfile = async (data) => {
   const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to create caregiver profile");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const getCaregiverProfile = async () => {
   const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
     method: "GET",
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    headers: getHeaders(),
   });
-  if (!res.ok) throw new Error("Failed to fetch caregiver profile");
-  return res.json();
+  return handleResponse(res);
+};
+
+export const updateCaregiverProfile = async (data) => {
+  const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+    method: "PUT",
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  return handleResponse(res);
 };
 
 export const addCapability = async (data) => {
@@ -33,8 +58,7 @@ export const addCapability = async (data) => {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to add capability");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const getCapabilities = async () => {
@@ -42,8 +66,7 @@ export const getCapabilities = async () => {
     method: "GET",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
-  if (!res.ok) throw new Error("Failed to fetch capabilities");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const addCertification = async (data) => {
@@ -52,15 +75,13 @@ export const addCertification = async (data) => {
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to add certification");
-  return res.json();
+  return handleResponse(res);
 };
 
 export const getCertifications = async () => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/certifications`, {
+  const res = await fetch(`${API_BASE_URL}/caregivers/certifications`, {
     method: "GET",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
-  if (!res.ok) throw new Error("Failed to fetch certifications");
-  return res.json();
+  return handleResponse(res);
 };

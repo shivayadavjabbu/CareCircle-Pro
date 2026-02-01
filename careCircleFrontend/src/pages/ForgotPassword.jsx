@@ -60,7 +60,7 @@ export default function ForgotPassword() {
                 type="button"
                 onClick={() => setRole("ROLE_CARETAKER")}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${role === "ROLE_CARETAKER"
-                  ? "bg-white text-brand-nanny shadow-sm"
+                  ? "bg-white text-brand-caregiver shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
                   }`}
               >

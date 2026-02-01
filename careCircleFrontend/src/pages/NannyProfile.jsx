@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   createCaregiverProfile,
+  updateCaregiverProfile,
   addCertification,
   addCapability,
   getCaregiverProfile
 } from "../api/caregiverApi";
 export default function NannyProfile() {
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  const [isUpdate, setIsUpdate] = useState(false);
 
   /* ================= PROFILE ================= */
   const [profile, setProfile] = useState({
@@ -30,6 +34,7 @@ export default function NannyProfile() {
             age: data.age || "", // Ensure controlled component
             experienceYears: data.experienceYears || ""
           });
+          setIsUpdate(true);
           console.log("Profile loaded");
         }
       } catch (err) {
@@ -63,22 +68,37 @@ export default function NannyProfile() {
 
   /* ================= PROFILE SUBMIT ================= */
   const submitProfile = async () => {
+    if (!profile.fullName || !profile.phoneNumber || !profile.age || !profile.gender || !profile.address || !profile.city) {
+      setMessage("❌ Please fill in all required fields (marked with *)");
+      return;
+    }
+
     try {
       const payload = {
         fullName: profile.fullName.trim(),
         phoneNumber: profile.phoneNumber.trim(),
-        age: Number(profile.age),
+        age: profile.age ? Number(profile.age) : null,
         gender: profile.gender.toUpperCase(),
         address: profile.address.trim(),
         city: profile.city.trim(),
         bio: profile.bio.trim(),
-        experienceYears: Number(profile.experienceYears || 0),
+        experienceYears: profile.experienceYears ? Number(profile.experienceYears) : 0,
       };
 
-      await createCaregiverProfile(payload);
-      setMessage("✅ Profile saved successfully! You can now add certifications and capabilities below.");
+      console.log("SENDING PAYLOAD:", payload);
+
+      if (isUpdate) {
+        await updateCaregiverProfile(payload);
+        setMessage("✅ Profile updated successfully!");
+        setTimeout(() => navigate("/nanny-dashboard"), 1500);
+      } else {
+        await createCaregiverProfile(payload);
+        setIsUpdate(true);
+        setMessage("✅ Profile saved successfully! Redirecting to dashboard...");
+        setTimeout(() => navigate("/nanny-dashboard"), 1500);
+      }
     } catch (error) {
-      console.error("PROFILE ERROR:", error);
+      console.error("FULL PROFILE ERROR:", error);
       setMessage("❌ " + (error.message || "Failed to save profile"));
     }
   };
@@ -181,57 +201,7 @@ export default function NannyProfile() {
         />
 
         <button onClick={submitProfile} className="w-full p-3.5 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(49,130,206,0.35)] active:translate-y-0">
-          Save Profile
-        </button>
-      </div>
-
-      {/* ================= CERTIFICATION ================= */}
-      <h3 className="mt-10 mb-3 text-lg font-bold text-gray-700 border-b-2 border-gray-100 pb-1.5">Certifications</h3>
-
-      <div className="flex flex-col gap-3.5">
-        <input
-          name="certificationName"
-          placeholder="Certification Name *"
-          value={certification.certificationName}
-          onChange={(e) => handleChange(e, setCertification, certification)}
-          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-        />
-
-        <input
-          name="issuedBy"
-          placeholder="Issued By *"
-          value={certification.issuedBy}
-          onChange={(e) => handleChange(e, setCertification, certification)}
-          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300"
-        />
-
-        <input
-          type="date"
-          name="validTill"
-          value={certification.validTill}
-          onChange={(e) => handleChange(e, setCertification, certification)}
-          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 bg-white"
-        />
-
-        <button onClick={submitCertification} className="w-full p-3.5 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(49,130,206,0.35)] active:translate-y-0">
-          Add Certification
-        </button>
-      </div>
-
-      {/* ================= CAPABILITY ================= */}
-      <h3 className="mt-10 mb-3 text-lg font-bold text-gray-700 border-b-2 border-gray-100 pb-1.5">Capabilities</h3>
-
-      <div className="flex flex-col gap-3.5">
-        <textarea
-          name="description"
-          placeholder="Describe your caregiving service"
-          value={capability.description}
-          onChange={(e) => handleChange(e, setCapability, capability)}
-          className="w-full p-3 text-sm border-2 border-gray-100 rounded-xl transition-all duration-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-gray-300 resize-y min-h-[90px]"
-        />
-
-        <button onClick={submitCapability} className="w-full p-3.5 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(49,130,206,0.35)] active:translate-y-0">
-          Add Capability
+          Save & Continue to Dashboard
         </button>
       </div>
     </div>

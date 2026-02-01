@@ -20,16 +20,16 @@ import java.util.ArrayList;
 @Table(name = "caregiver_profiles")
 public class CaregiverProfile {
 
-	@Id
-	@GeneratedValue
-	@Column(name = "id", nullable = false, updatable = false)
-	private UUID id;
+    @Id
+    @GeneratedValue
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;
 
     // ===== Identity (linked logically to auth-service) =====
 
     @Column(name = "user_email", nullable = false, unique = true, updatable = false)
     private String userEmail;
-    
+
     @Column(name = "user_id", nullable = false, unique = true)
     private UUID userId;
 
@@ -85,7 +85,7 @@ public class CaregiverProfile {
     }
 
     public CaregiverProfile(
-    		UUID userId, 
+            UUID userId,
             String userEmail,
             String fullName,
             String phoneNumber,
@@ -94,9 +94,8 @@ public class CaregiverProfile {
             String address,
             String city,
             String bio,
-            Integer experienceYears
-    ) {
-    	this.userId = userId;
+            Integer experienceYears) {
+        this.userId = userId;
         this.userEmail = userEmail;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
@@ -126,9 +125,9 @@ public class CaregiverProfile {
     public UUID getId() {
         return id;
     }
-    
+
     public UUID getUserId() {
-    	return userId;
+        return userId;
     }
 
     public String getUserEmail() {
@@ -186,8 +185,8 @@ public class CaregiverProfile {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-    
- // ===== Verification state changes (admin-only usage) =====
+
+    // ===== Verification state changes (admin-only usage) =====
 
     public void markVerified() {
         this.verificationStatus = "VERIFIED";
@@ -237,4 +236,3 @@ public class CaregiverProfile {
         this.id = id;
     }
 }
-

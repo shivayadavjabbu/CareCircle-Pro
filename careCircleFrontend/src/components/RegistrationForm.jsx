@@ -22,15 +22,15 @@ export default function RegistrationForm({ userType }) {
       // Redirect to baby details page
       navigate("/baby-details");
     } else {
-      alert("✅ Nanny registered successfully! Our team will contact you.");
+      alert("✅ Caregiver registered successfully! Our team will contact you.");
     }
   };
 
   return (
     <div className="form-wrapper">
       <h2>
-        {userType === "nanny"
-          ? "Nanny Registration"
+        {userType === "caregiver"
+          ? "Caregiver Registration"
           : "Parent Registration"}
       </h2>
 
@@ -56,7 +56,7 @@ export default function RegistrationForm({ userType }) {
           required
         />
 
-        {userType === "nanny" && (
+        {userType === "caregiver" && (
           <input
             name="experience"
             placeholder="Years of Experience"

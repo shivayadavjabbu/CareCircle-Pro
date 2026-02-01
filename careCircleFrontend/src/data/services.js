@@ -4,8 +4,8 @@ const services = [
     description: "Safe and reliable babysitting services."
   },
   {
-    title: "Nanny",
-    description: "Professional nanny for long-term child care."
+    title: "Caregiver",
+    description: "Professional caregiver for long-term child care."
   }
 ];
 

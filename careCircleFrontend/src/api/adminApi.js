@@ -44,7 +44,7 @@ export const verifyCaregiver = async (id, reason) => {
         body: JSON.stringify({ reason }),
     });
     if (!res.ok) throw new Error("Failed to verify caregiver");
-    return res.json();
+    return true;
 };
 
 export const verifyCapability = async (id, reason) => {
@@ -58,13 +58,23 @@ export const verifyCapability = async (id, reason) => {
 };
 
 export const verifyCertification = async (id, reason) => {
-    const res = await fetch(`${API_BASE_URL}/admin/certifications/${id}/verify`, {
+    const res = await fetch(`${API_BASE_URL}/admin/matching/certifications/${id}/verify`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ reason }),
     });
     if (!res.ok) throw new Error("Failed to verify certification");
-    return res.json();
+    return true;
+};
+
+export const rejectCertification = async (id, reason) => {
+    const res = await fetch(`${API_BASE_URL}/admin/matching/certifications/${id}/reject`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ reason }),
+    });
+    if (!res.ok) throw new Error("Failed to reject certification");
+    return true;
 };
 export const getAdminStatistics = async () => {
     const res = await fetch(`${API_BASE_URL}/admin/stats`, {
@@ -80,5 +90,33 @@ export const deleteAdminProfile = async () => {
         headers: getHeaders(),
     });
     if (!res.ok) throw new Error("Failed to delete admin profile");
+    return true;
+};
+
+export const getAllCaregivers = async (city = "", page = 0, size = 10) => {
+    const res = await fetch(`${API_BASE_URL}/admin/caregivers?city=${city}&page=${page}&size=${size}`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch caregivers");
+    return res.json();
+};
+
+export const getPendingCertifications = async () => {
+    const res = await fetch(`${API_BASE_URL}/admin/matching/certifications/pending`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch pending certifications");
+    return res.json();
+};
+
+export const rejectCaregiver = async (id, reason) => {
+    const res = await fetch(`${API_BASE_URL}/admin/caregivers/${id}/reject`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ reason }),
+    });
+    if (!res.ok) throw new Error("Failed to reject caregiver");
     return true;
 };

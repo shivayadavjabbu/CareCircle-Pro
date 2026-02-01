@@ -4,12 +4,16 @@ import com.carecircle.matchingBookingService.admin.dto.CertificationVerification
 import com.carecircle.matchingBookingService.admin.model.CertificationVerificationAudit;
 import com.carecircle.matchingBookingService.admin.repository.CertificationVerificationAuditRepository;
 import com.carecircle.matchingBookingService.admin.service.AdminMatchingService;
+import com.carecircle.matchingBookingService.common.dto.PagedResponse;
 import com.carecircle.matchingBookingService.common.service.UserIntegrationService;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverService;
 import com.carecircle.matchingBookingService.caregiver.repository.CaregiverCertificationRepository;
 import com.carecircle.matchingBookingService.caregiver.repository.CaregiverServiceRepository;
 import com.carecircle.matchingBookingService.service.repository.ServiceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +35,7 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
             CertificationVerificationAuditRepository auditRepository,
             CaregiverServiceRepository caregiverServiceRepository,
             ServiceRepository serviceRepository,
-            UserIntegrationService userService
-    ) {
+            UserIntegrationService userService) {
         this.certificationRepository = certificationRepository;
         this.auditRepository = auditRepository;
         this.caregiverServiceRepository = caregiverServiceRepository;
@@ -45,6 +48,26 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
         return certificationRepository.findAll().stream()
                 .filter(c -> "PENDING".equals(c.getVerificationStatus()))
                 .toList();
+    }
+
+    @Override
+    public PagedResponse<CaregiverCertification> getPagedCertifications(List<String> statuses, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CaregiverCertification> certPage;
+
+        if (statuses != null && !statuses.isEmpty()) {
+            certPage = certificationRepository.findByVerificationStatusIn(statuses, pageable);
+        } else {
+            certPage = certificationRepository.findAll(pageable);
+        }
+
+        return new PagedResponse<>(
+                certPage.getContent(),
+                certPage.getNumber(),
+                certPage.getSize(),
+                certPage.getTotalElements(),
+                certPage.getTotalPages(),
+                certPage.isLast());
     }
 
     @Override
@@ -66,8 +89,10 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
         if (cert.getServiceId() != null) {
             caregiverServiceRepository.findByCaregiverIdAndServiceId(cert.getCaregiverId(), cert.getServiceId())
                     .ifPresent(service -> {
-                        // We can implicitly 'activate' the service or we allow the user to define 'active' 
-                        // but logic checks certification. For now, let's just log or ensure it's not disabled by system.
+                        // We can implicitly 'activate' the service or we allow the user to define
+                        // 'active'
+                        // but logic checks certification. For now, let's just log or ensure it's not
+                        // disabled by system.
                     });
         }
     }
@@ -89,26 +114,30 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
                     .ifPresent(service -> {
                         service.deactivate();
                         caregiverServiceRepository.save(service);
-                        logAudit(adminId, adminEmail, "SERVICE", service.getId(), "DISABLE", "ACTIVE", "DISABLED", "Certification Rejected: " + reason);
+                        logAudit(adminId, adminEmail, "SERVICE", service.getId(), "DISABLE", "ACTIVE", "DISABLED",
+                                "Certification Rejected: " + reason);
                     });
         }
     }
 
     @Override
     public void disableCertification(UUID adminId, String adminEmail, UUID certificationId, String reason) {
-        // Similar to reject, but maybe "SUSPENDED" status? For now treating as REJECTED flow or just logging.
+        // Similar to reject, but maybe "SUSPENDED" status? For now treating as REJECTED
+        // flow or just logging.
         // Assuming Disable means Deactivate/Reject.
-         rejectCertification(adminId, adminEmail, certificationId, reason);
+        rejectCertification(adminId, adminEmail, certificationId, reason);
     }
 
     @Override
     public List<CertificationVerificationAuditResponse> getCertificationAudits() {
         List<CertificationVerificationAudit> audits = auditRepository.findAll();
-        if (audits.isEmpty()) return Collections.emptyList();
+        if (audits.isEmpty())
+            return Collections.emptyList();
 
         // Collect all IDs needed for enrichment
-        Set<UUID> adminIds = audits.stream().map(CertificationVerificationAudit::getAdminId).collect(Collectors.toSet());
-        
+        Set<UUID> adminIds = audits.stream().map(CertificationVerificationAudit::getAdminId)
+                .collect(Collectors.toSet());
+
         // Map to hold temp data for each audit
         Map<UUID, UUID> auditToCaregiverId = new HashMap<>();
         Map<UUID, String> auditToTargetName = new HashMap<>();
@@ -122,49 +151,49 @@ public class AdminMatchingServiceImpl implements AdminMatchingService {
             } else if ("SERVICE".equals(audit.getTargetType())) {
                 caregiverServiceRepository.findById(audit.getTargetId()).ifPresent(cs -> {
                     auditToCaregiverId.put(audit.getId(), cs.getCaregiverId());
-                    serviceRepository.findById(cs.getServiceId()).ifPresent(s -> 
-                        auditToTargetName.put(audit.getId(), s.getServiceName())
-                    );
+                    serviceRepository.findById(cs.getServiceId())
+                            .ifPresent(s -> auditToTargetName.put(audit.getId(), s.getServiceName()));
                 });
             }
         }
 
         Set<UUID> caregiverIds = new HashSet<>(auditToCaregiverId.values());
-        
+
         // Batch fetch all names
         List<UUID> allUserIds = new ArrayList<>(adminIds);
         allUserIds.addAll(caregiverIds);
-        
+
         Map<UUID, UserIntegrationService.UserSummary> userMap = userService.getUsersInfo(allUserIds);
 
         return audits.stream().map(a -> {
-            String adminName = userMap.containsKey(a.getAdminId()) ? userMap.get(a.getAdminId()).fullName() : "Unknown Admin";
+            String adminName = userMap.containsKey(a.getAdminId()) ? userMap.get(a.getAdminId()).fullName()
+                    : "Unknown Admin";
             UUID caregiverId = auditToCaregiverId.get(a.getId());
-            String caregiverName = (caregiverId != null && userMap.containsKey(caregiverId)) 
-                    ? userMap.get(caregiverId).fullName() : "Unknown Caregiver";
-            
+            String caregiverName = (caregiverId != null && userMap.containsKey(caregiverId))
+                    ? userMap.get(caregiverId).fullName()
+                    : "Unknown Caregiver";
+
             return new CertificationVerificationAuditResponse(
-                a.getId(),
-                a.getAdminId(),
-                adminName,
-                a.getTargetType(),
-                a.getTargetId(),
-                auditToTargetName.getOrDefault(a.getId(), "Unknown Target"),
-                caregiverId,
-                caregiverName,
-                a.getAction(),
-                a.getPreviousStatus(),
-                a.getNewStatus(),
-                a.getReason(),
-                a.getCreatedAt()
-            );
+                    a.getId(),
+                    a.getAdminId(),
+                    adminName,
+                    a.getTargetType(),
+                    a.getTargetId(),
+                    auditToTargetName.getOrDefault(a.getId(), "Unknown Target"),
+                    caregiverId,
+                    caregiverName,
+                    a.getAction(),
+                    a.getPreviousStatus(),
+                    a.getNewStatus(),
+                    a.getReason(),
+                    a.getCreatedAt());
         }).sorted(Comparator.comparing(CertificationVerificationAuditResponse::getCreatedAt).reversed()).toList();
     }
-    
-    private void logAudit(UUID adminId, String adminEmail, String targetType, UUID targetId, String action, String prev, String curr, String reason) {
+
+    private void logAudit(UUID adminId, String adminEmail, String targetType, UUID targetId, String action, String prev,
+            String curr, String reason) {
         CertificationVerificationAudit audit = new CertificationVerificationAudit(
-                adminId, adminEmail, targetType, targetId, action, prev, curr, reason
-        );
+                adminId, adminEmail, targetType, targetId, action, prev, curr, reason);
         auditRepository.save(audit);
     }
 }

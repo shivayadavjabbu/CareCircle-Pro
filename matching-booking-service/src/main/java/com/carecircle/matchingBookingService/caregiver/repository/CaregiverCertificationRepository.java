@@ -1,6 +1,8 @@
 package com.carecircle.matchingBookingService.caregiver.repository;
 
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,6 @@ public interface CaregiverCertificationRepository extends JpaRepository<Caregive
     List<CaregiverCertification> findByCaregiverId(UUID caregiverId);
 
     java.util.Optional<CaregiverCertification> findByCaregiverIdAndServiceId(UUID caregiverId, UUID serviceId);
+
+    Page<CaregiverCertification> findByVerificationStatusIn(List<String> statuses, Pageable pageable);
 }

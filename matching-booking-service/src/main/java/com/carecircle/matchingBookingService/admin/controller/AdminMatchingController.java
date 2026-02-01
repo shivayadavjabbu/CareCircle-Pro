@@ -1,6 +1,7 @@
 package com.carecircle.matchingBookingService.admin.controller;
 
 import com.carecircle.matchingBookingService.admin.dto.CertificationVerificationAuditResponse;
+import com.carecircle.matchingBookingService.common.dto.PagedResponse;
 import com.carecircle.matchingBookingService.admin.service.AdminMatchingService;
 import com.carecircle.matchingBookingService.caregiver.model.CaregiverCertification;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +33,19 @@ public class AdminMatchingController {
         return ResponseEntity.ok(adminMatchingService.getPendingCertifications());
     }
 
+    @GetMapping("/certifications")
+    public ResponseEntity<PagedResponse<CaregiverCertification>> getAllCertifications(
+            @RequestParam(required = false) List<String> status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest httpRequest) {
+        validateAdmin(httpRequest);
+        return ResponseEntity.ok(adminMatchingService.getPagedCertifications(status, page, size));
+    }
+
     @GetMapping("/audits/certifications")
-    public ResponseEntity<List<CertificationVerificationAuditResponse>> getCertificationAudits(HttpServletRequest request) {
+    public ResponseEntity<List<CertificationVerificationAuditResponse>> getCertificationAudits(
+            HttpServletRequest request) {
         validateAdmin(request);
         return ResponseEntity.ok(adminMatchingService.getCertificationAudits());
     }
@@ -42,8 +54,7 @@ public class AdminMatchingController {
     public ResponseEntity<Void> verifyCertification(
             @PathVariable UUID id,
             @RequestBody @Valid VerificationRequest request,
-            HttpServletRequest httpRequest
-    ) {
+            HttpServletRequest httpRequest) {
         UUID adminId = validateAdmin(httpRequest);
         String adminEmail = getAdminEmail(httpRequest);
         adminMatchingService.verifyCertification(adminId, adminEmail, id, request.getReason());
@@ -54,8 +65,7 @@ public class AdminMatchingController {
     public ResponseEntity<Void> rejectCertification(
             @PathVariable UUID id,
             @RequestBody @Valid VerificationRequest request,
-            HttpServletRequest httpRequest
-    ) {
+            HttpServletRequest httpRequest) {
         UUID adminId = validateAdmin(httpRequest);
         String adminEmail = getAdminEmail(httpRequest);
         adminMatchingService.rejectCertification(adminId, adminEmail, id, request.getReason());
@@ -68,7 +78,8 @@ public class AdminMatchingController {
             throw new RuntimeException("Access denied: admin role required");
         }
         String userId = request.getHeader(USER_ID);
-        if (userId == null) throw new RuntimeException("Missing X-User-Id");
+        if (userId == null)
+            throw new RuntimeException("Missing X-User-Id");
         try {
             return UUID.fromString(userId);
         } catch (IllegalArgumentException e) {

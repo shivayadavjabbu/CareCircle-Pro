@@ -20,12 +20,15 @@ import VerifyAccount from "./pages/VerifyAccount";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProfile from "./pages/AdminProfile";
+import ManageCaregivers from "./pages/ManageCaregivers";
+import ManageBookings from "./pages/ManageBookings";
+import ManageServices from "./pages/ManageServices";
+import ManageCities from "./pages/ManageCities";
 
 // New Nanny pages
 import NannyProfile from "./pages/NannyProfile";
 import CaregiverDashboard from "./pages/CaregiverDashboard";
-// import NannyQualification from "./pages/NannyQualification";
-// import NannyCertification from "./pages/NannyCertification";
+import FindCaregivers from "./pages/FindCaregivers";
 
 export default function App() {
   return (
@@ -52,11 +55,16 @@ export default function App() {
         <Route path="/parent-dashboard" element={<ParentDashboard />} />
         <Route path="/parent-profile" element={<ParentProfile />} />
         <Route path="/baby-details" element={<BabyDetails />} />
+        <Route path="/find-nanny" element={<FindCaregivers />} />
 
         {/* Admin flow */}
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-profile" element={<AdminProfile />} />
+        <Route path="/admin/nannies" element={<ManageCaregivers />} />
+        <Route path="/admin/bookings" element={<ManageBookings />} />
+        <Route path="/admin/services" element={<ManageServices />} />
+        <Route path="/admin/cities" element={<ManageCities />} />
 
         {/* Nanny onboarding flow */}
         <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />

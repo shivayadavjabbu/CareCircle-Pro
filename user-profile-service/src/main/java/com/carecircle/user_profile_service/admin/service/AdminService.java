@@ -45,7 +45,7 @@ public interface AdminService {
 	java.util.List<ChildResponse> getChildrenForParent(UUID parentId);
 
 	PagedResponse<com.carecircle.user_profile_service.admin.dto.CaregiverSummaryResponse> getAllCaregivers(
-			String city, int page, int size);
+			String city, List<String> statuses, int page, int size);
 
 	// ===== Caregiver Profile =====
 

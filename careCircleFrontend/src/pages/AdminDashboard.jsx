@@ -135,16 +135,55 @@ export default function AdminDashboard() {
             <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
           </div>
 
-          {/* Settings Card */}
-          <div className="card-apple flex flex-col justify-center items-center text-center cursor-pointer group hover:bg-[#f5f5f7]" onClick={() => navigate("/admin/settings")}>
-            <div className="mb-2 text-[#86868b] group-hover:text-[#0071e3]">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.212 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              </svg>
+          {/* Manage Bookings (Action) */}
+          <div className="card-apple md:col-span-2 flex items-center justify-between cursor-pointer group" onClick={() => navigate("/admin/bookings")}>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#0071e3] p-3 rounded-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1d1d1f]">Manage Bookings</h3>
+                <p className="text-sm text-gray-500">Monitor all platform bookings</p>
+              </div>
             </div>
-            <span className="text-sm font-medium text-[#1d1d1f]">Configs</span>
+            <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
           </div>
+
+          {/* Manage Services (Action) */}
+          <div className="card-apple md:col-span-2 flex items-center justify-between cursor-pointer group" onClick={() => navigate("/admin/services")}>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#34c759] p-3 rounded-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 0 0 3.182 0l4.318-4.318a2.25 2.25 0 0 0 0-3.182L10.58 3.659a2.25 2.25 0 0 0-1.591-.659ZM6 6h1.5v1.5H6V6Z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1d1d1f]">Manage Services</h3>
+                <p className="text-sm text-gray-500">Configure core offerings & pricing</p>
+              </div>
+            </div>
+            <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
+          </div>
+
+          {/* Manage Cities (Action) */}
+          <div className="card-apple md:col-span-2 flex items-center justify-between cursor-pointer group" onClick={() => navigate("/admin/cities")}>
+            <div className="flex items-center gap-4">
+              <div className="bg-[#5856d6] p-3 rounded-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#1d1d1f]">Manage Cities</h3>
+                <p className="text-sm text-gray-500">Edit supported locations</p>
+              </div>
+            </div>
+            <div className="text-[#d2d2d7] group-hover:text-[#1d1d1f] transition-colors">›</div>
+          </div>
+
+
 
           {/* Edit Profile Card */}
           <div className="card-apple flex flex-col justify-center items-center text-center cursor-pointer group hover:bg-[#f5f5f7]" onClick={() => navigate("/admin-profile")}>

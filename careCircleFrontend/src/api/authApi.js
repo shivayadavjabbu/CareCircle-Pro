@@ -18,7 +18,7 @@ async function handleResponse(response) {
 }
 
 export async function login(email, password, role) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth-service/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),
@@ -27,7 +27,7 @@ export async function login(email, password, role) {
 }
 
 export async function forgotPassword(email, role) {
-    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+    const response = await fetch(`${API_BASE_URL}/auth-service/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, role }),
@@ -36,7 +36,7 @@ export async function forgotPassword(email, role) {
 }
 
 export async function resetPassword(email, otp, newPassword, role) {
-    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+    const response = await fetch(`${API_BASE_URL}/auth-service/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword, role }),
@@ -45,7 +45,7 @@ export async function resetPassword(email, otp, newPassword, role) {
 }
 
 export async function verifyAccount(email, otp, role) {
-    const response = await fetch(`${API_BASE_URL}/auth/verify-account`, {
+    const response = await fetch(`${API_BASE_URL}/auth-service/auth/verify-account`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, role }),
@@ -54,7 +54,7 @@ export async function verifyAccount(email, otp, role) {
 }
 
 export async function register(email, password, role) {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`${API_BASE_URL}/auth-service/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, role }),

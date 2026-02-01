@@ -27,7 +27,7 @@ async function handleResponse(response) {
 }
 
 export const createCaregiverProfile = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+  const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -36,7 +36,7 @@ export const createCaregiverProfile = async (data) => {
 };
 
 export const getCaregiverProfile = async () => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+  const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile/me`, {
     method: "GET",
     headers: getHeaders(),
   });
@@ -44,7 +44,7 @@ export const getCaregiverProfile = async () => {
 };
 
 export const updateCaregiverProfile = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+  const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile`, {
     method: "PUT",
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -53,7 +53,7 @@ export const updateCaregiverProfile = async (data) => {
 };
 
 export const addCapability = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/capabilities`, {
+  const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/capabilities`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -62,7 +62,7 @@ export const addCapability = async (data) => {
 };
 
 export const getCapabilities = async () => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/capabilities`, {
+  const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/capabilities`, {
     method: "GET",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
@@ -70,7 +70,7 @@ export const getCapabilities = async () => {
 };
 
 export const addCertification = async (data) => {
-  const res = await fetch(`${API_BASE_URL}/caregiver/certifications`, {
+  const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/certifications`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(data),
@@ -79,7 +79,7 @@ export const addCertification = async (data) => {
 };
 
 export const getCertifications = async () => {
-  const res = await fetch(`${API_BASE_URL}/caregivers/certifications`, {
+  const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/certifications`, {
     method: "GET",
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });

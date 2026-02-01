@@ -9,7 +9,7 @@ const getHeaders = () => {
 };
 
 export const updateCaregiverServices = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/services`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/services`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -18,7 +18,7 @@ export const updateCaregiverServices = async (data) => {
 };
 
 export const getCaregiverServices = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/services`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/services`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -26,7 +26,7 @@ export const getCaregiverServices = async () => {
 };
 
 export const getCaregiverCertifications = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/certifications`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/certifications`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -34,7 +34,7 @@ export const getCaregiverCertifications = async () => {
 };
 
 export const addCertification = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/certifications`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/certifications`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -43,7 +43,7 @@ export const addCertification = async (data) => {
 };
 
 export const getCaregiverAvailability = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/availability`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/availability`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -51,7 +51,7 @@ export const getCaregiverAvailability = async () => {
 };
 
 export const updateCaregiverAvailability = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/availability`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/availability`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -60,7 +60,7 @@ export const updateCaregiverAvailability = async (data) => {
 };
 
 export const createBooking = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/bookings`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -69,7 +69,7 @@ export const createBooking = async (data) => {
 };
 
 export const getMyBookings = async () => {
-    const res = await fetch(`${API_BASE_URL}/bookings/my`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings/my`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -77,7 +77,7 @@ export const getMyBookings = async () => {
 };
 
 export const acceptBooking = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/bookings/${id}/accept`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/bookings/${id}/accept`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -85,7 +85,7 @@ export const acceptBooking = async (id) => {
 };
 
 export const rejectBooking = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/bookings/${id}/reject`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/bookings/${id}/reject`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -93,7 +93,7 @@ export const rejectBooking = async (id) => {
 };
 
 export const cancelBooking = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/bookings/${id}/cancel`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings/${id}/cancel`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -101,7 +101,7 @@ export const cancelBooking = async (id) => {
 };
 
 export const completeBooking = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/bookings/${id}/complete`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings/${id}/complete`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -109,7 +109,7 @@ export const completeBooking = async (id) => {
 };
 
 export const rateBooking = async (id, rating, comment) => {
-    const res = await fetch(`${API_BASE_URL}/bookings/${id}/rate`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings/${id}/rate`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ rating, comment }),
@@ -118,7 +118,7 @@ export const rateBooking = async (id, rating, comment) => {
 };
 
 export const getActiveCaregiverBookings = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/bookings/active`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/bookings/active`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -126,7 +126,7 @@ export const getActiveCaregiverBookings = async () => {
 };
 
 export const getPendingCaregiverBookings = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/bookings/pending`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/caregiver/bookings/pending`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -134,7 +134,7 @@ export const getPendingCaregiverBookings = async () => {
 };
 
 export const getBookingsByStatus = async (status) => {
-    const res = await fetch(`${API_BASE_URL}/bookings/${status.toLowerCase()}`, {
+    const res = await fetch(`${API_BASE_URL}/matching-booking-service/bookings/${status.toLowerCase()}`, {
         method: "GET",
         headers: getHeaders(),
     });

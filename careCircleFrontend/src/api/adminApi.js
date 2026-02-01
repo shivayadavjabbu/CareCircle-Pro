@@ -9,7 +9,7 @@ const getHeaders = () => {
 };
 
 export const createAdminProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/admin/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/profile`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -19,7 +19,7 @@ export const createAdminProfile = async (data) => {
 };
 
 export const verifyCaregiver = async (id, reason) => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregivers/${id}/verify`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/caregivers/${id}/verify`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ reason }),
@@ -29,7 +29,7 @@ export const verifyCaregiver = async (id, reason) => {
 };
 
 export const verifyCapability = async (id, reason) => {
-    const res = await fetch(`${API_BASE_URL}/admin/capabilities/${id}/verify`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/capabilities/${id}/verify`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ reason }),
@@ -39,7 +39,7 @@ export const verifyCapability = async (id, reason) => {
 };
 
 export const verifyCertification = async (id, reason) => {
-    const res = await fetch(`${API_BASE_URL}/admin/certifications/${id}/verify`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/certifications/${id}/verify`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ reason }),

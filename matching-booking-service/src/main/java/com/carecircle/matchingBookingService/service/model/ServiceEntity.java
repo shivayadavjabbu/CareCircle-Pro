@@ -18,7 +18,7 @@ public class ServiceEntity {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "service_name", nullable = false, updatable = false)
+    @Column(name = "service_name", nullable = false)
     private String serviceName;
 
     @Column(name = "description", nullable = false)
@@ -91,6 +91,10 @@ public class ServiceEntity {
     }
 
     // Setters for updateable fields
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }

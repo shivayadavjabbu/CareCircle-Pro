@@ -24,14 +24,14 @@ spring:
         - id: matching-service-cities
           uri: http://localhost:8085
           predicates:
-            - Path=/cities/**
-          # Controller expects /cities...
+            - Path=/cities/**, /services/**
+          # Controller expects /cities... or /services...
 
         - id: matching-service-admin
           uri: http://localhost:8085
           predicates:
-            - Path=/admin/cities/**, /admin/matching/**
-          # Controller expects /admin/cities, /admin/matching...
+            - Path=/admin/cities/**, /admin/matching/**, /admin/services/**
+          # Controller expects /admin/cities, /admin/matching, /admin/services...
 
         - id: matching-service-legacy
           uri: http://localhost:8085

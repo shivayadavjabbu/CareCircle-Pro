@@ -101,6 +101,7 @@ public class ServiceController {
         ServiceEntity service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found: " + id));
 
+        service.setServiceName(request.getServiceName());
         service.setDescription(request.getDescription());
         service.setCategory(request.getCategory());
         service.setBasePrice(request.getBasePrice());

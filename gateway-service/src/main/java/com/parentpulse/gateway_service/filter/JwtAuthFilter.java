@@ -141,7 +141,8 @@ public class JwtAuthFilter implements GlobalFilter {
         // ===== PUBLIC ENDPOINTS =====
         if (path.startsWith("/auth/") ||
                 path.startsWith("/actuator/") ||
-                path.startsWith("/cities")) {
+                path.startsWith("/cities") ||
+                path.startsWith("/services")) {
             return chain.filter(exchange);
         }
 

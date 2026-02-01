@@ -52,7 +52,7 @@ spring:
         - id: matching-service-caregiver-ops
           uri: http://localhost:8085
           predicates:
-            - Path=/caregiver/services/**, /caregiver/certifications/**, /caregiver/rating/**
+            - Path=/caregiver/services/**, /caregiver/services, /caregiver/certifications/**, /caregiver/certifications, /caregiver/rating/**, /caregiver/rating
 
         - id: user-profile-caregiver
           uri: http://localhost:8083

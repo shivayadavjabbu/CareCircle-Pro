@@ -66,3 +66,11 @@ export const verifyCertification = async (id, reason) => {
     if (!res.ok) throw new Error("Failed to verify certification");
     return res.json();
 };
+export const getAdminStatistics = async () => {
+    const res = await fetch(`${API_BASE_URL}/admin/stats`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch admin statistics");
+    return res.json();
+};

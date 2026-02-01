@@ -1,8 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAdminStatistics } from "../api/adminApi";
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "admin@example.com");
+  const [stats, setStats] = useState({
+    totalParents: 0,
+    totalChildren: 0,
+    totalCaregivers: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getAdminStatistics();
+        setStats(data);
+      } catch (err) {
+        console.error("Failed to fetch admin stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -12,6 +34,14 @@ export default function AdminDashboard() {
     alert("Logged out successfully!");
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-[80px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0071e3]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-[80px] pb-12 px-6 font-sans">
@@ -38,7 +68,7 @@ export default function AdminDashboard() {
           <div className="card-apple md:col-span-2 row-span-1 flex flex-col justify-center items-start relative overflow-hidden group cursor-pointer" onClick={() => navigate("/admin/parents")}>
             <div className="z-10">
               <h3 className="text-[#86868b] font-medium text-sm uppercase tracking-wider mb-1">Total Parents</h3>
-              <div className="text-[48px] font-semibold text-[#1d1d1f]">0</div>
+              <div className="text-[48px] font-semibold text-[#1d1d1f]">{stats.totalParents}</div>
             </div>
             <div className="absolute right-6 top-6 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
@@ -53,7 +83,7 @@ export default function AdminDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
               </div>
-              <span className="text-[#1d1d1f] font-bold text-2xl">0</span>
+              <span className="text-[#1d1d1f] font-bold text-2xl">{stats.totalCaregivers}</span>
             </div>
             <div>
               <h3 className="font-semibold text-[#1d1d1f]">Nannies</h3>
@@ -61,19 +91,19 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Bookings Stats Card */}
-          <div className="card-apple flex flex-col justify-between group cursor-pointer" onClick={() => navigate("/admin/bookings")}>
+          {/* Children Stats Card (Replaced Bookings) */}
+          <div className="card-apple flex flex-col justify-between group cursor-pointer" onClick={() => navigate("/admin/parents")}>
             <div className="flex justify-between items-start">
               <div className="bg-[#34c759] p-2 rounded-lg text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25h10.5V3A.75.75 0 0 1 18 3.75v2.25h1.5a2.25 2.25 0 0 1 2.25 2.25v12a2.25 2.25 0 0 1-2.25 2.25H4.5A2.25 2.25 0 0 1 2.25 18v-12a2.25 2.25 0 0 1 2.25-2.25H6v-2.25A.75.75 0 0 1 6.75 3Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A11.952 11.952 0 0 1 12 15c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
                 </svg>
               </div>
-              <span className="text-[#1d1d1f] font-bold text-2xl">0</span>
+              <span className="text-[#1d1d1f] font-bold text-2xl">{stats.totalChildren}</span>
             </div>
             <div>
-              <h3 className="font-semibold text-[#1d1d1f]">Bookings</h3>
-              <p className="text-xs text-[#86868b]">Active Sessions</p>
+              <h3 className="font-semibold text-[#1d1d1f]">Total Children</h3>
+              <p className="text-xs text-[#86868b]">Registered Kids</p>
             </div>
           </div>
 

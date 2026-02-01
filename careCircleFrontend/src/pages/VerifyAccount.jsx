@@ -18,8 +18,9 @@ export default function VerifyAccount() {
         if (location.state?.email && location.state?.role) {
             setEmail(location.state.email);
             setRole(location.state.role);
+            if (location.state.message) setMessage(location.state.message);
         } else {
-            // If accessed without state, redirect to login or home
+            // If accessed without state, redirect to login
             navigate("/login");
         }
     }, [location, navigate]);

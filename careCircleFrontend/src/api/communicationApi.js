@@ -9,7 +9,7 @@ const getHeaders = () => {
 };
 
 export const createChatRoom = async (bookingId) => {
-    const res = await fetch(`${API_BASE_URL}/chats/rooms`, {
+    const res = await fetch(`${API_BASE_URL}/communication-service/chats/rooms`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ bookingId }),
@@ -35,7 +35,7 @@ export const sendMessage = async (roomId, content) => {
 };
 
 export const getNotifications = async () => {
-    const res = await fetch(`${API_BASE_URL}/notifications`, {
+    const res = await fetch(`${API_BASE_URL}/communication-service/notifications`, {
         method: "GET",
         headers: getHeaders(),
     });

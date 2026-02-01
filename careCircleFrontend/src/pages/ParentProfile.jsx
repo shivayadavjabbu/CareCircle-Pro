@@ -30,6 +30,7 @@ export default function ParentProfile() {
         console.log("No profile found or fetch error:", error);
       }
     };
+
     fetchProfile();
   }, []);
 
@@ -110,7 +111,7 @@ export default function ParentProfile() {
             <input
               type="text"
               name="city"
-              placeholder="e.g. New York"
+              placeholder="e.g. Hyderabad"
               value={formData.city}
               onChange={handleChange}
               required

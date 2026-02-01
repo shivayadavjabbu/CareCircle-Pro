@@ -99,7 +99,7 @@ export default function Navbar() {
               <button
                 onClick={() => {
                   const role = localStorage.getItem("role");
-                  if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") navigate("/nanny-dashboard");
+                  if (role === "ROLE_CARETAKER") navigate("/caretaker-dashboard");
                   else if (role === "ROLE_PARENT") navigate("/parent-dashboard");
                   else if (role === "ROLE_ADMIN") navigate("/admin-dashboard");
                   else navigate("/dashboard");

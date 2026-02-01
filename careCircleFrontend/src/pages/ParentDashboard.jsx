@@ -5,8 +5,10 @@ export default function ParentDashboard() {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "");
   const [profile, setProfile] = useState(null);
+  const [children, setChildren] = useState([]);
   const [childrenCount, setChildrenCount] = useState(0);
   const [error, setError] = useState("");
+  const [showChildModal, setShowChildModal] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -17,6 +19,7 @@ export default function ParentDashboard() {
         ]);
         setProfile(profileData);
         if (profileData.email) setUserEmail(profileData.email);
+        setChildren(Array.isArray(childrenData) ? childrenData : []);
         setChildrenCount(childrenData.length || 0);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
@@ -54,7 +57,7 @@ export default function ParentDashboard() {
               <h3 className="text-4xl font-black text-indigo-600 mb-2">0</h3>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Active Bookings</p>
             </div>
-            <div className="text-center p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] transition-transform hover:scale-[1.02]">
+            <div onClick={() => navigate("/registered-children")} className="text-center p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] transition-transform hover:scale-[1.02] cursor-pointer">
               <h3 className="text-4xl font-black text-indigo-600 mb-2">{childrenCount}</h3>
               <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Registered Children</p>
             </div>
@@ -67,18 +70,24 @@ export default function ParentDashboard() {
 
         {/* Action Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {/* Find a Nanny */}
+          {/* Find a Caretaker */}
           <div className="bg-white rounded-[2rem] p-8 shadow-xl flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner">🔍</div>
-            <h3 className="text-lg font-bold text-slate-800 mb-3">Find a Nanny</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-3">Find a Caretaker</h3>
             <p className="text-xs text-slate-500 leading-relaxed mb-8">
-              Browse through verified and trusted nannies in your area
+              Browse through verified and trusted caretakers in your area
             </p>
             <button
-              onClick={() => navigate("/find-nanny")}
+              onClick={() => {
+                if (children.length > 0) setShowChildModal(true);
+                else {
+                  alert("Please register a child first.");
+                  navigate("/baby-details");
+                }
+              }}
               className="mt-auto w-full py-3 bg-[#ff9800] text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 hover:bg-[#e68a00] transition-colors"
             >
-              Search Nannies
+              Search Caretakers
             </button>
           </div>
 
@@ -117,7 +126,7 @@ export default function ParentDashboard() {
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner">⭐</div>
             <h3 className="text-lg font-bold text-slate-800 mb-3">Favorites</h3>
             <p className="text-xs text-slate-500 leading-relaxed mb-8">
-              Quick access to your favorite and trusted nannies
+              Quick access to your favorite and trusted caretakers
             </p>
             <button
               onClick={() => navigate("/favorites")}
@@ -132,7 +141,7 @@ export default function ParentDashboard() {
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner">💬</div>
             <h3 className="text-lg font-bold text-slate-800 mb-3">Messages</h3>
             <p className="text-xs text-slate-500 leading-relaxed mb-8">
-              Chat with nannies and manage your conversations
+              Chat with caretakers and manage your conversations
             </p>
             <button
               onClick={() => navigate("/messages")}
@@ -143,6 +152,36 @@ export default function ParentDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Child Selection Modal */}
+      {showChildModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-fade-in">
+            <h3 className="text-2xl font-black text-slate-800 mb-2">Select a Child</h3>
+            <p className="text-slate-500 mb-6">Who are you looking for a caretaker for?</p>
+
+            <div className="space-y-3 mb-6 max-h-[60vh] overflow-y-auto">
+              {children.map(child => (
+                <button
+                  key={child.id}
+                  onClick={() => navigate("/find-caretaker", { state: { childId: child.id, childName: child.name } })}
+                  className="w-full p-4 flex items-center justify-between bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-2xl transition-all group"
+                >
+                  <span className="font-bold text-slate-700 group-hover:text-indigo-700">{child.name}</span>
+                  <span className="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-lg uppercase">{child.age} yrs</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowChildModal(false)}
+              className="w-full py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

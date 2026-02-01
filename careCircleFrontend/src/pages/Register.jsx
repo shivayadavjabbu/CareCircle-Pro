@@ -21,7 +21,7 @@ export default function Register() {
 
   const roles = [
     { value: "ROLE_PARENT", label: "👨‍👩‍👧 Parent", description: "Looking for childcare services" },
-    { value: "ROLE_CARETAKER", label: "👩‍⚕️ Nanny/Caregiver", description: "Offering childcare services" }
+    { value: "ROLE_CARETAKER", label: "👩‍⚕️ Caretaker", description: "Offering childcare services" }
   ];
 
   const handleChange = (e) => {
@@ -84,7 +84,7 @@ export default function Register() {
 
       setSuccess(true);
       setTimeout(() => {
-        navigate(form.role === "ROLE_PARENT" ? "/parent-profile" : "/nanny-profile");
+        navigate(form.role === "ROLE_PARENT" ? "/parent-profile" : "/caretaker-profile");
       }, 1500);
 
     } catch (error) {
@@ -113,10 +113,10 @@ export default function Register() {
       <div className="relative z-10 w-full max-w-[540px] animate-fade-in-up">
         <div className="glass-card rounded-[2.5rem] p-10 md:p-12 border-white/50 shadow-2xl">
           <div className="text-center mb-10">
-            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl mx-auto mb-6 shadow-xl rotate-3 ${form.role === "parent" ? "bg-brand-parent shadow-brand-parent/20" : "bg-brand-nanny shadow-brand-nanny/20"
+            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl mx-auto mb-6 shadow-xl rotate-3 ${form.role === "ROLE_PARENT" ? "bg-brand-parent shadow-brand-parent/20" : "bg-brand-caretaker shadow-brand-caretaker/20"
               }`}>C</div>
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Join CareCircle</h2>
-            <p className="text-slate-500 font-medium tracking-tight">Create your {form.role === "ROLE_PARENT" ? "parent" : "caregiver"} account</p>
+            <p className="text-slate-500 font-medium tracking-tight">Create your {form.role === "ROLE_PARENT" ? "parent" : "caretaker"} account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -182,7 +182,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-4 rounded-2xl font-extrabold text-white transition-all shadow-xl active:scale-95 btn-premium mt-4 ${form.role === "ROLE_PARENT" ? "bg-brand-parent hover:bg-brand-parent-dark shadow-brand-parent/20" : "bg-brand-nanny hover:bg-brand-nanny-dark shadow-brand-nanny/20"
+              className={`w-full py-4 rounded-2xl font-extrabold text-white transition-all shadow-xl active:scale-95 btn-premium mt-4 ${form.role === "ROLE_PARENT" ? "bg-brand-parent hover:bg-brand-parent-dark shadow-brand-parent/20" : "bg-brand-caretaker hover:bg-brand-caretaker-dark shadow-brand-caretaker/20"
                 }`}
             >
               {loading ? "Processing..." : "Create Account"}

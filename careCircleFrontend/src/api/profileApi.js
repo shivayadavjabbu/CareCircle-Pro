@@ -10,7 +10,7 @@ const getHeaders = () => {
 
 // Parent APIs
 export const createParentProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/parents/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/profile`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -20,7 +20,7 @@ export const createParentProfile = async (data) => {
 };
 
 export const getParentProfile = async () => {
-    const res = await fetch(`${API_BASE_URL}/parents/profile/me`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/profile/me`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -32,7 +32,7 @@ export const getParentProfile = async () => {
 };
 
 export const updateParentProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/parents/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/profile`, {
         method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -43,7 +43,7 @@ export const updateParentProfile = async (data) => {
 
 // Children APIs
 export const addChild = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/parents/children`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/children`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -53,7 +53,7 @@ export const addChild = async (data) => {
 };
 
 export const getChildren = async () => {
-    const res = await fetch(`${API_BASE_URL}/parents/children`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/children`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -63,7 +63,7 @@ export const getChildren = async () => {
 
 // Caregiver APIs
 export const createCaregiverProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -73,7 +73,7 @@ export const createCaregiverProfile = async (data) => {
 };
 
 export const getCaregiverProfile = async () => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/profile/me`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile/me`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -85,7 +85,7 @@ export const getCaregiverProfile = async () => {
 };
 
 export const updateCaregiverProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/caregiver/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/caregiver/profile`, {
         method: "PUT",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -96,7 +96,7 @@ export const updateCaregiverProfile = async (data) => {
 
 // Admin APIs
 export const getAdminProfile = async () => {
-    const res = await fetch(`${API_BASE_URL}/admin/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/profile`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -108,7 +108,7 @@ export const getAdminProfile = async () => {
 };
 
 export const getAdminStats = async () => {
-    const res = await fetch(`${API_BASE_URL}/admin/stats`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/stats`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -116,7 +116,7 @@ export const getAdminStats = async () => {
 };
 
 export const getAdminParents = async () => {
-    const res = await fetch(`${API_BASE_URL}/admin/parents`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/parents`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -124,7 +124,7 @@ export const getAdminParents = async () => {
 };
 
 export const getAdminCaregivers = async () => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregivers`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/caregivers`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -132,7 +132,7 @@ export const getAdminCaregivers = async () => {
 };
 
 export const verifyCaregiver = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregiver/${id}/verify`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/caregiver/${id}/verify`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -140,7 +140,7 @@ export const verifyCaregiver = async (id) => {
 };
 
 export const rejectCaregiver = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregiver/${id}/reject`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/caregiver/${id}/reject`, {
         method: "POST",
         headers: getHeaders(),
     });
@@ -148,9 +148,19 @@ export const rejectCaregiver = async (id) => {
 };
 
 export const disableCaregiver = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/admin/caregivers/${id}/disable`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/admin/caregivers/${id}/disable`, {
         method: "POST",
         headers: getHeaders(),
     });
+    return res.json();
+};
+
+// Fetch cities for dropdown
+export const getCities = async () => {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/api/lookup/cities`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+    if (!res.ok) throw new Error("Failed to fetch cities");
     return res.json();
 };

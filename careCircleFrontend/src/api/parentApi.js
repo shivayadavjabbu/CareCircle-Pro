@@ -9,7 +9,7 @@ const getHeaders = () => {
 };
 
 export const createParentProfile = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/parents/profile`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/profile`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -22,7 +22,7 @@ export const createParentProfile = async (data) => {
 };
 
 export const getParentProfile = async () => {
-    const res = await fetch(`${API_BASE_URL}/parents/profile/me`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/profile/me`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -31,7 +31,7 @@ export const getParentProfile = async () => {
 };
 
 export const addChild = async (data) => {
-    const res = await fetch(`${API_BASE_URL}/parents/children`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/children`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -41,7 +41,7 @@ export const addChild = async (data) => {
 };
 
 export const getChildren = async () => {
-    const res = await fetch(`${API_BASE_URL}/parents/children`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/children`, {
         method: "GET",
         headers: getHeaders(),
     });
@@ -50,7 +50,7 @@ export const getChildren = async () => {
 };
 
 export const getVerifiedCaregivers = async () => {
-    const res = await fetch(`${API_BASE_URL}/parents/caregivers`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/caregivers`, {
         method: "GET",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Only Auth header required for this GET
     });
@@ -59,7 +59,7 @@ export const getVerifiedCaregivers = async () => {
 };
 
 export const getCaregiverDetails = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/parents/caregivers/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/user-profile-service/parents/caregivers/${id}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });

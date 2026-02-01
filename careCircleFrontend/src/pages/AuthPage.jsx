@@ -7,7 +7,10 @@ import { jwtDecode } from "jwt-decode";
 export default function AuthPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isLogin, setIsLogin] = useState(location.state?.isLogin !== false);
+    const [isLogin, setIsLogin] = useState(() => {
+        if (location.state?.isLogin !== undefined) return location.state.isLogin;
+        return location.pathname !== "/register";
+    });
     const [role, setRole] = useState(location.state?.role || "ROLE_PARENT");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -36,16 +39,22 @@ export default function AuthPage() {
                 localStorage.setItem("userEmail", decoded.sub || email);
 
                 let profile = null;
-                console.log("Fetching profile for role:", role);
                 if (role === "ROLE_PARENT") profile = await getParentProfile();
-                else if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") profile = await getCaregiverProfile();
+                else if (role === "ROLE_CARETAKER") {
+                    try {
+                        profile = await getCaregiverProfile();
+                    } catch (e) {
+                        console.warn("Caregiver profile fetch failed, redirecting to setup:", e);
+                        profile = null;
+                    }
+                }
                 else if (role === "ROLE_ADMIN") profile = await getAdminProfile();
 
                 console.log("Profile fetched:", profile);
 
-                if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") {
-                    if (profile) navigate("/nanny-dashboard");
-                    else navigate("/nanny-profile");
+                if (role === "ROLE_CARETAKER") {
+                    if (profile) navigate("/caretaker-dashboard");
+                    else navigate("/caretaker-profile");
                 } else if (role === "ROLE_ADMIN") {
                     navigate("/admin-dashboard");
                 } else {
@@ -54,7 +63,8 @@ export default function AuthPage() {
                 }
             } else {
                 await register(email, password, role);
-                navigate("/verify-account", { state: { email, role } });
+                // Optionally show a toast/message here.
+                navigate("/verify-account", { state: { email, role, message: "OTP has been sent to your email!" } });
             }
         } catch (err) {
             setError(err.message || "Authentication failed");
@@ -72,7 +82,8 @@ export default function AuthPage() {
 
                 <div className="flex p-1.5 bg-slate-100 rounded-2xl mb-8">
                     <button onClick={() => setRole("ROLE_PARENT")} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${role === "ROLE_PARENT" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>Parent</button>
-                    <button onClick={() => setRole("ROLE_CARETAKER")} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>Caregiver</button>
+                    <button onClick={() => setRole("ROLE_CARETAKER")} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${role === "ROLE_CARETAKER" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>Caregiver</button>
+                    <button onClick={() => setRole("ROLE_ADMIN")} className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${role === "ROLE_ADMIN" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}>Admin</button>
                 </div>
 
                 <form onSubmit={handleAuth} className="space-y-6">
@@ -81,7 +92,14 @@ export default function AuthPage() {
                         <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 outline-none transition-all" required />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-500 ml-1 uppercase">Password</label>
+                        <div className="flex justify-between items-center ml-1">
+                            <label className="text-xs font-bold text-slate-500 uppercase">Password</label>
+                            {isLogin && (
+                                <button type="button" onClick={() => navigate("/forgot-password")} className="text-xs font-bold text-indigo-600 hover:text-indigo-700">
+                                    Forgot?
+                                </button>
+                            )}
+                        </div>
                         <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 outline-none transition-all" required />
                     </div>
 

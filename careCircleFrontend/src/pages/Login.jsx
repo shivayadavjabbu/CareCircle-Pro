@@ -51,8 +51,8 @@ export default function Login() {
           // If profile fetch fails (e.g., 404), assume profile is incomplete
           navigate("/parent-profile");
         }
-      } else if (tokenRole === "ROLE_CARETAKER" || tokenRole === "ROLE_CAREGIVER") {
-        navigate("/nanny-profile");
+      } else if (tokenRole === "ROLE_CARETAKER") {
+        navigate("/caretaker-profile");
       } else if (tokenRole === "ROLE_ADMIN") {
         navigate("/admin-dashboard");
       } else {
@@ -101,11 +101,21 @@ export default function Login() {
                 type="button"
                 onClick={() => setRole("ROLE_CARETAKER")}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${role === "ROLE_CARETAKER"
-                  ? "bg-white text-brand-nanny shadow-sm"
+                  ? "bg-white text-brand-caretaker shadow-sm"
                   : "text-slate-500 hover:text-slate-700"
                   }`}
               >
-                👩‍⚕️ Caregiver
+                👩‍⚕️ Caretaker
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("ROLE_ADMIN")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${role === "ROLE_ADMIN"
+                  ? "bg-white text-brand-admin shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+                  }`}
+              >
+                🛠️ Admin
               </button>
             </div>
           </div>
@@ -156,7 +166,7 @@ export default function Login() {
               disabled={loading}
               className={`w-full py-4 rounded-2xl font-extrabold text-white transition-all shadow-xl active:scale-95 btn-premium ${role === "ROLE_PARENT" ? "bg-brand-parent hover:bg-brand-parent-dark shadow-brand-parent/20" :
                 role === "ROLE_ADMIN" ? "bg-brand-admin hover:bg-brand-admin-dark shadow-brand-admin/20" :
-                  "bg-brand-nanny hover:bg-brand-nanny-dark shadow-brand-nanny/20"
+                  "bg-brand-caretaker hover:bg-brand-caretaker-dark shadow-brand-caretaker/20"
                 }`}
             >
               {loading ? (
@@ -175,7 +185,7 @@ export default function Login() {
             <p className="text-slate-500 text-sm font-medium">
               Don't have an account?{" "}
               <button
-                onClick={() => navigate(role === "ROLE_PARENT" ? "/register-parent" : "/register-nanny")}
+                onClick={() => navigate(role === "ROLE_PARENT" ? "/register-parent" : "/register-caretaker")}
                 className="font-bold text-indigo-600 hover:underline"
               >
                 Create Account

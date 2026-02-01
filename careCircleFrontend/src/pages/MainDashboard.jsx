@@ -11,8 +11,8 @@ export default function MainDashboard() {
     const [stats, setStats] = useState({ active: 0, total: 0 });
 
     useEffect(() => {
-        if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") {
-            navigate("/nanny-dashboard");
+        if (role === "ROLE_CARETAKER") {
+            navigate("/caretaker-dashboard");
             return;
         }
         if (role === "ROLE_PARENT") {

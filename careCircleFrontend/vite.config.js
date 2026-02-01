@@ -6,10 +6,26 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/auth": "http://localhost:8080",
-      "/caregiver": "http://localhost:8080",
-      "/parents": "http://localhost:8080",
-      "/admin": "http://localhost:8080",
+      "/auth-service": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/user-profile-service": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/matching-booking-service": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/communication-service": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

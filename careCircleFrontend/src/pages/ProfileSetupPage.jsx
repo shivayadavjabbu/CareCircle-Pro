@@ -18,7 +18,7 @@ export default function ProfileSetupPage() {
             if (role === "ROLE_PARENT") {
                 data = await getParentProfile();
                 setChildren(await getChildren() || []);
-            } else if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") {
+            } else if (role === "ROLE_CARETAKER") {
                 data = await getCaregiverProfile();
                 if (data) setIsUpdate(true);
             }
@@ -35,11 +35,12 @@ export default function ProfileSetupPage() {
             if (role === "ROLE_PARENT") {
                 if (isUpdate) await updateParentProfile(profile);
                 else await createParentProfile(profile);
-            } else if (role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") {
+            } else if (role === "ROLE_CARETAKER") {
                 if (isUpdate) await updateCaregiverProfile(profile);
                 else await createCaregiverProfile(profile);
             }
-            navigate("/dashboard");
+            if (role === "ROLE_CARETAKER") navigate("/caretaker-dashboard");
+            else navigate("/parent-dashboard");
         } catch (err) {
             console.error("Save Error:", err);
             setError(err.message || "Error saving profile");
@@ -69,7 +70,7 @@ export default function ProfileSetupPage() {
                     </div>
                     <input placeholder="City" value={profile.city} onChange={e => setProfile({ ...profile, city: e.target.value })} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 outline-none transition-all font-medium" required />
 
-                    {(role === "ROLE_CARETAKER" || role === "ROLE_CAREGIVER") && (
+                    {(role === "ROLE_CARETAKER") && (
                         <input placeholder="Years of Experience" type="number" value={profile.experienceYears} onChange={e => setProfile({ ...profile, experienceYears: e.target.value })} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 focus:border-indigo-500 outline-none transition-all font-medium" required />
                     )}
 

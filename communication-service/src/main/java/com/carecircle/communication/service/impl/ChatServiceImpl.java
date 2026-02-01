@@ -1,6 +1,7 @@
 package com.carecircle.communication.service.impl;
 
 import com.carecircle.communication.dto.response.ChatMessageResponse;
+import com.carecircle.communication.dto.response.ChatRoomInitializationResponse;
 import com.carecircle.communication.dto.response.ChatRoomSummaryResponse;
 import com.carecircle.communication.exception.ChatBlockedException;
 import com.carecircle.communication.model.chat.ChatMessage;
@@ -56,13 +57,23 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public UUID createChatRoom(UUID bookingId) {
-        ChatRoom room = new ChatRoom();
-        room.setType(ChatRoomType.DIRECT);
-        room.setBookingId(bookingId);
+    public ChatRoomInitializationResponse initializeChatRoom(UUID bookingId, UUID initiatorId, UUID partnerId) {
+        // Check if room already exists for this booking
+        return chatRoomRepository.findByBookingId(bookingId)
+                .map(room -> new ChatRoomInitializationResponse(room.getId(), false))
+                .orElseGet(() -> {
+                    // Create new room
+                    ChatRoom room = new ChatRoom();
+                    room.setType(ChatRoomType.DIRECT);
+                    room.setBookingId(bookingId);
+                    ChatRoom savedRoom = chatRoomRepository.save(room);
 
-        ChatRoom savedRoom = chatRoomRepository.save(room);
-        return savedRoom.getId();
+                    // Auto-add participants
+                    addParticipant(savedRoom.getId(), initiatorId);
+                    addParticipant(savedRoom.getId(), partnerId);
+
+                    return new ChatRoomInitializationResponse(savedRoom.getId(), true);
+                });
     }
 
     @Override

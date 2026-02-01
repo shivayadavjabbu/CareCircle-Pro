@@ -1,16 +1,17 @@
 package com.carecircle.communication.service.interfaces;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.carecircle.communication.dto.response.ChatMessageResponse;
+import com.carecircle.communication.dto.response.ChatRoomInitializationResponse;
 import com.carecircle.communication.dto.response.ChatRoomSummaryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.UUID;
+
 public interface ChatService {
 
-    UUID createChatRoom(UUID bookingId);
+    ChatRoomInitializationResponse initializeChatRoom(UUID bookingId, UUID initiatorId, UUID partnerId);
 
     void addParticipant(UUID roomId, UUID userId);
 

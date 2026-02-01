@@ -4,6 +4,8 @@ import com.carecircle.communication.dto.request.AddParticipantRequest;
 import com.carecircle.communication.dto.request.CreateChatRoomRequest;
 import com.carecircle.communication.dto.request.SendMessageRequest;
 import com.carecircle.communication.dto.response.ChatMessageResponse;
+import com.carecircle.communication.dto.response.ChatMessageResponse;
+import com.carecircle.communication.dto.response.ChatRoomInitializationResponse;
 import com.carecircle.communication.dto.response.ChatRoomSummaryResponse;
 import com.carecircle.communication.service.interfaces.ChatService;
 import org.springframework.data.domain.Page;
@@ -27,11 +29,16 @@ public class ChatController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<Map<String, UUID>> createRoom(
+    public ResponseEntity<ChatRoomInitializationResponse> createRoom(
+            @RequestHeader("X-User-Id") UUID initiatorId,
             @RequestBody CreateChatRoomRequest request
     ) {
-        UUID roomId = chatService.createChatRoom(request.getBookingId());
-        return ResponseEntity.ok(Map.of("roomId", roomId));
+        ChatRoomInitializationResponse response = chatService.initializeChatRoom(
+                request.getBookingId(),
+                initiatorId,
+                request.getPartnerId()
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/rooms/{roomId}/participants")

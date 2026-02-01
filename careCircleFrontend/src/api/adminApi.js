@@ -137,3 +137,13 @@ export const rejectCaregiver = async (id, reason) => {
     if (!res.ok) throw new Error("Failed to reject caregiver");
     return true;
 };
+
+export const getBookings = async (type = "active", page = 0, limit = 5) => {
+    // type: active, completed, cancelled
+    const res = await fetch(`${API_BASE_URL}/admin/bookings/${type}?page=${page}&limit=${limit}`, {
+        method: "GET",
+        headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch ${type} bookings`);
+    return res.json();
+};

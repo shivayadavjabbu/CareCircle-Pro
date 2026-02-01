@@ -21,6 +21,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProfile from "./pages/AdminProfile";
 import ManageCaregivers from "./pages/ManageCaregivers";
+import ManageBookings from "./pages/ManageBookings";
 
 // New Nanny pages
 import NannyProfile from "./pages/NannyProfile";
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-profile" element={<AdminProfile />} />
         <Route path="/admin/nannies" element={<ManageCaregivers />} />
+        <Route path="/admin/bookings" element={<ManageBookings />} />
 
         {/* Nanny onboarding flow */}
         <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />

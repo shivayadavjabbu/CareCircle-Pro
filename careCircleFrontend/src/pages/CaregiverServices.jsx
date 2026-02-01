@@ -45,19 +45,33 @@ export default function CaregiverServices() {
     }, []);
 
     const fetchInitialData = async () => {
+        setLoading(true);
         try {
-            const [gs, c, ms, mc] = await Promise.all([
-                getActiveServices(),
-                getActiveCities(),
-                getServices(),
-                getCertifications()
-            ]);
-            setGlobalServices(gs || []);
-            setCities(c || []);
-            setMyServices(ms || []);
-            setMyCertifications(mc || []);
-        } catch (error) {
-            console.error("Failed to fetch data", error);
+            // 1. Fetch Global Metadata (Independent of Profile)
+            try {
+                const [gs, c] = await Promise.all([
+                    getActiveServices(),
+                    getActiveCities()
+                ]);
+                setGlobalServices(gs || []);
+                setCities(c || []);
+            } catch (err) {
+                console.error("Global meta fetch error:", err);
+            }
+
+            // 2. Fetch User-Specific Data
+            try {
+                const [ms, mc] = await Promise.all([
+                    getServices(),
+                    getCertifications()
+                ]);
+                setMyServices(ms || []);
+                setMyCertifications(mc || []);
+            } catch (err) {
+                console.warn("User data fetch error (maybe no profile yet):", err);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -318,7 +332,7 @@ export default function CaregiverServices() {
                                             </div>
                                             <p className="text-xs text-gray-500 mt-0.5">
                                                 {c.issuedBy} • Valid: {new Date(c.validTill).toLocaleDateString()}
-                                                {c.serviceId && ` • ${globalServices.find(gs => gs.id === c.serviceId)?.serviceName}`}
+                                                {c.serviceName && ` • ${c.serviceName}`}
                                             </p>
                                         </div>
                                         <div className="flex gap-2">

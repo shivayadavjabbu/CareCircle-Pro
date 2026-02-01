@@ -20,6 +20,9 @@ export default function Login() {
     if (location.state?.role) {
       setRole(location.state.role);
     }
+    if (location.state?.email) {
+      setEmail(location.state.email);
+    }
   }, [location.state]);
 
   const handleLogin = async (e) => {

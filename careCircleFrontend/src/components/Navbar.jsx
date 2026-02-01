@@ -30,7 +30,7 @@ export default function Navbar() {
         : "bg-white/80 backdrop-blur-md border-b border-transparent"
         }`}
     >
-      <div className="max-w-[980px] mx-auto px-6 h-[48px] flex justify-between items-center text-xs">
+      <div className="max-w-[980px] mx-auto px-6 h-[64px] flex justify-between items-center text-xs">
         {/* Logo / Brand */}
         <Link to="/" className="flex items-center text-[#1d1d1f] hover:opacity-70 transition-opacity">
           <img src={logo} alt="CareCircle" className="h-4 w-4 mr-2" />
@@ -38,7 +38,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-8 text-[#1d1d1f] text-[12px] font-normal tracking-wide">
+        <div className="hidden md:flex items-center space-x-8 text-[#1d1d1f] text-[16px] font-medium tracking-wide">
           <Link to="/" className="hover:text-[#0071e3] transition-colors">Home</Link>
           <Link to="/find-nanny" className="hover:text-[#0071e3] transition-colors">Find Care</Link>
           <Link to="/register" state={{ role: "ROLE_CARETAKER" }} className="hover:text-[#0071e3] transition-colors">Become a Caregiver</Link>

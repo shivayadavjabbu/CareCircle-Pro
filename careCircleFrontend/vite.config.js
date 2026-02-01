@@ -10,6 +10,7 @@ export default defineConfig({
       "/caregiver": "http://localhost:8080",
       "/parents": "http://localhost:8080",
       "/admin": "http://localhost:8080",
+      "/cities": "http://localhost:8085",
     },
   },
 });

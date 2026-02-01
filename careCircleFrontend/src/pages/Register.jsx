@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { isValidPassword } from "../utils/passwordValidation";
+import PasswordInput from "../components/PasswordInput";
 import logo from "../assets/logo.png";
 
 export default function Register() {
@@ -34,11 +35,6 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setSuccess(false);
-
-    if (!isValidPassword(form.password)) {
-      setError("Password must be 8+ chars, with 2 numbers and 1 special symbol.");
-      return;
-    }
 
     if (!isValidPassword(form.password)) {
       setError("Password must be 8+ chars, with 2 numbers and 1 special symbol.");
@@ -80,7 +76,12 @@ export default function Register() {
 
       setSuccess(true);
       setTimeout(() => {
-        navigate(form.role === "ROLE_PARENT" ? "/parent-profile" : "/nanny-profile");
+        navigate("/verify-account", {
+          state: {
+            email: form.email,
+            role: form.role
+          }
+        });
       }, 1500);
 
     } catch (error) {
@@ -150,7 +151,14 @@ export default function Register() {
 
             <div className="space-y-2">
               <label className="block text-sm font-bold text-slate-700 ml-1">Password</label>
-              <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" required className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50" />
+              <PasswordInput
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                showStrengthMeter={true}
+                className="input-premium focus:border-indigo-500 focus:ring-indigo-500/10 bg-slate-50/50"
+              />
             </div>
 
             {error && (
@@ -170,10 +178,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-4 rounded-2xl font-extrabold text-white transition-all shadow-xl active:scale-95 mt-4 
-                ${form.role === "ROLE_PARENT" ? "bg-[#0071e3] hover:bg-[#0077ed]" :
-                  form.role === "ROLE_CARETAKER" ? "bg-[#af52de] hover:bg-[#9f4bc9]" :
-                    "bg-[#1d1d1f] hover:bg-[#2d2d2f]"}`}
+              className={`w-full py-4 rounded-2xl font-extrabold text-white transition-all shadow-xl active:scale-95 mt-4 bg-[#0071e3] hover:bg-[#0077ed]`}
             >
               {loading ? "Processing..." : "Register"}
             </button>

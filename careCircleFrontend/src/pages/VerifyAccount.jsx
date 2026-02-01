@@ -39,7 +39,7 @@ export default function VerifyAccount() {
             await verifyAccount(email, otp, role);
             setMessage("Verified!");
             setTimeout(() => {
-                navigate("/login", { state: { role } });
+                navigate("/login", { state: { email, role } });
             }, 1000);
         } catch (err) {
             setError(err.message || "Invalid code. Please try again.");

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 
 const PasswordInput = ({
     id,
+    name, // Added name prop
     value,
     onChange,
     placeholder = "Password",
     showStrengthMeter = true,
-    className = ""
+    className = "",
+    ...props // Capture other props
 }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [strength, setStrength] = useState(0); // 0-4
@@ -48,6 +50,7 @@ const PasswordInput = ({
             >
                 <input
                     id={id}
+                    name={name} // Pass name prop
                     type={showPassword ? "text" : "password"}
                     value={value}
                     onChange={onChange}
@@ -56,6 +59,7 @@ const PasswordInput = ({
                     placeholder={placeholder}
                     className="w-full h-[56px] px-4 text-[17px] bg-white bg-opacity-80 backdrop-blur-md outline-none text-[#1d1d1f] placeholder-[#86868b] rounded-xl transition-all"
                     required
+                    {...props} // Spread remaining props
                 />
 
                 {/* Visual Toggle */}

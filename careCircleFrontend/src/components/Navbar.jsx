@@ -41,8 +41,14 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8 text-[#1d1d1f] text-[16px] font-medium tracking-wide">
           <Link to="/" className="hover:text-[#0071e3] transition-colors">Home</Link>
-          <Link to="/find-nanny" className="hover:text-[#0071e3] transition-colors">Find Care</Link>
-          <Link to="/register" state={{ role: "ROLE_CARETAKER" }} className="hover:text-[#0071e3] transition-colors">Become a Caregiver</Link>
+
+          {token && (
+            <Link to="/chat" className="hover:text-[#0071e3] transition-colors">Messages</Link>
+          )}
+
+          {!token && (
+            <Link to="/register" state={{ role: "ROLE_CARETAKER" }} className="hover:text-[#0071e3] transition-colors">Become a Caregiver</Link>
+          )}
 
           {token ? (
             <div className="relative group cursor-pointer hover:text-[#0071e3] transition-colors">

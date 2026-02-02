@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
  */
 public class ParentProfileResponse {
 
+    private final java.util.UUID id;
+    private final java.util.UUID userId;
     private final String fullName;
     private final String phoneNumber;
     private final String address;
@@ -18,17 +20,29 @@ public class ParentProfileResponse {
     private final LocalDateTime createdAt;
 
     public ParentProfileResponse(
+            java.util.UUID id,
+            java.util.UUID userId,
             String fullName,
             String phoneNumber,
             String address,
             String city,
             LocalDateTime createdAt
     ) {
+        this.id = id;
+        this.userId = userId;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.city = city;
         this.createdAt = createdAt;
+    }
+
+    public java.util.UUID getId() {
+        return id;
+    }
+
+    public java.util.UUID getUserId() {
+        return userId;
     }
 
     public String getFullName() {

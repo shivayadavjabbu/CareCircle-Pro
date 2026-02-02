@@ -142,6 +142,8 @@ public class ParentProfileController {
    
     private ParentProfileResponse mapToResponse(ParentProfile profile) {
         return new ParentProfileResponse(
+                profile.getId(),
+                profile.getUserId(),
                 profile.getFullName(),
                 profile.getPhoneNumber(),
                 profile.getAddress(),

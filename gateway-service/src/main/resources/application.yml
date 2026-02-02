@@ -40,6 +40,12 @@ spring:
           filters:
             - StripPrefix=1
 
+        # Generic Matching API
+        - id: matching-service-api
+          uri: http://localhost:8085
+          predicates:
+            - Path=/matching/**
+
         # =========================
         # USER PROFILE SERVICE
         # =========================
@@ -52,7 +58,12 @@ spring:
         - id: matching-service-caregiver-ops
           uri: http://localhost:8085
           predicates:
-            - Path=/caregiver/services/**, /caregiver/services, /caregiver/certifications/**, /caregiver/certifications, /caregiver/rating/**, /caregiver/rating
+            - Path=/caregiver/services/**, /caregiver/services, /caregiver/certifications/**, /caregiver/certifications, /caregiver/availability/**, /caregiver/availability, /caregiver/rating/**, /caregiver/rating
+
+        - id: matching-service-bookings
+          uri: http://localhost:8085
+          predicates:
+            - Path=/bookings/**
 
         - id: user-profile-caregiver
           uri: http://localhost:8083
@@ -90,9 +101,12 @@ spring:
             - StripPrefix=1
 
         - id: communication-ws
-          uri: ws://localhost:8082
+          uri: http://localhost:8082
           predicates:
             - Path=/ws/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST
+            - DedupeResponseHeader=Access-Control-Allow-Credentials, RETAIN_FIRST
 
 jwt:
   secret: carecircle-auth-secret-key-which-is-at-least-32-bytes-long

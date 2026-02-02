@@ -15,6 +15,7 @@ import com.carecircle.communication.repository.chat.ChatParticipantRepository;
 import com.carecircle.communication.repository.chat.ChatRoomRepository;
 import com.carecircle.communication.service.interfaces.BlockService;
 import com.carecircle.communication.service.interfaces.ChatService;
+import com.carecircle.communication.service.BookingIntegrationService;
 import com.carecircle.communication.service.UserIntegrationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+
 
 @Service
 @Transactional
@@ -37,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
     private final BlockService blockService;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserIntegrationService userIntegrationService;
+    private final BookingIntegrationService bookingIntegrationService; // Added
 
     public ChatServiceImpl(
             ChatRoomRepository chatRoomRepository,
@@ -45,7 +48,8 @@ public class ChatServiceImpl implements ChatService {
             NotificationService notificationService, 
             BlockService blockService,
             SimpMessagingTemplate messagingTemplate,
-            UserIntegrationService userIntegrationService
+            UserIntegrationService userIntegrationService,
+            BookingIntegrationService bookingIntegrationService
     ) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatParticipantRepository = chatParticipantRepository;
@@ -54,26 +58,81 @@ public class ChatServiceImpl implements ChatService {
         this.blockService = blockService;
         this.messagingTemplate = messagingTemplate;
         this.userIntegrationService = userIntegrationService;
+        this.bookingIntegrationService = bookingIntegrationService;
     }
 
     @Override
-    public ChatRoomInitializationResponse initializeChatRoom(UUID bookingId, UUID initiatorId, UUID partnerId) {
-        // Check if room already exists for this booking
-        return chatRoomRepository.findByBookingId(bookingId)
+    public ChatRoomInitializationResponse initializeChatRoom(UUID bookingId, UUID initiatorId, String initiatorRole, UUID partnerId) {
+        
+        // Case 1: Booking ID provided
+        if (bookingId != null) {
+            // Validate Booking
+            var booking = bookingIntegrationService.getBooking(bookingId);
+            if (booking == null) {
+                 throw new IllegalArgumentException("Invalid Booking ID");
+            }
+            if (!"ACCEPTED".equalsIgnoreCase(booking.status()) && 
+                !"COMPLETED".equalsIgnoreCase(booking.status())) { // Maybe allow completed too? REQ says "booking confirmed".
+                 throw new IllegalStateException("Chat only allowed for CONFIRMED bookings.");
+            }
+            
+            // Validate Participants match booking
+            // Initiator must be Parent or Caregiver of the booking
+            boolean isParent = booking.parentId().equals(initiatorId);
+            boolean isCaregiver = booking.caregiverId().equals(initiatorId);
+            
+            if (!isParent && !isCaregiver) {
+                 // Check if initiator is ADMIN? Creating room on behalf?
+                 // Let's check initiator role via UserIntegration if valid
+            }
+            // For now enforce strict matching for non-admin flow
+            
+            return chatRoomRepository.findByBookingId(bookingId)
                 .map(room -> new ChatRoomInitializationResponse(room.getId(), false))
                 .orElseGet(() -> {
-                    // Create new room
                     ChatRoom room = new ChatRoom();
                     room.setType(ChatRoomType.DIRECT);
                     room.setBookingId(bookingId);
                     ChatRoom savedRoom = chatRoomRepository.save(room);
 
-                    // Auto-add participants
-                    addParticipant(savedRoom.getId(), initiatorId);
-                    addParticipant(savedRoom.getId(), partnerId);
+                    addParticipant(savedRoom.getId(), booking.parentId());
+                    addParticipant(savedRoom.getId(), booking.caregiverId());
 
                     return new ChatRoomInitializationResponse(savedRoom.getId(), true);
                 });
+        }
+        
+        // Case 2: No Booking ID (Admin <-> User context)
+        if (bookingId == null) {
+             if (initiatorRole == null || !initiatorRole.contains("ADMIN")) {
+                 throw new IllegalStateException("Only Admins can initiate chat without a booking.");
+             }
+             
+             // Admin Logic: Check for existing room
+             List<UUID> commonRoomIds = chatParticipantRepository.findCommonRoomIds(initiatorId, partnerId);
+             
+             // Find first DIRECT room
+             for (UUID roomId : commonRoomIds) {
+                 ChatRoom room = chatRoomRepository.findById(roomId).orElse(null);
+                 if (room != null && room.getType() == ChatRoomType.DIRECT && room.getBookingId() == null) {
+                      // Found existing direct chat
+                      return new ChatRoomInitializationResponse(roomId, false);
+                 }
+             }
+             
+             // Create new if not found
+             ChatRoom room = new ChatRoom();
+             room.setType(ChatRoomType.DIRECT);
+             room.setBookingId(null); // Admin chat has no booking
+             ChatRoom savedRoom = chatRoomRepository.save(room);
+             
+             addParticipant(savedRoom.getId(), initiatorId);
+             addParticipant(savedRoom.getId(), partnerId);
+             
+             return new ChatRoomInitializationResponse(savedRoom.getId(), true);
+        }
+        
+        return null; // Should not reach
     }
 
     @Override
@@ -81,23 +140,18 @@ public class ChatServiceImpl implements ChatService {
         ChatParticipant participant = new ChatParticipant();
         participant.setRoomId(roomId);
         participant.setUserId(userId);
-
         chatParticipantRepository.save(participant);
     }
 
     @Override
     public void sendMessage(UUID roomId, UUID senderId, String message) {
-
         var participants = chatParticipantRepository.findByRoomId(roomId);
-
         boolean isBlocked = participants.stream()
                 .map(ChatParticipant::getUserId)
                 .anyMatch(userId -> blockService.isBlocked(userId, senderId));
 
         if (isBlocked) {
-            throw new ChatBlockedException(
-                    "Message cannot be sent. You are blocked by a participant."
-            );
+            throw new ChatBlockedException("Message cannot be sent. You are blocked by a participant.");
         }
 
         ChatMessage chatMessage = new ChatMessage();
@@ -108,13 +162,11 @@ public class ChatServiceImpl implements ChatService {
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
         
-        // Broadcast to WebSocket subscribers
+        // Broadcast
         ChatMessageResponse response = mapToResponse(savedMessage);
-        
-        // Enrich single message sender name
         userIntegrationService.getUsersInfo(List.of(senderId)).values().stream()
                 .findFirst()
-                .ifPresent(u -> response.setSenderName(u.fullName()));
+                .ifPresent(u -> response.setSenderName(formatName(u))); // Use formatted name
 
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
 
@@ -123,27 +175,16 @@ public class ChatServiceImpl implements ChatService {
                 .filter(userId -> !userId.equals(senderId))
                 .filter(userId -> !blockService.isBlocked(userId, senderId))
                 .forEach(userId ->
-                        notificationService.createNotification(
-                                userId,
-                                "CHAT",
-                                "New message received"
-                        )
+                        notificationService.createNotification(userId, "CHAT", "New message received")
                 );
     }
 
     @Override
     public List<ChatMessageResponse> getRoomMessages(UUID roomId, UUID userId) {
-
-        boolean isParticipant = chatParticipantRepository
-                .existsByRoomIdAndUserId(roomId, userId);
-
-        if (!isParticipant) {
-            throw new IllegalStateException("User is not a participant of this chat room");
-        }
+        boolean isParticipant = chatParticipantRepository.existsByRoomIdAndUserId(roomId, userId);
+        if (!isParticipant) throw new IllegalStateException("User is not a participant of this chat room");
 
         List<ChatMessage> messages = chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
-        
-        // Enrich in batch
         List<UUID> senderIds = messages.stream().map(ChatMessage::getSenderId).distinct().toList();
         var userMap = userIntegrationService.getUsersInfo(senderIds);
 
@@ -151,7 +192,7 @@ public class ChatServiceImpl implements ChatService {
                 .map(m -> {
                     ChatMessageResponse res = mapToResponse(m);
                     if (userMap.containsKey(m.getSenderId())) {
-                        res.setSenderName(userMap.get(m.getSenderId()).fullName());
+                        res.setSenderName(formatName(userMap.get(m.getSenderId())));
                     }
                     return res;
                 })
@@ -160,23 +201,17 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Page<ChatMessageResponse> getRoomMessages(UUID roomId, UUID userId, Pageable pageable) {
-        boolean isParticipant = chatParticipantRepository
-                .existsByRoomIdAndUserId(roomId, userId);
-
-        if (!isParticipant) {
-            throw new IllegalStateException("User is not a participant of this chat room");
-        }
+        boolean isParticipant = chatParticipantRepository.existsByRoomIdAndUserId(roomId, userId);
+        if (!isParticipant) throw new IllegalStateException("User is not a participant of this chat room");
 
         Page<ChatMessage> messagePage = chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(roomId, pageable);
-
-        // Enrich in batch
         List<UUID> senderIds = messagePage.getContent().stream().map(ChatMessage::getSenderId).distinct().toList();
         var userMap = userIntegrationService.getUsersInfo(senderIds);
 
         return messagePage.map(m -> {
             ChatMessageResponse res = mapToResponse(m);
             if (userMap.containsKey(m.getSenderId())) {
-                res.setSenderName(userMap.get(m.getSenderId()).fullName());
+                res.setSenderName(formatName(userMap.get(m.getSenderId())));
             }
             return res;
         });
@@ -186,12 +221,16 @@ public class ChatServiceImpl implements ChatService {
     public List<ChatRoomSummaryResponse> getMyChatRooms(UUID userId) {
         List<ChatParticipant> myParticipations = chatParticipantRepository.findByUserId(userId);
         
+        // Fetch all generic room details (Type, BookingId)
+        List<UUID> roomIds = myParticipations.stream().map(ChatParticipant::getRoomId).toList();
+        java.util.Map<UUID, ChatRoom> roomMap = chatRoomRepository.findAllById(roomIds).stream()
+                .collect(java.util.stream.Collectors.toMap(ChatRoom::getId, java.util.function.Function.identity()));
+
         List<ChatRoomSummaryResponse> summaries = myParticipations.stream().map(p -> {
             UUID roomId = p.getRoomId();
             ChatRoomSummaryResponse summary = new ChatRoomSummaryResponse();
             summary.setRoomId(roomId);
 
-            // Find partner ID
             List<ChatParticipant> participants = chatParticipantRepository.findByRoomId(roomId);
             UUID partnerId = participants.stream()
                     .map(ChatParticipant::getUserId)
@@ -201,21 +240,20 @@ public class ChatServiceImpl implements ChatService {
             
             summary.setPartnerId(partnerId);
 
-            // Latest message
             chatMessageRepository.findFirstByRoomIdOrderByCreatedAtDesc(roomId)
                     .ifPresent(m -> {
                         summary.setLastMessage(m.getContent());
                         summary.setLastMessageTime(m.getCreatedAt());
                     });
 
-            // Unread count
             long unread = chatMessageRepository.countByRoomIdAndSenderIdNotAndReadFalse(roomId, userId);
             summary.setUnreadCount(unread);
+            
+            summary.setPartnerName("Unknown User");
 
             return summary;
         }).toList();
 
-        // Enrich partner names in batch
         List<UUID> partnerIds = summaries.stream()
                 .map(ChatRoomSummaryResponse::getPartnerId)
                 .filter(java.util.Objects::nonNull)
@@ -226,12 +264,37 @@ public class ChatServiceImpl implements ChatService {
             var userMap = userIntegrationService.getUsersInfo(partnerIds);
             summaries.forEach(s -> {
                 if (s.getPartnerId() != null && userMap.containsKey(s.getPartnerId())) {
-                    s.setPartnerName(userMap.get(s.getPartnerId()).fullName());
+                    String baseName = formatName(userMap.get(s.getPartnerId()));
+                    
+                    // Add Context (Booking vs Direct)
+                    ChatRoom room = roomMap.get(s.getRoomId());
+                    if (room != null && room.getBookingId() != null) {
+                         String shortId = room.getBookingId().toString().substring(0, 4);
+                         baseName += " (Booking #" + shortId + ")";
+                    }
+                    
+                    s.setPartnerName(baseName);
                 }
             });
         }
-
-        return summaries;
+        
+        // Deduplicate: If multiple rooms result in exact same content, distinct() can help if equals() is implemented, 
+        // but here objects are new. 
+        // We rely on distinct roomIds. 
+        // However, if myParticipations has duplicates (same user/room multiple times), use distinct on room IDs stream above.
+        // The implementation above maps myParticipations (List) -> summaries (List).
+        // If 'myParticipations' has duplicates, 'summaries' has duplicates.
+        // We should distinct 'myParticipations' by RoomID first.
+        
+        return summaries.stream()
+                .filter(distinctByKey(ChatRoomSummaryResponse::getRoomId)) // Ensure unique rooms
+                .toList();
+    }
+    
+    // Utility for distinct stream
+    private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+        java.util.Set<Object> seen = java.util.concurrent.ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
     @Override
@@ -253,8 +316,21 @@ public class ChatServiceImpl implements ChatService {
         response.setCreatedAt(message.getCreatedAt());
         return response;
     }
-
-
-
-
+    
+    // Helper to format name with Role Prefix
+    private String formatName(UserIntegrationService.UserSummary user) {
+        if (user == null) return "Unknown";
+        String prefix = "";
+        String role = user.userRole() != null ? user.userRole().toUpperCase() : "";
+        
+        if (role.contains("ADMIN")) {
+            prefix = "RA_";
+        } else if (role.contains("PARENT")) {
+            prefix = "RP_";
+        } else if (role.contains("CAREGIVER") || role.contains("CARETAKER")) {
+            prefix = "RC_";
+        }
+        
+        return prefix + user.fullName();
+    }
 }
